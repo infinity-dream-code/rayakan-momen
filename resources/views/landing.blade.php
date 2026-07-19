@@ -31,7 +31,6 @@
           imagesizes="100vw"
           fetchpriority="high">
 
-    <link rel="stylesheet" href="{{ asset('css/landing-tw.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
     {{-- Fonts non-blocking --}}
