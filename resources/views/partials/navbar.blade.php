@@ -1,3 +1,11 @@
+<style>
+/* Nav CTA: sembunyi di HP — tidak bergantung upload app.css */
+.nav-cta{display:none!important;white-space:nowrap;flex-shrink:0}
+@media(min-width:640px){.nav-cta{display:inline-flex!important}}
+.nav-hamburger{display:inline-flex;flex-shrink:0}
+@media(min-width:1024px){.nav-hamburger{display:none!important}}
+@media(min-width:1024px){.mobile-menu,.mobile-overlay{display:none!important}}
+</style>
 <nav id="navbar" class="nav-blur fixed top-0 inset-x-0 z-50 transition-all duration-300">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="flex items-center justify-between h-16 md:h-[4.5rem]">
