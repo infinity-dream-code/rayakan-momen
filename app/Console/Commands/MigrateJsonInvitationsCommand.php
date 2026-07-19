@@ -89,14 +89,14 @@ class MigrateJsonInvitationsCommand extends Command
             if ($created && ! empty($row['id'])) {
                 // Adjust expires/purge from original created_at
                 $createdAt = \Illuminate\Support\Carbon::parse($created);
-                $expireMonths = (int) config('undangan.expire_months', 3);
-                $purgeMonths = (int) config('undangan.purge_months', 6);
+                $expireDays = (int) config('undangan.expire_days', 90);
+                $purgeDays = (int) config('undangan.purge_days', 180);
                 \Illuminate\Support\Facades\DB::update(
                     'UPDATE invitations SET created_at = ?, expires_at = ?, purge_at = ?, views = ? WHERE id = ?',
                     [
                         $createdAt->toDateTimeString(),
-                        $createdAt->copy()->addMonths($expireMonths)->toDateTimeString(),
-                        $createdAt->copy()->addMonths($purgeMonths)->toDateTimeString(),
+                        $createdAt->copy()->addDays($expireDays)->toDateTimeString(),
+                        $createdAt->copy()->addDays($purgeDays)->toDateTimeString(),
                         (int) ($item['views'] ?? $row['views'] ?? 0),
                         $row['id'],
                     ]

@@ -66,7 +66,7 @@
             <div>
                 <label class="form-label">Slug URL *</label>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs text-gray-400 shrink-0">untal.id/</span>
+                    <span class="text-xs text-gray-400 shrink-0">rayakanmomen.com/</span>
                     <input type="text" name="slug" value="{{ old('slug', $u['slug'] ?? '') }}" class="form-input" placeholder="ica" required>
                 </div>
             </div>

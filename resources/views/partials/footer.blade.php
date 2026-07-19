@@ -3,7 +3,7 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
             <div class="lg:col-span-1">
                 <a href="#beranda" class="font-display text-2xl text-gold-light-accent tracking-wide inline-block mb-4">
-                    Web Untal
+                    Rayakan Momen
                 </a>
                 <p class="text-sm leading-relaxed text-on-dark-soft">
                     Marketplace undangan digital — wedding, ultah anak, dan couple. Pilih template, lihat harga, siap share lewat WhatsApp.
@@ -33,9 +33,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="mailto:halo@webuntal.com" class="footer-link inline-flex items-center gap-2">
+                        <a href="mailto:halo@rayakanmomen.com" class="footer-link inline-flex items-center gap-2">
                             <i class="fa-solid fa-envelope text-gold-accent"></i>
-                            halo@webuntal.com
+                            halo@rayakanmomen.com
                         </a>
                     </li>
                 </ul>
@@ -44,25 +44,25 @@
             <div>
                 <h4 class="text-on-dark font-medium text-sm mb-4 tracking-wide">Sosial Media</h4>
                 <div class="flex gap-3">
-                    <a href="https://instagram.com/web_untal"
+                    <a href="https://instagram.com/rayakanmomen"
                        target="_blank"
                        rel="noopener noreferrer"
                        class="social-btn"
-                       aria-label="Instagram Web Untal">
+                       aria-label="Instagram Rayakan Momen">
                         <i class="fa-brands fa-instagram"></i>
                     </a>
-                    <a href="https://tiktok.com/@web_untal"
+                    <a href="https://tiktok.com/@rayakanmomen"
                        target="_blank"
                        rel="noopener noreferrer"
                        class="social-btn"
-                       aria-label="TikTok Web Untal">
+                       aria-label="TikTok Rayakan Momen">
                         <i class="fa-brands fa-tiktok"></i>
                     </a>
                     <a href="https://wa.me/6285777743388"
                        target="_blank"
                        rel="noopener noreferrer"
                        class="social-btn"
-                       aria-label="WhatsApp Web Untal">
+                       aria-label="WhatsApp Rayakan Momen">
                         <i class="fa-brands fa-whatsapp"></i>
                     </a>
                 </div>
@@ -70,7 +70,7 @@
         </div>
 
         <div class="border-t border-white/10 pt-6 text-center text-xs text-on-dark-soft">
-            &copy; 2026 Web Untal. All rights reserved.
+            &copy; 2026 Rayakan Momen. All rights reserved.
         </div>
     </div>
 </footer>

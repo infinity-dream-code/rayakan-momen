@@ -3,7 +3,7 @@
 
     <div class="max-w-6xl mx-auto px-4 sm:px-6 relative">
         <div class="max-w-xl mb-14 md:mb-16 reveal">
-            <p class="section-label">Kenapa Web Untal</p>
+            <p class="section-label">Kenapa Rayakan Momen</p>
             <h2 class="section-heading text-left mb-4">
                 Dibuat untuk momen,<br>
                 <span class="text-gold-dark-accent">bukan template generik</span>

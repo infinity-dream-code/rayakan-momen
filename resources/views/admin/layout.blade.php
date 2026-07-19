@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Admin') — Web Untal</title>
+    <title>@yield('title', 'Admin') — Rayakan Momen</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -38,7 +38,7 @@
         <aside class="sidebar w-64 shrink-0 hidden md:flex flex-col fixed inset-y-0 left-0 z-30">
             <div class="px-6 py-6 border-b border-white/10">
                 <a href="{{ route('admin.dashboard') }}" class="font-display text-xl text-[#e8d5a3]">
-                    Web Untal
+                    Rayakan Momen
                 </a>
                 <p class="text-white/40 text-xs mt-1">Panel Admin Demo</p>
             </div>

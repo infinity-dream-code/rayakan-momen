@@ -2,7 +2,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="flex items-center justify-between h-16 md:h-[4.5rem]">
             <a href="#beranda" class="font-display text-xl md:text-2xl text-gold-light-accent tracking-wide">
-                Web Untal
+                Rayakan Momen
             </a>
 
             <ul class="hidden lg:flex items-center gap-8">

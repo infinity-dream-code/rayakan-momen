@@ -56,15 +56,15 @@ class InvitationTemplateRenderer
         if ($kat === 'ultah_anak') {
             $name = $u['nama_anak'] ?? $u['nama_wanita'] ?? 'Ultah';
             $title = $name.' — Undangan Ulang Tahun';
-            $desc = 'Undangan digital ulang tahun '.$name.'. Dibuat dengan Web Untal.';
+            $desc = 'Undangan digital ulang tahun '.$name.'. Dibuat dengan Rayakan Momen.';
         } elseif ($kat === 'couple') {
             $name = trim(($u['nama_pria'] ?? '').' & '.($u['nama_wanita'] ?? ''));
             $title = $name.' — Surat Spesial';
-            $desc = 'Surat digital spesial untuk '.$name.'. Dibuat dengan Web Untal.';
+            $desc = 'Surat digital spesial untuk '.$name.'. Dibuat dengan Rayakan Momen.';
         } else {
             $name = trim(($u['nama_wanita'] ?? '').' & '.($u['nama_pria'] ?? ''));
             $title = $name.' — Undangan Pernikahan';
-            $desc = 'Undangan pernikahan digital '.$name.'. Dibuat dengan Web Untal.';
+            $desc = 'Undangan pernikahan digital '.$name.'. Dibuat dengan Rayakan Momen.';
         }
 
         $image = null;
@@ -766,7 +766,7 @@ HTML;
         ];
 
         $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        $script = '<script>window.WEB_UNTAL = '.$json.';</script>'."\n"
+        $script = '<script>window.RAYAKAN_MOMEN = '.$json.'; window.WEB_UNTAL = window.RAYAKAN_MOMEN;</script>'."\n"
             .'<script src="'.asset('js/undangan-bridge.js').'"></script>';
 
         if (stripos($html, '</body>') !== false) {

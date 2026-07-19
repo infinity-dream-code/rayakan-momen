@@ -130,8 +130,8 @@ class InvitationRepository
     {
         $id = (string) Str::uuid();
         $now = now();
-        $expireMonths = (int) config('undangan.expire_months', 3);
-        $purgeMonths = (int) config('undangan.purge_months', 6);
+        $expireDays = (int) config('undangan.expire_days', 90);
+        $purgeDays = (int) config('undangan.purge_days', 180);
 
         $data['id'] = $id;
         $data['slug'] = Str::lower($data['slug'] ?? '');
@@ -140,8 +140,8 @@ class InvitationRepository
         $data['views'] = (int) ($data['views'] ?? 0);
         $data['created_at'] = $now->toDateTimeString();
         $data['updated_at'] = $now->toDateTimeString();
-        $data['expires_at'] = $now->copy()->addMonths($expireMonths)->toDateTimeString();
-        $data['purge_at'] = $now->copy()->addMonths($purgeMonths)->toDateTimeString();
+        $data['expires_at'] = $now->copy()->addDays($expireDays)->toDateTimeString();
+        $data['purge_at'] = $now->copy()->addDays($purgeDays)->toDateTimeString();
 
         [$row, $payload, $cerita, $rekening, $ewallet] = $this->splitData($data);
 
@@ -304,6 +304,50 @@ class InvitationRepository
                AND expires_at <= NOW()",
             [now()->toDateTimeString()]
         );
+    }
+
+    /**
+     * Auto-expire one invitation by slug if past expires_at (no cron needed).
+     */
+    public function expireIfDueBySlug(string $slug): bool
+    {
+        $slug = Str::lower($slug);
+        $affected = DB::update(
+            "UPDATE invitations
+             SET access_state = 'expired', status = 'nonaktif', updated_at = ?
+             WHERE slug = ?
+               AND access_state = 'live'
+               AND expires_at IS NOT NULL
+               AND expires_at <= NOW()",
+            [now()->toDateTimeString(), $slug]
+        );
+
+        if ($affected > 0) {
+            $this->forgetClientCache($slug);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Also expire any due rows (lightweight) — call from admin list.
+     */
+    public function expireAllDue(): int
+    {
+        $rows = DB::select(
+            "SELECT slug FROM invitations
+             WHERE access_state = 'live'
+               AND expires_at IS NOT NULL
+               AND expires_at <= NOW()"
+        );
+        $count = $this->markExpiredDue();
+        foreach ($rows as $row) {
+            $this->forgetClientCache($row->slug ?? '');
+        }
+
+        return $count;
     }
 
     public function countPurgeEligible(): int

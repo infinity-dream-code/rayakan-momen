@@ -40,7 +40,7 @@
                     $punyaDiskon = ! empty($t['punya_diskon']);
                     $hargaFinalLabel = $final > 0 ? $catalog->formatRupiah($final) : null;
                     $hargaAwalLabel = $harga > 0 ? $catalog->formatRupiah($harga) : null;
-                    $waText = rawurlencode('Halo Web Untal, saya mau pesan template '.$t['nama'].($hargaFinalLabel ? ' ('.$hargaFinalLabel.')' : ''));
+                    $waText = rawurlencode('Halo Rayakan Momen, saya mau pesan template '.$t['nama'].($hargaFinalLabel ? ' ('.$hargaFinalLabel.')' : ''));
                 @endphp
                 <article class="portfolio-card market-card reveal"
                          data-category="{{ $t['kategori'] }}">

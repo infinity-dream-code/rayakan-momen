@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,nofollow">
-    <title>Undangan tidak tersedia — Web Untal</title>
+    <title>Undangan tidak tersedia — Rayakan Momen</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
@@ -18,7 +18,7 @@
     <div>
         <h1>Undangan tidak tersedia</h1>
         <p>Link undangan ini sudah tidak aktif (masa tayang berakhir). Data masih tersimpan di sistem, tetapi tidak bisa dibuka oleh tamu.</p>
-        <a href="{{ url('/') }}">Kembali ke Web Untal</a>
+        <a href="{{ url('/') }}">Kembali ke Rayakan Momen</a>
     </div>
 </body>
 </html>

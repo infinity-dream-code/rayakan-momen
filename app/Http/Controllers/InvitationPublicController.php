@@ -19,6 +19,10 @@ class InvitationPublicController extends Controller
     public function show(string $slug)
     {
         $slug = Str::lower($slug);
+
+        // Auto: lewat 90 hari → status jadi expired (tanpa tunggu cron)
+        $this->invitations->expireIfDueBySlug($slug);
+
         $undangan = $this->invitations->findPublicBySlug($slug);
 
         if (! $undangan) {

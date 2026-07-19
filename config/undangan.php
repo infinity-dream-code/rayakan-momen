@@ -6,9 +6,13 @@ return [
     |--------------------------------------------------------------------------
     | Client invitation lifecycle
     |--------------------------------------------------------------------------
-    | After expire_months the public page becomes inaccessible (data kept).
-    | After purge_months admins may bulk-delete expired records.
+    | expire_days  = otomatis jadi expired (tidak bisa diakses publik), data tetap ada
+    | purge_days   = setelah ini baru muncul tombol hapus manual di admin
     */
+    'expire_days' => (int) env('UNDANGAN_EXPIRE_DAYS', 90),
+    'purge_days' => (int) env('UNDANGAN_PURGE_DAYS', 180),
+
+    // Backward-compatible aliases (bulan ≈ 30 hari) — prefer *_days di atas
     'expire_months' => (int) env('UNDANGAN_EXPIRE_MONTHS', 3),
     'purge_months' => (int) env('UNDANGAN_PURGE_MONTHS', 6),
 
@@ -28,6 +32,12 @@ return [
     | Only jpg/jpeg/png. Double extensions rejected. Auto-compress to max_kb.
     */
     'upload_max_kb' => (int) env('UPLOAD_MAX_KB', 500),
-    'upload_max_dimension' => (int) env('UPLOAD_MAX_DIMENSION', 1920),
+    /*
+    |--------------------------------------------------------------------------
+    | Public brand
+    |--------------------------------------------------------------------------
+    */
+    'brand' => env('APP_BRAND', 'Rayakan Momen'),
+    'public_domain' => env('APP_DOMAIN', 'rayakanmomen.com'),
 
 ];

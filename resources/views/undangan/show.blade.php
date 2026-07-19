@@ -1,4 +1,4 @@
-@php
+﻿@php
     $tema = $undangan['tema'] ?? 'elegan';
     $isDark = $tema === 'langit_malam';
     $isClassic = $tema === 'classic';
@@ -331,7 +331,7 @@
         </section>
 
         <footer class="text-center py-8 text-xs" style="color:var(--muted)">
-            Made with ♥ by <a href="{{ url('/') }}" class="underline" style="color:var(--accent)">Web Untal</a>
+            Made with ♥ by <a href="{{ url('/') }}" class="underline" style="color:var(--accent)">Rayakan Momen</a>
         </footer>
     </div>
 </div>

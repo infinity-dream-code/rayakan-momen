@@ -1,4 +1,4 @@
-{{--
+﻿{{--
   Shared layout untuk 3 template.
   Edit warna/gaya di masing-masing file:
   - templates/elegan.blade.php
@@ -318,7 +318,7 @@
         </section>
 
         <footer class="text-center py-8 text-xs" style="color:var(--muted)">
-            Made with ♥ by <a href="{{ url('/') }}" class="underline" style="color:var(--accent)">Web Untal</a>
+            Made with ♥ by <a href="{{ url('/') }}" class="underline" style="color:var(--accent)">Rayakan Momen</a>
         </footer>
     </div>
 </div>

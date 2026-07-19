@@ -16,6 +16,9 @@ class InvitationController extends Controller
 
     public function index()
     {
+        // Sync status expired otomatis saat buka daftar admin
+        $this->storage->expireAllDue();
+
         $undangan = $this->storage->allForAdmin();
         $purgeEligible = $this->storage->countPurgeEligible();
 
@@ -134,8 +137,8 @@ class InvitationController extends Controller
         return redirect()
             ->route('admin.undangan.index')
             ->with('success', $count > 0
-                ? "Berhasil menghapus {$count} undangan nonaktif (≥6 bulan)."
-                : 'Tidak ada data nonaktif yang siap dihapus.');
+                ? "Berhasil menghapus {$count} undangan expired (manual)."
+                : 'Tidak ada undangan expired yang siap dihapus (≥180 hari).');
     }
 
     public function laporan(string $id)

@@ -11,15 +11,15 @@
         <div class="flex items-center gap-2 flex-wrap">
             @if (($purgeEligible ?? 0) > 0)
                 <form method="POST" action="{{ route('admin.undangan.purge-expired') }}"
-                      onsubmit="return confirm('Hapus {{ $purgeEligible }} undangan nonaktif yang sudah ≥6 bulan? File foto ikut terhapus.')">
+                      onsubmit="return confirm('Hapus {{ $purgeEligible }} undangan yang sudah expired ≥180 hari? File foto ikut terhapus. Tindakan ini manual &amp; permanen.')">
                     @csrf
                     <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm border border-red-200 text-red-600 bg-red-50 hover:bg-red-100">
                         <i class="fa-solid fa-trash-can"></i>
-                        Hapus nonaktif ({{ $purgeEligible }})
+                        Hapus manual expired ({{ $purgeEligible }})
                     </button>
                 </form>
             @else
-                <span class="text-xs text-gray-400">Tidak ada data siap purge (≥6 bln)</span>
+                <span class="text-xs text-gray-400">Expired otomatis 90 hari · hapus manual setelah 180 hari</span>
             @endif
             <a href="{{ route('admin.undangan.create') }}" class="btn-gold inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm">
                 <i class="fa-solid fa-plus"></i> Tambah Baru

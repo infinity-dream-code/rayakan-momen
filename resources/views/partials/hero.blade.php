@@ -16,7 +16,7 @@
     </div>
 
     <div class="hero-content">
-        <p class="hero-brand hero-in">Web Untal</p>
+        <p class="hero-brand hero-in">Rayakan Momen</p>
 
         <h1 class="hero-title hero-in hero-in-2">
             Undangan digital<br>

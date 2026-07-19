@@ -19,7 +19,8 @@ html {
 body {
     font-family: 'Poppins', sans-serif;
     color: var(--color-charcoal);
-    background-color: var(--color-warm-white);
+    /* Dark base so no cream “stripe” between CTA and footer */
+    background-color: var(--color-navy-deep);
     overflow-x: hidden;
 }
 
@@ -1494,6 +1495,7 @@ body {
     background: var(--color-charcoal);
     position: relative;
     overflow: hidden;
+    margin-bottom: 0;
 }
 
 .cta-bg {
@@ -1529,6 +1531,7 @@ body {
     background: var(--color-navy-deep);
     color: rgba(255, 255, 255, 0.55);
     border-top: 1px solid rgba(201, 168, 76, 0.15);
+    margin-top: 0;
 }
 
 .footer-link {

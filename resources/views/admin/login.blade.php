@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login Admin — Web Untal</title>
+    <title>Login Admin — Rayakan Momen</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,7 +15,7 @@
 <body class="min-h-screen bg-[#0e1320] flex items-center justify-center px-4">
     <div class="w-full max-w-md">
         <div class="text-center mb-8">
-            <h1 class="font-display text-3xl text-[#e8d5a3]">Web Untal</h1>
+            <h1 class="font-display text-3xl text-[#e8d5a3]">Rayakan Momen</h1>
             <p class="text-white/45 text-sm mt-2">Login Panel Admin (Demo)</p>
         </div>
 

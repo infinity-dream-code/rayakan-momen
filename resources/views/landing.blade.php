@@ -1,20 +1,20 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Web Untal — Undangan Digital Wedding, Ultah &amp; Couple</title>
-    <meta name="description" content="Web Untal — marketplace undangan digital untuk pernikahan, ulang tahun anak, dan kejutan couple. Lihat demo live, pilih template, lalu pesan lewat WhatsApp.">
-    <meta name="keywords" content="undangan digital, undangan pernikahan, undangan ulang tahun anak, undangan couple, wedding invitation, Web Untal">
-    <meta name="author" content="Web Untal">
+    <title>Rayakan Momen — Undangan Digital Wedding, Ultah &amp; Couple</title>
+    <meta name="description" content="Rayakan Momen — marketplace undangan digital untuk pernikahan, ulang tahun anak, dan kejutan couple. Lihat demo live, pilih template, lalu pesan lewat WhatsApp.">
+    <meta name="keywords" content="undangan digital, undangan pernikahan, undangan ulang tahun anak, undangan couple, wedding invitation, Rayakan Momen">
+    <meta name="author" content="Rayakan Momen">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Web Untal — Undangan Digital Wedding, Ultah &amp; Couple">
+    <meta property="og:title" content="Rayakan Momen — Undangan Digital Wedding, Ultah &amp; Couple">
     <meta property="og:description" content="Pilih template undangan digital: wedding, ultah anak, atau couple. Demo live tersedia — siap share lewat WA.">
     <meta property="og:image" content="https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=80">
     <meta property="og:url" content="{{ url('/') }}">
-    <meta property="og:site_name" content="Web Untal">
+    <meta property="og:site_name" content="Rayakan Momen">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Web Untal — Jasa Undangan Digital">
+    <meta name="twitter:title" content="Rayakan Momen — Jasa Undangan Digital">
     <meta name="twitter:description" content="Undangan digital elegan untuk wedding, ultah anak, dan couple. Mulai dari Rp 150.000.">
     <meta name="twitter:image" content="https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=80">
     <link rel="canonical" href="{{ url('/') }}">

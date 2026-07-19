@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    var cfg = window.WEB_UNTAL;
+    var cfg = window.RAYAKAN_MOMEN || window.WEB_UNTAL;
     if (!cfg) return;
 
     var form = document.getElementById('rsvpForm');

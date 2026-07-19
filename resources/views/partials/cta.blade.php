@@ -9,7 +9,7 @@
     </div>
 
     <div class="relative max-w-3xl mx-auto px-4 sm:px-6 text-center reveal z-10">
-        <p class="hero-brand cta-brand mb-6">Web Untal</p>
+        <p class="hero-brand cta-brand mb-6">Rayakan Momen</p>
         <h2 class="font-display text-3xl sm:text-4xl md:text-5xl text-on-dark mb-5 leading-tight">
             Siap buat undangan<br>
             <em class="gold-gradient-text not-italic">sesuai momenmu?</em>

@@ -28,7 +28,7 @@ class AuthController extends Controller
 
         if ($request->username === $username && $request->password === $password) {
             $request->session()->put('demo_admin_logged_in', true);
-            $request->session()->put('demo_admin_name', 'Admin web_untal');
+            $request->session()->put('demo_admin_name', 'Admin Rayakan Momen');
 
             return redirect()->route('admin.dashboard')->with('success', 'Selamat datang kembali!');
         }
