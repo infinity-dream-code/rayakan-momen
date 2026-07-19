@@ -27,6 +27,7 @@ class InvitationTemplateRenderer
                 $html = $this->replaceStory($html, $undangan);
                 $html = $this->replaceGallery($html, $undangan);
                 $html = $this->replaceBanks($html, $undangan);
+                $html = $this->attachImageErrorHandlers($html);
                 $html = $this->injectSeoMeta($html, $undangan, $meta);
                 $html = $this->injectBridge($html, $undangan);
 
@@ -813,8 +814,8 @@ HTML;
         if (str_contains($html, 'class="gal-memories"')) {
             $formal = $urls[0];
             $html = preg_replace(
-                '/(<figure class="gal-formal">\s*<img\s+src=")[^"]+(")/i',
-                '$1'.e($formal).'$2',
+                '/(<figure class="gal-formal">\s*<img)(\s+[^>]*)(>)/i',
+                '$1 src="'.e($formal).'" alt="'.$altCouple.'" onerror="window.__rmHideImg&&window.__rmHideImg(this)"$3',
                 $html,
                 1
             ) ?? $html;
@@ -822,7 +823,7 @@ HTML;
             $memories = count($urls) > 1 ? array_slice($urls, 1) : $urls;
             $items = '';
             foreach ($memories as $url) {
-                $items .= '<figure class="gal-item"><img src="'.e($url).'" alt="Kenangan '.$altCouple.'"></figure>';
+                $items .= '<figure class="gal-item"><img src="'.e($url).'" alt="" onerror="window.__rmHideImg&&window.__rmHideImg(this)" loading="lazy"></figure>';
             }
 
             $html = preg_replace(
@@ -926,13 +927,53 @@ HTML;
         ];
 
         $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $bridge = asset('js/undangan-bridge.js');
+        $bridge .= (str_contains($bridge, '?') ? '&' : '?').'v='.@filemtime(public_path('js/undangan-bridge.js'));
+
+        // HARUS di <head> supaya siap sebelum <img> fire onerror
+        $inlineHide = <<<'JS'
+<script>
+window.__rmHideImg=function(img){if(!img||img.dataset.rmHide==='1')return;img.dataset.rmHide='1';img.removeAttribute('alt');img.style.display='none';var p=img.closest('figure,button.gal-item,.gal-item,.arch-frame,.arch-photo,.mosaic-item');if(p)p.style.display='none';};
+document.addEventListener('error',function(e){var t=e.target;if(t&&t.tagName==='IMG')window.__rmHideImg(t);},true);
+</script>
+JS;
+
+        if (stripos($html, '</head>') !== false) {
+            $html = str_ireplace('</head>', $inlineHide."\n</head>", $html);
+        } else {
+            $html = $inlineHide.$html;
+        }
+
         $script = '<script>window.RAYAKAN_MOMEN = '.$json.'; window.WEB_UNTAL = window.RAYAKAN_MOMEN;</script>'."\n"
-            .'<script src="'.asset('js/undangan-bridge.js').'"></script>';
+            .'<script src="'.e($bridge).'"></script>'."\n"
+            .'<script>document.querySelectorAll("img").forEach(function(img){if(img.complete&&img.naturalWidth===0&&img.getAttribute("src"))window.__rmHideImg(img);});</script>';
 
         if (stripos($html, '</body>') !== false) {
             return str_ireplace('</body>', $script."\n</body>", $html);
         }
 
         return $html.$script;
+    }
+
+    /**
+     * Pasang onerror di semua <img> supaya yang 404 langsung hilang.
+     */
+    protected function attachImageErrorHandlers(string $html): string
+    {
+        return preg_replace_callback('/<img\b([^>]*?)>/i', function (array $m) {
+            $attrs = $m[1];
+            if (preg_match('/\bonerror\s*=/i', $attrs)) {
+                return $m[0];
+            }
+
+            // Buang alt teks biar tidak muncul "Kenangan..." saat broken
+            if (! preg_match('/\balt\s*=/i', $attrs)) {
+                $attrs .= ' alt=""';
+            } else {
+                $attrs = preg_replace('/\balt\s*=\s*(["\']).*?\1/i', 'alt=""', $attrs, 1) ?? $attrs;
+            }
+
+            return '<img'.$attrs.' onerror="window.__rmHideImg&&window.__rmHideImg(this)">';
+        }, $html) ?? $html;
     }
 }
