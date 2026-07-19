@@ -155,6 +155,13 @@ class InvitationController extends Controller
 
     protected function validated(Request $request, ?string $ignoreId = null): array
     {
+        // Normalisasi slug dulu biar huruf besar / spasi tidak bikin error regex
+        if ($request->filled('slug')) {
+            $request->merge([
+                'slug' => Str::slug((string) $request->input('slug'), '-'),
+            ]);
+        }
+
         $reserved = ['admin', 'panel', 'SmartLoginAdmin', 'login', 'logout', 'api', 'css', 'js', 'images', 'uploads', 'storage', 'sitemap.xml', 'robots.txt'];
         $tema = $request->input('tema');
         $meta = config('templates.templates.'.$tema, []);
@@ -168,9 +175,9 @@ class InvitationController extends Controller
                 'required',
                 'string',
                 'max:50',
-                'regex:/^[a-z0-9\-]+$/',
+                'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
                 function ($attribute, $value, $fail) use ($storage, $reserved, $ignoreId) {
-                    $value = Str::lower($value);
+                    $value = Str::lower((string) $value);
                     if (in_array($value, $reserved, true)) {
                         $fail('Slug ini tidak boleh digunakan.');
                     }

@@ -147,8 +147,9 @@ return [
             'warna' => '#8b3a3a',
             'harga' => 250000,
             'preview' => null,
-            'file' => 'template/template1.php',
-            'blade' => null,
+            // Sumber asli: template_undangan/.../template 1/index.html (fallback di renderer)
+            'file' => 'template_undangan/template_wedding/template 1/index.html',
+            'blade' => 'templates.elegan',
             'demo_url' => 'https://dream-wedding-steel.vercel.app/',
             'aktif' => true,
             'fields' => [
@@ -165,8 +166,8 @@ return [
             'warna' => '#234338',
             'harga' => 250000,
             'preview' => null,
-            'file' => 'template/template2.php',
-            'blade' => null,
+            'file' => 'template_undangan/template_wedding/template 2/index.html',
+            'blade' => 'templates.classic',
             'demo_url' => 'https://dream-wedding-2.vercel.app/',
             'aktif' => true,
             'fields' => [
@@ -183,8 +184,8 @@ return [
             'warna' => '#0b1320',
             'harga' => 275000,
             'preview' => null,
-            'file' => 'template/template3.php',
-            'blade' => null,
+            'file' => 'template_undangan/template_wedding/template 3/index.html',
+            'blade' => 'templates.langit_malam',
             'demo_url' => 'https://dream-wedding-3.vercel.app/',
             'aktif' => true,
             'fields' => [

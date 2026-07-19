@@ -18,7 +18,8 @@ class InvitationPublicController extends Controller
 
     public function show(string $slug)
     {
-        $slug = Str::lower($slug);
+        // Slug sering diketik pakai spasi di address bar → normalisasi
+        $slug = Str::slug(Str::lower(rawurldecode($slug)), '-');
 
         // Auto: lewat 90 hari → status jadi expired (tanpa tunggu cron)
         $this->invitations->expireIfDueBySlug($slug);

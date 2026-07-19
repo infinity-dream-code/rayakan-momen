@@ -85,7 +85,7 @@
         <p style="margin-top:16px"><a class="map" href="{{ $undangan['maps_url'] }}" target="_blank" rel="noopener">Lihat Lokasi →</a></p>
     @endif
 
-    <p class="note">Template adat Jawa masih preview. Data dari admin sudah aktif — desain penuh menyusul.</p>
+    <p class="note">Halaman preview sementara. Data dari admin sudah aktif — pastikan file template &amp; folder assets terpasang di server.</p>
 </div>
 </body>
 </html>

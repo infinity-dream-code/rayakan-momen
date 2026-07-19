@@ -10,6 +10,19 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         require_once app_path('Helpers/cdn.php');
+
+        // Hosting: project di root, public di public_html
+        $candidates = [
+            base_path('public_html'),
+            base_path('public'),
+        ];
+
+        foreach ($candidates as $path) {
+            if (is_dir($path) && is_file($path.DIRECTORY_SEPARATOR.'index.php')) {
+                $this->app->usePublicPath($path);
+                break;
+            }
+        }
     }
 
     public function boot(): void

@@ -179,18 +179,17 @@ class FileUploadService
     }
 
     /**
-     * Re-encode & compress image to JPEG under ~500KB.
+     * Re-encode & compress image to JPEG under ~500KB (cepat di shared hosting).
      */
     protected function compressToJpeg(string $sourcePath, string $destPath): void
     {
         if (! function_exists('imagecreatefromstring')) {
-            // Fallback: copy without compress if GD missing (still validated)
             copy($sourcePath, $destPath);
 
             return;
         }
 
-        $binary = file_get_contents($sourcePath);
+        $binary = @file_get_contents($sourcePath);
         if ($binary === false) {
             throw new InvalidArgumentException('Tidak bisa membaca file gambar.');
         }
@@ -203,8 +202,8 @@ class FileUploadService
         $width = imagesx($src);
         $height = imagesy($src);
 
-        // Downscale if too large
-        $max = $this->maxDimension;
+        // Shared hosting: batasi resolusi agar tidak timeout
+        $max = min($this->maxDimension, 1280);
         if ($width > $max || $height > $max) {
             $ratio = min($max / $width, $max / $height);
             $newW = max(1, (int) round($width * $ratio));
@@ -218,7 +217,6 @@ class FileUploadService
             $width = $newW;
             $height = $newH;
         } else {
-            // Flatten PNG transparency onto white
             $canvas = imagecreatetruecolor($width, $height);
             $white = imagecolorallocate($canvas, 255, 255, 255);
             imagefill($canvas, 0, 0, $white);
@@ -227,64 +225,28 @@ class FileUploadService
             $src = $canvas;
         }
 
-        // Binary search quality to fit under maxBytes
-        $quality = 85;
-        $minQ = 40;
-        $maxQ = 90;
-        $best = null;
+        // Satu pass kualitas (hindari binary-search yang berat di shared hosting)
+        $quality = 72;
+        ob_start();
+        imagejpeg($src, null, $quality);
+        $data = ob_get_clean();
 
-        for ($i = 0; $i < 8; $i++) {
-            ob_start();
-            imagejpeg($src, null, $quality);
-            $data = ob_get_clean();
-            $size = strlen($data);
-
-            if ($size <= $this->maxBytes) {
-                $best = $data;
-                $minQ = $quality + 1;
-                $quality = (int) ceil(($quality + $maxQ) / 2);
-            } else {
-                $maxQ = $quality - 1;
-                $quality = (int) floor(($minQ + $quality) / 2);
-            }
-
-            if ($minQ > $maxQ) {
-                break;
-            }
+        if ($data === false || $data === '') {
+            imagedestroy($src);
+            throw new InvalidArgumentException('Gagal kompres gambar.');
         }
 
-        // If still too big at low quality, shrink dimensions further
-        if ($best === null || strlen($best) > $this->maxBytes) {
-            $scale = 0.75;
-            while ($scale >= 0.35) {
-                $nw = max(1, (int) round($width * $scale));
-                $nh = max(1, (int) round($height * $scale));
-                $tmp = imagecreatetruecolor($nw, $nh);
-                $white = imagecolorallocate($tmp, 255, 255, 255);
-                imagefill($tmp, 0, 0, $white);
-                imagecopyresampled($tmp, $src, 0, 0, 0, 0, $nw, $nh, $width, $height);
-
-                ob_start();
-                imagejpeg($tmp, null, 72);
-                $data = ob_get_clean();
-                imagedestroy($tmp);
-
-                if (strlen($data) <= $this->maxBytes) {
-                    $best = $data;
-                    break;
-                }
-                $scale -= 0.1;
-            }
+        // Kalau masih terlalu besar, turunkan kualitas sekali lagi
+        if (strlen($data) > $this->maxBytes) {
+            ob_start();
+            imagejpeg($src, null, 55);
+            $data = ob_get_clean() ?: $data;
         }
 
         imagedestroy($src);
 
-        if ($best === null) {
-            throw new InvalidArgumentException('Gambar terlalu besar untuk dikompres ke 500KB.');
-        }
-
-        if (file_put_contents($destPath, $best) === false) {
-            throw new InvalidArgumentException('Gagal menyimpan gambar.');
+        if (file_put_contents($destPath, $data) === false) {
+            throw new InvalidArgumentException('Gagal menyimpan gambar. Cek permission folder uploads.');
         }
     }
 }

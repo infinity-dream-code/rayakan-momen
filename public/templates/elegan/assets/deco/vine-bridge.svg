@@ -1,0 +1,6 @@
+<svg viewBox="0 0 360 56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="none">
+                <path class="vb-stem" d="M4 28 C 48 22, 96 32, 144 27 C 192 22, 240 31, 288 27 C 324 24, 352 28, 356 28" />
+                <path class="vb-stem vb-stem-alt" d="M4 30 C 48 25, 96 34, 144 30 C 192 25, 240 33, 288 30 C 324 26, 352 30, 356 30" />
+                <g id="vbRootsGroup"></g>
+                <g id="vbLeavesGroup"></g>
+            </svg>

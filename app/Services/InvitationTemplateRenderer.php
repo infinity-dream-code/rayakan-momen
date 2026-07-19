@@ -8,12 +8,15 @@ class InvitationTemplateRenderer
     {
         $tema = $undangan['tema'] ?? 'elegan';
         $meta = config('templates.templates.'.$tema, []);
-        $file = $meta['file'] ?? null;
 
-        if (filled($file)) {
-            $path = base_path($file);
-            if (is_file($path)) {
-                $html = file_get_contents($path);
+        $path = $this->resolveTemplateFile($tema, $meta['file'] ?? null);
+
+        if ($path !== null) {
+            $html = file_get_contents($path);
+            if ($html === false) {
+                $html = '';
+            } else {
+                $html = $this->rewriteAssetUrls($html, $tema);
                 $html = $this->replaceCoupleNames($html, $tema, $undangan);
                 $html = $this->replaceParents($html, $undangan);
                 $html = $this->replaceQuote($html, $undangan);
@@ -28,15 +31,16 @@ class InvitationTemplateRenderer
 
                 return $html;
             }
-            // Fall through to blade preview if PHP template file is missing
         }
 
         $kategori = $meta['kategori'] ?? ($undangan['kategori'] ?? 'wedding');
-        $blade = $meta['blade'] ?? match ($kategori) {
-            'ultah_anak' => 'undangan.preview.ultah',
-            'couple' => 'undangan.preview.couple',
-            default => 'undangan.preview.wedding',
-        };
+        $blade = $meta['blade']
+            ?? (view()->exists('templates.'.$tema) ? 'templates.'.$tema : null)
+            ?? match ($kategori) {
+                'ultah_anak' => 'undangan.preview.ultah',
+                'couple' => 'undangan.preview.couple',
+                default => 'undangan.preview.wedding',
+            };
 
         return view($blade, [
             'undangan' => $undangan,
@@ -45,6 +49,60 @@ class InvitationTemplateRenderer
             'categories' => config('templates.categories', []),
             'seo' => $this->buildSeo($undangan, $meta),
         ])->render();
+    }
+
+    /**
+     * Cari file HTML template: config path, lalu sumber di template_undangan/.
+     */
+    protected function resolveTemplateFile(string $tema, ?string $file): ?string
+    {
+        $candidates = [];
+
+        if (filled($file)) {
+            $candidates[] = base_path($file);
+        }
+
+        $sourceMap = [
+            'elegan' => 'template_undangan/template_wedding/template 1/index.html',
+            'classic' => 'template_undangan/template_wedding/template 2/index.html',
+            'langit_malam' => 'template_undangan/template_wedding/template 3/index.html',
+        ];
+
+        if (isset($sourceMap[$tema])) {
+            $candidates[] = base_path($sourceMap[$tema]);
+        }
+
+        foreach ($candidates as $path) {
+            if (is_file($path)) {
+                return $path;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Ubah assets/ relatif → URL publik di /templates/{tema}/assets/
+     */
+    protected function rewriteAssetUrls(string $html, string $tema): string
+    {
+        $base = rtrim(asset('templates/'.$tema.'/assets'), '/').'/';
+
+        // href="assets/..." / src='assets/...' / src="assets/..."
+        $html = preg_replace(
+            '/\b(href|src)=(["\'])assets\//i',
+            '$1=$2'.$base,
+            $html
+        ) ?? $html;
+
+        // url(assets/...) di CSS inline
+        $html = preg_replace(
+            '/url\((["\']?)assets\//i',
+            'url($1'.$base,
+            $html
+        ) ?? $html;
+
+        return $html;
     }
 
     protected function buildSeo(array $u, array $meta): array

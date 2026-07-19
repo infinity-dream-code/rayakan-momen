@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
+<defs>
+<radialGradient id="hangerHeartFill" cx="35%" cy="30%" r="75%">
+<stop offset="0%" stop-color="#E8D5B5"/>
+<stop offset="55%" stop-color="#B8935A"/>
+<stop offset="100%" stop-color="#6B2737"/>
+</radialGradient>
+</defs>
+<path d="M16 27 C 8 20, 3 15, 3 10 C 3 6, 6 3, 10 3 C 12.5 3, 14.8 4.2, 16 6 C 17.2 4.2, 19.5 3, 22 3 C 26 3, 29 6, 29 10 C 29 15, 24 20, 16 27 Z" fill="url(#hangerHeartFill)" stroke="#B8935A" stroke-width="0.8"/>
+</svg>
