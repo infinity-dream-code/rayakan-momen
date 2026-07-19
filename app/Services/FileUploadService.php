@@ -75,7 +75,22 @@ class FileUploadService
             @unlink($dest);
         }
 
-        $this->compressToJpeg($file->getRealPath(), $dest);
+        $source = $file->getRealPath();
+        // Shared hosting: skip kompres berat kalau sudah JPEG kecil
+        $mime = (string) $file->getMimeType();
+        $size = (int) $file->getSize();
+        if (
+            in_array($mime, ['image/jpeg', 'image/jpg'], true)
+            && $size > 0
+            && $size <= $this->maxBytes
+            && @getimagesize($source) !== false
+        ) {
+            if (! @copy($source, $dest)) {
+                $this->compressToJpeg($source, $dest);
+            }
+        } else {
+            $this->compressToJpeg($source, $dest);
+        }
 
         if (! is_file($dest) || filesize($dest) < 32) {
             @unlink($dest);
@@ -256,7 +271,7 @@ class FileUploadService
         $height = imagesy($src);
 
         // Shared hosting: batasi resolusi agar tidak timeout
-        $max = min($this->maxDimension, 1280);
+        $max = min($this->maxDimension, 1100);
         if ($width > $max || $height > $max) {
             $ratio = min($max / $width, $max / $height);
             $newW = max(1, (int) round($width * $ratio));

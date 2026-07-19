@@ -323,28 +323,77 @@ class InvitationTemplateRenderer
 
     protected function replacePhotos(string $html, string $tema, array $u): string
     {
+        // Default di HTML template (setelah rewriteAssetUrls) + URL demo lama
         $map = [
             'elegan' => [
-                'wanita' => 'https://i.pinimg.com/736x/de/45/a5/de45a5997368ad7f1afa624dc7d2417a.jpg',
-                'pria' => 'https://i.pinimg.com/736x/d2/79/b8/d279b8a5f1d58d6dbe6c598d0b37b072.jpg',
+                'wanita' => [
+                    'https://i.pinimg.com/736x/de/45/a5/de45a5997368ad7f1afa624dc7d2417a.jpg',
+                    'assets/images/de45a5997368ad7f1afa624dc7d2417a_922181.jpg',
+                ],
+                'pria' => [
+                    'https://i.pinimg.com/736x/d2/79/b8/d279b8a5f1d58d6dbe6c598d0b37b072.jpg',
+                    'assets/images/d279b8a5f1d58d6dbe6c598d0b37b072_8387373.jpg',
+                ],
             ],
             'classic' => [
-                'wanita' => 'https://i.pinimg.com/736x/76/20/9d/76209dcd4b79a4849d031c22dc1d7fbc.jpg',
-                'pria' => 'https://i.pinimg.com/736x/0e/f1/3b/0ef13b4f10cc3b4e2594591ef63a9c20.jpg',
+                'wanita' => [
+                    'https://i.pinimg.com/736x/76/20/9d/76209dcd4b79a4849d031c22dc1d7fbc.jpg',
+                ],
+                'pria' => [
+                    'https://i.pinimg.com/736x/0e/f1/3b/0ef13b4f10cc3b4e2594591ef63a9c20.jpg',
+                ],
             ],
             'langit_malam' => [
-                'wanita' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80',
-                'pria' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80',
+                'wanita' => [
+                    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80',
+                ],
+                'pria' => [
+                    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80',
+                ],
             ],
         ];
 
         $defaults = $map[$tema] ?? $map['elegan'];
+        $assetBase = rtrim(asset('templates/'.$tema.'/assets'), '/').'/';
 
         if (! empty($u['foto_wanita'])) {
-            $html = str_replace($defaults['wanita'], asset($u['foto_wanita']), $html);
+            $to = asset($u['foto_wanita']);
+            foreach ($defaults['wanita'] as $from) {
+                $html = str_replace($from, $to, $html);
+                if (str_starts_with($from, 'assets/')) {
+                    $html = str_replace($assetBase.substr($from, strlen('assets/')), $to, $html);
+                }
+            }
+            // Fallback: ganti img di kartu mempelai wanita
+            $html = preg_replace(
+                '/(<div class="arch-frame"[^>]*>\s*<img\s+src=")[^"]+("\s+alt="[^"]*"[^>]*>)/i',
+                '$1'.e($to).'$2',
+                $html,
+                1
+            ) ?? $html;
         }
+
         if (! empty($u['foto_pria'])) {
-            $html = str_replace($defaults['pria'], asset($u['foto_pria']), $html);
+            $to = asset($u['foto_pria']);
+            foreach ($defaults['pria'] as $from) {
+                $html = str_replace($from, $to, $html);
+                if (str_starts_with($from, 'assets/')) {
+                    $html = str_replace($assetBase.substr($from, strlen('assets/')), $to, $html);
+                }
+            }
+            // Kartu kedua (pria) — ganti img arch-frame yang masih default
+            $html = preg_replace(
+                '/(<div class="arch-frame"[^>]*>\s*<img\s+src=")https?:\/\/rayakanmomen\.com\/templates\/elegan\/assets\/images\/[^"]+(")/i',
+                '$1'.e($to).'$2',
+                $html,
+                1
+            ) ?? $html;
+            $html = preg_replace(
+                '/(<div class="arch-frame"[^>]*>\s*<img\s+src=")[^"]*templates\/[^"]+\/assets\/images\/[^"]+(")/i',
+                '$1'.e($to).'$2',
+                $html,
+                1
+            ) ?? $html;
         }
 
         return $html;

@@ -1,18 +1,15 @@
 <?php
 
 /**
- * Path ke project Laravel.
+ * Path ke project Laravel (folder yang berisi vendor/, app/, .env).
  *
- * Setup kamu:
- *   /home/USER/app
- *   /home/USER/vendor
- *   /home/USER/bootstrap
- *   /home/USER/.env
- *   /home/USER/public_html/   ← isi folder public/
+ * LOCAL (Laragon): biarkan null.
  *
- * Karena project = induk dari public_html, biarkan null (otomatis).
+ * SERVER (cPanel kamu): project terpisah dari public_html, isi path absolut, contoh:
+ *   return '/home/rayakanm/website-undangan';
  *
- * Hanya isi path manual kalau project TIDAK di samping public_html, contoh:
- *   return '/home/USER/rayakanmomen';
+ * Struktur server:
+ *   /home/rayakanm/website-undangan/  ← app, vendor, .env
+ *   /home/rayakanm/public_html/       ← isi folder public/
  */
 return null;

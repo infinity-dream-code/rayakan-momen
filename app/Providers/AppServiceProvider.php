@@ -11,14 +11,26 @@ class AppServiceProvider extends ServiceProvider
     {
         require_once app_path('Helpers/cdn.php');
 
-        // Hosting: project di root, public di public_html
-        $candidates = [
-            base_path('public_html'),
-            base_path('public'),
-        ];
+        // public_html sering di LUAR folder project (sibling), bukan di dalamnya.
+        // Contoh: /home/USER/website-undangan + /home/USER/public_html
+        $candidates = [];
+
+        // 1) Document root web server (paling akurat di hosting)
+        $docRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
+        if (is_string($docRoot) && $docRoot !== '') {
+            $candidates[] = rtrim(str_replace('\\', '/', $docRoot), '/');
+        }
+
+        // 2) Sibling public_html (project di subfolder, public di home)
+        $candidates[] = dirname(base_path()).DIRECTORY_SEPARATOR.'public_html';
+
+        // 3) Fallback klasik
+        $candidates[] = base_path('public_html');
+        $candidates[] = base_path('public');
 
         foreach ($candidates as $path) {
-            if (is_dir($path) && is_file($path.DIRECTORY_SEPARATOR.'index.php')) {
+            $path = rtrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, (string) $path), DIRECTORY_SEPARATOR);
+            if ($path !== '' && is_dir($path) && is_file($path.DIRECTORY_SEPARATOR.'index.php')) {
                 $this->app->usePublicPath($path);
                 break;
             }
