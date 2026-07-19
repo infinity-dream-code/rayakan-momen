@@ -1,9 +1,14 @@
 <section class="cta-section py-28 md:py-36">
     <div class="cta-bg" aria-hidden="true">
         <img
-            src="{{ asset('images/landing/cta.jpg') }}"
+            src="{{ cdn_image('cta', 'f_auto,q_auto:eco,w_960,c_limit') }}"
+            srcset="{{ cdn_srcset('cta', [640, 960, 1280]) }}"
+            sizes="100vw"
+            width="1280"
+            height="720"
             alt=""
             loading="lazy"
+            decoding="async"
         >
         <div class="cta-overlay"></div>
     </div>

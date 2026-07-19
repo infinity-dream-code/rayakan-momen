@@ -87,7 +87,7 @@ class InvitationTemplateRenderer
         $title = e($seo['title']);
         $desc = e($seo['desc']);
         $url = e($seo['url']);
-        $image = e($seo['image'] ?? url('/images/landing/hero-wedding.jpg'));
+        $image = e($seo['image'] ?? cdn_image('hero_wedding', 'f_auto,q_auto:eco,w_1200,c_fill,g_auto'));
 
         $html = preg_replace('/<title>.*?<\/title>/is', '<title>'.$title.'</title>', $html, 1) ?? $html;
 

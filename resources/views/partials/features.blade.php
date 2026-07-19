@@ -17,7 +17,16 @@
         <div class="grid md:grid-cols-3 gap-5 md:gap-6 mb-16 md:mb-24">
             <a href="#template" class="cat-spotlight reveal" data-jump-cat="wedding" style="--spot:#8b3a3a">
                 <div class="cat-spotlight-media">
-                    <img src="{{ asset('images/landing/cat-wedding.jpg') }}" alt="" loading="lazy" decoding="async">
+                    <img
+                        src="{{ cdn_image('cat_wedding', 'f_auto,q_auto:eco,w_480,c_fill,g_auto') }}"
+                        srcset="{{ cdn_srcset('cat_wedding', [360, 480, 720], 'f_auto,q_auto:eco,c_fill,g_auto') }}"
+                        sizes="(min-width: 768px) 33vw, 90vw"
+                        width="720"
+                        height="900"
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                    >
                 </div>
                 <div class="cat-spotlight-body">
                     <i class="fa-solid fa-ring"></i>
@@ -27,7 +36,16 @@
             </a>
             <a href="#template" class="cat-spotlight reveal reveal-delay-1" data-jump-cat="ultah_anak" style="--spot:#e85d75">
                 <div class="cat-spotlight-media">
-                    <img src="{{ asset('images/landing/cat-ultah.jpg') }}" alt="" loading="lazy" decoding="async">
+                    <img
+                        src="{{ cdn_image('cat_ultah', 'f_auto,q_auto:eco,w_480,c_fill,g_auto') }}"
+                        srcset="{{ cdn_srcset('cat_ultah', [360, 480, 720], 'f_auto,q_auto:eco,c_fill,g_auto') }}"
+                        sizes="(min-width: 768px) 33vw, 90vw"
+                        width="720"
+                        height="900"
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                    >
                 </div>
                 <div class="cat-spotlight-body">
                     <i class="fa-solid fa-cake-candles"></i>
@@ -37,7 +55,16 @@
             </a>
             <a href="#template" class="cat-spotlight reveal reveal-delay-2" data-jump-cat="couple" style="--spot:#c45c7a">
                 <div class="cat-spotlight-media">
-                    <img src="{{ asset('images/landing/cat-couple.jpg') }}" alt="" loading="lazy" decoding="async">
+                    <img
+                        src="{{ cdn_image('cat_couple', 'f_auto,q_auto:eco,w_480,c_fill,g_auto') }}"
+                        srcset="{{ cdn_srcset('cat_couple', [360, 480, 720], 'f_auto,q_auto:eco,c_fill,g_auto') }}"
+                        sizes="(min-width: 768px) 33vw, 90vw"
+                        width="720"
+                        height="900"
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                    >
                 </div>
                 <div class="cat-spotlight-body">
                     <i class="fa-solid fa-heart"></i>

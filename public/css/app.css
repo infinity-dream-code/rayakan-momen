@@ -37,6 +37,8 @@ body {
 .text-gold-accent { color: var(--color-gold); }
 .text-gold-light-accent { color: var(--color-gold-light); }
 .text-gold-dark-accent { color: var(--color-gold-dark); }
+.hover\:text-gold-accent:hover { color: var(--color-gold); }
+.hover\:text-gold-light-accent:hover { color: var(--color-gold-light); }
 .text-muted { color: rgba(18, 22, 31, 0.6); }
 .text-on-dark { color: #ffffff; }
 .text-on-dark-muted { color: rgba(255, 255, 255, 0.65); }

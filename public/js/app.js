@@ -29,12 +29,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.addEventListener('scroll', function () {
         if (!navbar) return;
-        if (window.scrollY > 40) {
-            navbar.classList.add('nav-scrolled');
-        } else {
-            navbar.classList.remove('nav-scrolled');
-        }
-    });
+        if (window.__navScrollScheduled) return;
+        window.__navScrollScheduled = true;
+        requestAnimationFrame(function () {
+            window.__navScrollScheduled = false;
+            if (window.scrollY > 40) {
+                navbar.classList.add('nav-scrolled');
+            } else {
+                navbar.classList.remove('nav-scrolled');
+            }
+        });
+    }, { passive: true });
 
     document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
         anchor.addEventListener('click', function (e) {

@@ -1,14 +1,44 @@
-<section id="beranda" class="hero-stage">
+﻿<section id="beranda" class="hero-stage">
     <div class="hero-media" aria-hidden="true">
         <div class="hero-slides" id="heroSlides">
             <div class="hero-slide is-active" data-label="Wedding">
-                <img src="{{ asset('images/landing/hero-wedding.jpg') }}" alt="" class="hero-media-img">
+                <img
+                    src="{{ cdn_image('hero_wedding', 'f_auto,q_auto:eco,w_960,c_limit') }}"
+                    srcset="{{ cdn_srcset('hero_wedding', [640, 960, 1280, 1920]) }}"
+                    sizes="100vw"
+                    width="1920"
+                    height="1080"
+                    alt=""
+                    class="hero-media-img"
+                    fetchpriority="high"
+                    decoding="async"
+                >
             </div>
             <div class="hero-slide" data-label="Couple">
-                <img src="{{ asset('images/landing/hero-couple.jpg') }}" alt="" class="hero-media-img">
+                <img
+                    src="{{ cdn_image('hero_couple', 'f_auto,q_auto:eco,w_960,c_limit') }}"
+                    srcset="{{ cdn_srcset('hero_couple', [640, 960, 1280, 1920]) }}"
+                    sizes="100vw"
+                    width="1920"
+                    height="1080"
+                    alt=""
+                    class="hero-media-img"
+                    loading="lazy"
+                    decoding="async"
+                >
             </div>
             <div class="hero-slide" data-label="Ultah Anak">
-                <img src="{{ asset('images/landing/hero-ultah.jpg') }}" alt="" class="hero-media-img">
+                <img
+                    src="{{ cdn_image('hero_ultah', 'f_auto,q_auto:eco,w_960,c_limit') }}"
+                    srcset="{{ cdn_srcset('hero_ultah', [640, 960, 1280, 1920]) }}"
+                    sizes="100vw"
+                    width="1920"
+                    height="1080"
+                    alt=""
+                    class="hero-media-img"
+                    loading="lazy"
+                    decoding="async"
+                >
             </div>
         </div>
         <div class="hero-media-veil"></div>
