@@ -1,0 +1,3 @@
+# Pastikan index.php dilayani di folder ini
+DirectoryIndex index.php
+Options -Indexes
