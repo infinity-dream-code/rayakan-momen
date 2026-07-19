@@ -31,7 +31,13 @@
           imagesizes="100vw"
           fetchpriority="high">
 
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    {{-- Utilities inlined di Blade agar layout tidak tergantung upload CSS baru --}}
+    @php
+        $appCssVer = @filemtime(public_path('css/app.css')) ?: time();
+        $appJsVer = @filemtime(public_path('js/app.js')) ?: time();
+    @endphp
+    @include('partials.landing-tw-inline')
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ $appCssVer }}">
 
     {{-- Fonts non-blocking --}}
     <link rel="preload" as="style"
@@ -65,6 +71,6 @@
 
     @include('partials.footer')
 
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') }}?v={{ $appJsVer }}" defer></script>
 </body>
 </html>

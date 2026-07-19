@@ -41,13 +41,20 @@
                     $hargaFinalLabel = $final > 0 ? $catalog->formatRupiah($final) : null;
                     $hargaAwalLabel = $harga > 0 ? $catalog->formatRupiah($harga) : null;
                     $waText = rawurlencode('Halo Rayakan Momen, saya mau pesan template '.$t['nama'].($hargaFinalLabel ? ' ('.$hargaFinalLabel.')' : ''));
+                    $previewFallback = match ($t['kategori'] ?? '') {
+                        'wedding' => cdn_image('cat_wedding', 'f_auto,q_auto:eco,w_720,c_fill,g_auto'),
+                        'ultah_anak' => cdn_image('cat_ultah', 'f_auto,q_auto:eco,w_720,c_fill,g_auto'),
+                        'couple' => cdn_image('cat_couple', 'f_auto,q_auto:eco,w_720,c_fill,g_auto'),
+                        default => '',
+                    };
+                    $previewSrc = ! empty($t['preview']) ? $t['preview'] : $previewFallback;
                 @endphp
                 <article class="portfolio-card market-card reveal"
                          data-category="{{ $t['kategori'] }}">
                     <div class="relative aspect-[4/5] overflow-hidden bg-navy-custom">
-                        @if (! empty($t['preview']))
+                        @if ($previewSrc)
                             <img
-                                src="{{ $t['preview'] }}"
+                                src="{{ $previewSrc }}"
                                 alt="Preview {{ $t['nama'] }}"
                                 class="portfolio-img absolute inset-0 w-full h-full object-cover object-top"
                                 loading="lazy"
