@@ -16,7 +16,7 @@
     <div class="w-full max-w-md">
         <div class="text-center mb-8">
             <h1 class="font-display text-3xl text-[#e8d5a3]">Rayakan Momen</h1>
-            <p class="text-white/45 text-sm mt-2">Login Panel Admin (Demo)</p>
+            <p class="text-white/45 text-sm mt-2">Login Panel Admin</p>
         </div>
 
         <div class="bg-white rounded-2xl p-7 shadow-2xl">
@@ -30,25 +30,27 @@
             <form method="POST" action="{{ route('admin.login.submit') }}" class="space-y-4">
                 @csrf
                 <div>
-                    <label class="block text-sm font-medium mb-1.5 text-gray-700">Username</label>
-                    <input type="text" name="username" value="{{ old('username', 'admin') }}" required
-                           class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] focus:ring-2 focus:ring-[#c9a84c]/30">
+                    <label class="block text-sm font-medium mb-1.5 text-gray-700">Email</label>
+                    <input type="email" name="email" value="{{ old('email') }}" required autocomplete="username"
+                           class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] focus:ring-2 focus:ring-[#c9a84c]/30"
+                           placeholder="admin@gmail.com">
+                    @error('email')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1.5 text-gray-700">Password</label>
-                    <input type="password" name="password" value="webuntal123" required
-                           class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] focus:ring-2 focus:ring-[#c9a84c]/30">
+                    <input type="password" name="password" required autocomplete="current-password"
+                           class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] focus:ring-2 focus:ring-[#c9a84c]/30"
+                           placeholder="••••••••">
+                    @error('password')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <button type="submit" class="w-full py-3 rounded-xl font-semibold text-sm" style="background: linear-gradient(135deg,#dfc06a,#c9a84c); color:#12161f;">
                     <i class="fa-solid fa-right-to-bracket mr-2"></i> Masuk
                 </button>
             </form>
-
-            <div class="mt-5 p-3 rounded-xl bg-[#faf7f2] text-xs text-gray-500 leading-relaxed">
-                <strong class="text-gray-700">Demo tanpa database</strong><br>
-                Username: <code>admin</code><br>
-                Password: <code>webuntal123</code>
-            </div>
         </div>
 
         <p class="text-center text-white/30 text-xs mt-6">

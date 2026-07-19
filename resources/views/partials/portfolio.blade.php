@@ -13,12 +13,12 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="grid lg:grid-cols-12 gap-8 lg:gap-12 items-end mb-12">
             <div class="lg:col-span-6 reveal">
-                <p class="section-label">Katalog Template</p>
-                <h2 class="section-heading text-left mb-0">Pilih sesuai momenmu</h2>
+                <p class="section-label">Pilihan Undangan</p>
+                <h2 class="section-heading text-left mb-0">Pilih sesuai harimu</h2>
             </div>
             <div class="lg:col-span-5 lg:col-start-8 reveal reveal-delay-1">
                 <p class="text-muted text-sm leading-relaxed">
-                    Tiap template punya harga sendiri (bisa ada diskon). Lihat demo live, lalu pesan langsung via WhatsApp.
+                    Setiap desain punya harga sendiri (bisa ada diskon). Lihat contohnya, lalu pesan langsung lewat WhatsApp.
                 </p>
             </div>
         </div>
@@ -40,7 +40,7 @@
                     $punyaDiskon = ! empty($t['punya_diskon']);
                     $hargaFinalLabel = $final > 0 ? $catalog->formatRupiah($final) : null;
                     $hargaAwalLabel = $harga > 0 ? $catalog->formatRupiah($harga) : null;
-                    $waText = rawurlencode('Halo Rayakan Momen, saya mau pesan template '.$t['nama'].($hargaFinalLabel ? ' ('.$hargaFinalLabel.')' : ''));
+                    $waText = rawurlencode('Halo Rayakan Momen, saya mau pesan undangan '.$t['nama'].($hargaFinalLabel ? ' ('.$hargaFinalLabel.')' : ''));
                     $previewFallback = match ($t['kategori'] ?? '') {
                         'wedding' => cdn_image('cat_wedding', 'f_auto,q_auto:eco,w_720,c_fill,g_auto'),
                         'ultah_anak' => cdn_image('cat_ultah', 'f_auto,q_auto:eco,w_720,c_fill,g_auto'),
@@ -105,11 +105,11 @@
                                    target="_blank"
                                    rel="noopener noreferrer"
                                    class="inline-flex items-center gap-2 text-sm font-semibold text-gold-dark-accent hover:text-gold-accent transition-colors">
-                                    Demo
+                                    Lihat Contoh
                                     <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
                                 </a>
                             @else
-                                <span class="text-xs text-muted">Preview segera</span>
+                                <span class="text-xs text-muted">Contoh segera hadir</span>
                             @endif
                         </div>
                     </div>
@@ -118,7 +118,7 @@
         </div>
 
         <p class="text-center text-xs text-muted mt-10 reveal">
-            Harga &amp; diskon diatur dari admin. Request khusus (custom domain, animasi ekstra) chat kami.
+            Harga &amp; diskon diatur dari admin. Permintaan khusus bisa dibicarakan langsung dengan kami.
         </p>
     </div>
 </section>

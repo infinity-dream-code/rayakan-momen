@@ -108,7 +108,7 @@ return [
     'categories' => [
         'wedding' => [
             'id' => 'wedding',
-            'nama' => 'Wedding',
+            'nama' => 'Pernikahan',
             'tagline' => 'Undangan pernikahan digital',
             'deskripsi' => 'Dari nuansa elegan, klasik, langit malam, hingga adat Jawa — undangan pernikahan yang siap dibagikan lewat WhatsApp.',
             'icon' => 'fa-ring',
@@ -116,17 +116,17 @@ return [
         ],
         'ultah_anak' => [
             'id' => 'ultah_anak',
-            'nama' => 'Ultah Anak',
+            'nama' => 'Ulang Tahun Anak',
             'tagline' => 'Pesta ulang tahun si kecil',
-            'deskripsi' => 'Undangan interaktif penuh warna — balon, lilin, game, RSVP, dan kejutan manis untuk tamu cilik.',
+            'deskripsi' => 'Undangan interaktif penuh warna — balon, lilin, permainan, konfirmasi hadir, dan kejutan manis untuk tamu cilik.',
             'icon' => 'fa-cake-candles',
             'warna' => '#e85d75',
         ],
         'couple' => [
             'id' => 'couple',
-            'nama' => 'Couple',
+            'nama' => 'Untuk Pasangan',
             'tagline' => 'Surat cinta & kejutan pasangan',
-            'deskripsi' => 'Bukan undangan acara — ini pengalaman digital romantis: surat spesial, countdown, foto kenangan, dan janji manis.',
+            'deskripsi' => 'Bukan undangan acara — ini pengalaman digital romantis: surat spesial, hitung mundur, foto kenangan, dan janji manis.',
             'icon' => 'fa-heart',
             'warna' => '#c45c7a',
         ],

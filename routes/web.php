@@ -14,11 +14,15 @@ Route::get('/', function () {
 Route::get('/sitemap.xml', [InvitationPublicController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt', [InvitationPublicController::class, 'robots'])->name('robots');
 
-Route::get('/admin/login', [AuthController::class, 'showLogin'])->name('admin.login');
-Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.submit');
-Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
+/*
+| Panel admin pakai prefix /panel (bukan /admin).
+| Banyak hosting LiteSpeed memblokir path /admin → 404.
+*/
+Route::get('/panel/login', [AuthController::class, 'showLogin'])->name('admin.login');
+Route::post('/panel/login', [AuthController::class, 'login'])->name('admin.login.submit');
+Route::post('/panel/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
-Route::prefix('admin')->name('admin.')->middleware('demo.admin')->group(function () {
+Route::prefix('panel')->name('admin.')->middleware('demo.admin')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/katalog', [CatalogController::class, 'index'])->name('katalog.index');
     Route::put('/katalog', [CatalogController::class, 'update'])->name('katalog.update');
@@ -35,9 +39,9 @@ Route::prefix('admin')->name('admin.')->middleware('demo.admin')->group(function
 });
 
 Route::get('/{slug}', [InvitationPublicController::class, 'show'])
-    ->where('slug', '^(?!admin$).*$')
+    ->where('slug', '^(?!admin$|panel$).*$')
     ->name('undangan.show');
 
 Route::post('/{slug}/ucapan', [InvitationPublicController::class, 'storeUcapan'])
-    ->where('slug', '^(?!admin$).*$')
+    ->where('slug', '^(?!admin$|panel$).*$')
     ->name('undangan.ucapan');

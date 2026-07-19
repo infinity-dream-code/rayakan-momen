@@ -6,7 +6,7 @@
                     Rayakan Momen
                 </a>
                 <p class="text-sm leading-relaxed text-on-dark-soft">
-                    Marketplace undangan digital — wedding, ultah anak, dan couple. Pilih template, lihat harga, siap share lewat WhatsApp.
+                    Jasa undangan digital untuk pernikahan, ulang tahun anak, dan kejutan pasangan. Pilih desain, lihat harga, siap dibagikan lewat WhatsApp.
                 </p>
             </div>
 
@@ -15,8 +15,8 @@
                 <ul class="space-y-2.5">
                     <li><a href="#beranda" class="footer-link">Beranda</a></li>
                     <li><a href="#layanan" class="footer-link">Layanan</a></li>
-                    <li><a href="#template" class="footer-link">Template &amp; Harga</a></li>
-                    <li><a href="#faq" class="footer-link">FAQ</a></li>
+                    <li><a href="#template" class="footer-link">Pilihan &amp; Harga</a></li>
+                    <li><a href="#faq" class="footer-link">Pertanyaan</a></li>
                 </ul>
             </div>
 
@@ -70,7 +70,7 @@
         </div>
 
         <div class="border-t border-white/10 pt-6 text-center text-xs text-on-dark-soft">
-            &copy; 2026 Rayakan Momen. All rights reserved.
+            &copy; 2026 Rayakan Momen. Semua hak dilindungi.
         </div>
     </div>
 </footer>

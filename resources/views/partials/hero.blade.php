@@ -1,7 +1,7 @@
 <section id="beranda" class="hero-stage">
     <div class="hero-media" aria-hidden="true">
         <div class="hero-slides" id="heroSlides">
-            <div class="hero-slide is-active" data-label="Wedding">
+            <div class="hero-slide is-active" data-label="Pernikahan">
                 <img
                     src="{{ cdn_image('hero_wedding', 'f_auto,q_auto:eco,w_960,c_limit') }}"
                     srcset="{{ cdn_srcset('hero_wedding', [640, 960, 1280, 1920]) }}"
@@ -14,7 +14,7 @@
                     decoding="async"
                 >
             </div>
-            <div class="hero-slide" data-label="Couple">
+            <div class="hero-slide" data-label="Untuk Pasangan">
                 <img
                     src="{{ cdn_image('hero_couple', 'f_auto,q_auto:eco,w_960,c_limit') }}"
                     srcset="{{ cdn_srcset('hero_couple', [640, 960, 1280, 1920]) }}"
@@ -27,7 +27,7 @@
                     decoding="async"
                 >
             </div>
-            <div class="hero-slide" data-label="Ultah Anak">
+            <div class="hero-slide" data-label="Ulang Tahun Anak">
                 <img
                     src="{{ cdn_image('hero_ultah', 'f_auto,q_auto:eco,w_960,c_limit') }}"
                     srcset="{{ cdn_srcset('hero_ultah', [640, 960, 1280, 1920]) }}"
@@ -54,28 +54,28 @@
         </h1>
 
         <p class="hero-lead hero-in hero-in-3">
-            Wedding, ulang tahun anak, dan couple &mdash; pilih template, lihat demo, lalu bagikan lewat WhatsApp.
+            Undangan pernikahan, ulang tahun anak, dan kejutan pasangan &mdash; pilih desain, lihat contohnya, lalu bagikan lewat WhatsApp.
         </p>
 
         <div class="hero-actions hero-in hero-in-4">
             <a href="#template" class="btn-gold px-8 py-3.5 rounded-full text-sm">
-                Jelajahi Template
+                Lihat Pilihan Undangan
             </a>
-            <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20mau%20chat%20soal%20undangan%20digital"
+            <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20mau%20tanya%20soal%20undangan%20digital"
                target="_blank"
                rel="noopener noreferrer"
                class="btn-outline-gold px-8 py-3.5 rounded-full text-sm">
                 <i class="fa-brands fa-whatsapp"></i>
-                Chat WhatsApp
+                Tanya via WhatsApp
             </a>
         </div>
 
         <div class="hero-slide-meta hero-in hero-in-4" aria-live="polite">
-            <span class="hero-slide-label" id="heroSlideLabel">Wedding</span>
+            <span class="hero-slide-label" id="heroSlideLabel">Pernikahan</span>
             <div class="hero-slide-dots" id="heroSlideDots" role="tablist" aria-label="Slide hero">
-                <button type="button" class="is-active" data-slide="0" aria-label="Wedding"></button>
-                <button type="button" data-slide="1" aria-label="Couple"></button>
-                <button type="button" data-slide="2" aria-label="Ultah Anak"></button>
+                <button type="button" class="is-active" data-slide="0" aria-label="Pernikahan"></button>
+                <button type="button" data-slide="1" aria-label="Untuk Pasangan"></button>
+                <button type="button" data-slide="2" aria-label="Ulang Tahun Anak"></button>
             </div>
         </div>
     </div>

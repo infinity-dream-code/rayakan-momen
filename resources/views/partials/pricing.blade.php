@@ -9,7 +9,7 @@
             </h2>
             <div class="floral-line"></div>
             <p class="section-desc">
-                Berlaku untuk wedding, ultah anak, maupun couple. Pilih paket — semua termasuk desain, fitur, dan support.
+                Berlaku untuk undangan pernikahan, ulang tahun anak, maupun untuk pasangan. Pilih paket — semua sudah termasuk desain, kelengkapan, dan bantuan kami.
             </p>
         </div>
 
@@ -25,12 +25,12 @@
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>1 halaman undangan</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Tema pilihan dari katalog</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Cover, detail acara, galeri (max 10 foto)</li>
-                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>RSVP &amp; buku ucapan</li>
+                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Konfirmasi hadir &amp; buku ucapan</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-xmark text-charcoal/20 mt-0.5"></i><span class="opacity-50">Tanpa amplop digital</span></li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Aktif 3 bulan</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Revisi 1×</li>
                 </ul>
-                <a href="https://wa.me/6285777433886?text=Halo%20web_untal%2C%20saya%20ingin%20pesan%20Paket%20Silver"
+                <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20Paket%20Silver"
                    target="_blank"
                    rel="noopener noreferrer"
                    class="btn-outline-dark w-full py-3 rounded-full text-sm">
@@ -55,7 +55,7 @@
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Aktif 6 bulan</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Revisi 3×</li>
                 </ul>
-                <a href="https://wa.me/6285777433886?text=Halo%20web_untal%2C%20saya%20ingin%20pesan%20Paket%20Gold"
+                <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20Paket%20Gold"
                    target="_blank"
                    rel="noopener noreferrer"
                    class="btn-gold w-full py-3 rounded-full text-sm">
@@ -79,7 +79,7 @@
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Revisi unlimited sampai puas</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Prioritas pengerjaan (2 hari jadi)</li>
                 </ul>
-                <a href="https://wa.me/6285777433886?text=Halo%20web_untal%2C%20saya%20ingin%20pesan%20Paket%20Platinum"
+                <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20Paket%20Platinum"
                    target="_blank"
                    rel="noopener noreferrer"
                    class="btn-outline-gold w-full py-3 rounded-full text-sm">
@@ -92,7 +92,7 @@
             <p class="text-sm text-muted mb-6 max-w-lg mx-auto">
                 Harga bisa disesuaikan untuk request khusus. Chat langsung untuk konsultasi gratis — tanpa komitmen.
             </p>
-            <a href="https://wa.me/6285777433886?text=Halo%20web_untal%2C%20saya%20mau%20konsultasi%20paket%20undangan%20digital"
+            <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20mau%20konsultasi%20paket%20undangan%20digital"
                target="_blank"
                rel="noopener noreferrer"
                class="btn-gold px-7 py-3 rounded-full text-sm">

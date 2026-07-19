@@ -3,10 +3,10 @@
 
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
         <div class="text-center mb-14 reveal">
-            <p class="section-label">FAQ</p>
-            <h2 class="section-heading">Pertanyaan yang sering muncul</h2>
+            <p class="section-label">Pertanyaan Umum</p>
+            <h2 class="section-heading">Yang sering ditanyakan</h2>
             <p class="section-desc mt-4">
-                Kalau masih penasaran, langsung chat aja — kita jawab dengan senang hati.
+                Masih penasaran? Langsung chat saja — kami siap membantu.
             </p>
         </div>
 
@@ -17,7 +17,7 @@
                     <i class="fa-solid fa-chevron-down faq-chevron"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Ada. Saat ini tersedia 3 kategori: <strong>Wedding</strong> (termasuk adat Jawa), <strong>Ultah Anak</strong>, dan <strong>Couple</strong> (surat/kejutan romantis). Lihat demo &amp; harga di bagian Template beranda.</p>
+                    <p>Ada. Saat ini tersedia 3 jenis: <strong>Pernikahan</strong> (termasuk adat Jawa), <strong>Ulang Tahun Anak</strong>, dan <strong>Untuk Pasangan</strong> (surat atau kejutan romantis). Lihat contoh &amp; harga di bagian Pilihan Undangan.</p>
                 </div>
             </div>
 
@@ -27,7 +27,7 @@
                     <i class="fa-solid fa-chevron-down faq-chevron"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Tiap template punya harga sendiri — langsung tampil di kartu produk di katalog. Klik <strong>Pesan</strong> untuk chat WhatsApp dengan template yang dipilih.</p>
+                    <p>Setiap desain punya harga sendiri — langsung tampil di kartu pilihannya. Tekan <strong>Pesan</strong> untuk chat WhatsApp dengan desain yang kamu pilih.</p>
                 </div>
             </div>
 
@@ -37,17 +37,17 @@
                     <i class="fa-solid fa-chevron-down faq-chevron"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Umumnya 2–4 hari kerja setelah data lengkap diterima. Request khusus atau mepet tanggal bisa diprioritaskan — chat kami dulu.</p>
+                    <p>Umumnya 2–4 hari kerja setelah data lengkap diterima. Kalau request khusus atau tanggal sudah dekat, bisa diprioritaskan — chat kami dulu.</p>
                 </div>
             </div>
 
             <div class="faq-item">
                 <button type="button" class="faq-trigger">
-                    <span>Apakah bisa custom tema sendiri?</span>
+                    <span>Apakah bisa desain sesuai keinginan sendiri?</span>
                     <i class="fa-solid fa-chevron-down faq-chevron"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Bisa. Mulai dari penyesuaian warna &amp; elemen sampai desain full custom (adat Jawa, dark elegant, dll). Biaya menyesuaikan request — dibahas saat konsultasi.</p>
+                    <p>Bisa. Mulai dari penyesuaian warna &amp; elemen sampai desain penuh sesuai konsep (adat Jawa, dark elegant, dan lainnya). Biaya menyesuaikan permintaan — dibahas saat konsultasi.</p>
                 </div>
             </div>
 
@@ -57,17 +57,17 @@
                     <i class="fa-solid fa-chevron-down faq-chevron"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Transfer bank atau e-wallet. Biasanya DP di awal, pelunasan setelah preview disetujui. Detail rekening diinformasikan saat konsultasi WhatsApp.</p>
+                    <p>Transfer bank atau e-wallet. Biasanya DP di awal, pelunasan setelah pratinjau disetujui. Detail rekening kami sampaikan saat konsultasi WhatsApp.</p>
                 </div>
             </div>
 
             <div class="faq-item">
                 <button type="button" class="faq-trigger">
-                    <span>Apakah undangan bisa diedit setelah jadi?</span>
+                    <span>Apakah undangan bisa diubah setelah jadi?</span>
                     <i class="fa-solid fa-chevron-down faq-chevron"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Ya. Perubahan kecil (nama, jam, alamat) tinggal chat kami. Revisi desain dibahas sesuai kesepakatan di awal pemesanan.</p>
+                    <p>Ya. Perubahan kecil (nama, jam, alamat) tinggal hubungi kami. Revisi desain dibahas sesuai kesepakatan di awal pemesanan.</p>
                 </div>
             </div>
 
@@ -77,7 +77,7 @@
                     <i class="fa-solid fa-chevron-down faq-chevron"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Cukup copy link undangan, lalu kirim via WhatsApp, Instagram DM, atau SMS. Bisa juga dibagikan dengan nama tamu personal di tiap link (opsional).</p>
+                    <p>Cukup salin tautan undangan, lalu kirim lewat WhatsApp, Instagram DM, atau SMS. Bisa juga dibagikan dengan nama tamu di tiap tautan (opsional).</p>
                 </div>
             </div>
         </div>

@@ -4,6 +4,7 @@
     </IfModule>
 
     RewriteEngine On
+    RewriteBase /
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -20,7 +21,10 @@
     RewriteRule ^ index.php [L]
 </IfModule>
 
-# Long cache for static assets (Apache / Laragon)
+<IfModule LiteSpeed>
+    RewriteEngine On
+</IfModule>
+
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresByType text/css "access plus 30 days"

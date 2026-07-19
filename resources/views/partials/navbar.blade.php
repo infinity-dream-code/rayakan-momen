@@ -16,9 +16,9 @@
             <ul class="hidden lg:flex items-center gap-8">
                 <li><a href="#beranda" class="nav-link">Beranda</a></li>
                 <li><a href="#layanan" class="nav-link">Layanan</a></li>
-                <li><a href="#template" class="nav-link">Template</a></li>
-                <li><a href="#testimoni" class="nav-link">Testimoni</a></li>
-                <li><a href="#faq" class="nav-link">FAQ</a></li>
+                <li><a href="#template" class="nav-link">Pilihan</a></li>
+                <li><a href="#testimoni" class="nav-link">Cerita</a></li>
+                <li><a href="#faq" class="nav-link">Pertanyaan</a></li>
                 <li><a href="#kontak" class="nav-link">Kontak</a></li>
             </ul>
 
@@ -50,9 +50,9 @@
     <ul class="flex flex-col px-5 py-6 gap-1">
         <li><a href="#beranda" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Beranda</a></li>
         <li><a href="#layanan" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Layanan</a></li>
-        <li><a href="#template" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Template</a></li>
-        <li><a href="#testimoni" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Testimoni</a></li>
-        <li><a href="#faq" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">FAQ</a></li>
+        <li><a href="#template" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Pilihan Undangan</a></li>
+        <li><a href="#testimoni" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Cerita Klien</a></li>
+        <li><a href="#faq" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Pertanyaan</a></li>
         <li><a href="#kontak" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Kontak</a></li>
     </ul>
     <div class="px-5 mt-4">
