@@ -15,12 +15,15 @@ Route::get('/sitemap.xml', [InvitationPublicController::class, 'sitemap'])->name
 Route::get('/robots.txt', [InvitationPublicController::class, 'robots'])->name('robots');
 
 /*
-| Panel admin pakai prefix /panel (bukan /admin).
-| Banyak hosting LiteSpeed memblokir path /admin → 404.
+| Login rahasia: /index.php/SmartLoginAdmin
+| Panel setelah login tetap di /index.php/panel/...
 */
-Route::get('/panel/login', [AuthController::class, 'showLogin'])->name('admin.login');
-Route::post('/panel/login', [AuthController::class, 'login'])->name('admin.login.submit');
+Route::get('/SmartLoginAdmin', [AuthController::class, 'showLogin'])->name('admin.login');
+Route::post('/SmartLoginAdmin', [AuthController::class, 'login'])->name('admin.login.submit');
 Route::post('/panel/logout', [AuthController::class, 'logout'])->name('admin.logout');
+
+// Redirect lama → login baru
+Route::redirect('/panel/login', '/SmartLoginAdmin', 301);
 
 Route::prefix('panel')->name('admin.')->middleware('demo.admin')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -39,9 +42,9 @@ Route::prefix('panel')->name('admin.')->middleware('demo.admin')->group(function
 });
 
 Route::get('/{slug}', [InvitationPublicController::class, 'show'])
-    ->where('slug', '^(?!admin$|panel$).*$')
+    ->where('slug', '^(?!admin$|panel$|SmartLoginAdmin$).*$')
     ->name('undangan.show');
 
 Route::post('/{slug}/ucapan', [InvitationPublicController::class, 'storeUcapan'])
-    ->where('slug', '^(?!admin$|panel$).*$')
+    ->where('slug', '^(?!admin$|panel$|SmartLoginAdmin$).*$')
     ->name('undangan.ucapan');

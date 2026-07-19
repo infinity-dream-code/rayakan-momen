@@ -2,4 +2,5 @@ User-agent: *
 Allow: /
 Disallow: /panel
 Disallow: /admin
+Disallow: /SmartLoginAdmin
 Sitemap: https://rayakanmomen.com/sitemap.xml

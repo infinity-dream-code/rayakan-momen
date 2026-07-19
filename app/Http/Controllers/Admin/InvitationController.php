@@ -155,7 +155,7 @@ class InvitationController extends Controller
 
     protected function validated(Request $request, ?string $ignoreId = null): array
     {
-        $reserved = ['admin', 'panel', 'login', 'logout', 'api', 'css', 'js', 'images', 'uploads', 'storage', 'sitemap.xml', 'robots.txt'];
+        $reserved = ['admin', 'panel', 'SmartLoginAdmin', 'login', 'logout', 'api', 'css', 'js', 'images', 'uploads', 'storage', 'sitemap.xml', 'robots.txt'];
         $tema = $request->input('tema');
         $meta = config('templates.templates.'.$tema, []);
         $kategori = $meta['kategori'] ?? 'wedding';

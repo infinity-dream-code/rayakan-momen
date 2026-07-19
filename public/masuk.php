@@ -2,7 +2,7 @@
 
 /**
  * Pintu masuk login admin.
- * https://rayakanmomen.com/masuk.php
+ * https://rayakanmomen.com/masuk.php → SmartLoginAdmin
  */
-header('Location: /index.php/panel/login', true, 302);
+header('Location: /index.php/SmartLoginAdmin', true, 302);
 exit;
