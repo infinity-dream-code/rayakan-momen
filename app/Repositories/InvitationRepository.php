@@ -408,9 +408,9 @@ class InvitationRepository
         ];
     }
 
-    public function storeUpload($file, string $folder = 'covers'): ?string
+    public function storeUpload($file, string $folder = 'covers', ?string $basename = null): ?string
     {
-        return $this->uploads->storeUpload($file, $folder);
+        return $this->uploads->storeUpload($file, $folder, $basename);
     }
 
     public function storeMultipleUploads(array $files, string $folder = 'galeri'): array

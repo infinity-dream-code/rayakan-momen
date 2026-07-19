@@ -41,7 +41,12 @@ class FileUploadService
         $this->maxDimension = max(640, (int) config('undangan.upload_max_dimension', 1920));
     }
 
-    public function storeUpload(?UploadedFile $file, string $folder = 'covers'): ?string
+    /**
+     * Simpan gambar ke public/uploads/{folder}/.
+     * Contoh folder: mempelai/niko-naswa/foto-mempelai
+     * $basename opsional → foto-wanita.jpg (tanpa ekstensi).
+     */
+    public function storeUpload(?UploadedFile $file, string $folder = 'covers', ?string $basename = null): ?string
     {
         if (! $file) {
             return null;
@@ -49,14 +54,26 @@ class FileUploadService
 
         $this->assertSafeImage($file);
 
+        $folder = $this->sanitizeFolder($folder);
         $dir = public_path('uploads/'.$folder);
         if (! File::isDirectory($dir)) {
             File::makeDirectory($dir, 0755, true);
         }
 
         // Always save as .jpg after re-encode (safe + compressible)
-        $name = Str::uuid().'.jpg';
+        if ($basename !== null && $basename !== '') {
+            $safe = Str::slug(pathinfo($basename, PATHINFO_FILENAME), '-');
+            $name = ($safe !== '' ? $safe : 'foto').'.jpg';
+        } else {
+            $name = Str::uuid().'.jpg';
+        }
+
         $dest = $dir.DIRECTORY_SEPARATOR.$name;
+
+        // Timpa file lama dengan nama sama (foto-wanita / foto-pria / qris)
+        if (is_file($dest)) {
+            @unlink($dest);
+        }
 
         $this->compressToJpeg($file->getRealPath(), $dest);
 
@@ -71,10 +88,12 @@ class FileUploadService
     public function storeMultipleUploads(array $files, string $folder = 'galeri'): array
     {
         $paths = [];
+        $folder = $this->sanitizeFolder($folder);
 
-        foreach ($files as $file) {
+        foreach ($files as $i => $file) {
             if ($file instanceof UploadedFile) {
-                $path = $this->storeUpload($file, $folder);
+                $label = 'galeri-'.now()->format('Ymd-His').'-'.($i + 1);
+                $path = $this->storeUpload($file, $folder, $label);
                 if ($path) {
                     $paths[] = $path;
                 }
@@ -82,6 +101,40 @@ class FileUploadService
         }
 
         return $paths;
+    }
+
+    /**
+     * Base folder undangan: mempelai/{slug}
+     */
+    public function invitationBase(string $slug): string
+    {
+        $slug = Str::slug(Str::lower($slug), '-');
+
+        return $slug !== '' ? 'mempelai/'.$slug : 'mempelai/undangan';
+    }
+
+    /**
+     * Hanya izinkan a-z, 0-9, strip, underscore, slash — cegah path traversal.
+     */
+    protected function sanitizeFolder(string $folder): string
+    {
+        $folder = str_replace('\\', '/', $folder);
+        $folder = trim($folder, '/');
+        $parts = array_values(array_filter(explode('/', $folder), fn ($p) => $p !== '' && $p !== '.' && $p !== '..'));
+
+        $clean = [];
+        foreach ($parts as $part) {
+            $part = Str::slug(Str::lower($part), '-');
+            if ($part !== '') {
+                $clean[] = $part;
+            }
+        }
+
+        if ($clean === []) {
+            throw new InvalidArgumentException('Folder upload tidak valid.');
+        }
+
+        return implode('/', $clean);
     }
 
     public function deletePublicPath(?string $relative): void

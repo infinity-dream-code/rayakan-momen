@@ -386,23 +386,32 @@ class InvitationController extends Controller
         }
 
         try {
-            $fotoWanita = $this->storage->storeUpload($request->file('foto_wanita'), 'mempelai');
+            // uploads/mempelai/{slug}/foto-mempelai|galeri|qris/
+            $slugKey = Str::slug((string) ($validated['slug'] ?? ($existing['slug'] ?? 'undangan')), '-');
+            if ($slugKey === '') {
+                $slugKey = 'undangan';
+            }
+            $dirFoto = 'mempelai/'.$slugKey.'/foto-mempelai';
+            $dirGaleri = 'mempelai/'.$slugKey.'/galeri';
+            $dirQris = 'mempelai/'.$slugKey.'/qris';
+
+            $fotoWanita = $this->storage->storeUpload($request->file('foto_wanita'), $dirFoto, 'foto-wanita');
             $validated['foto_wanita'] = $fotoWanita ?: ($existing['foto_wanita'] ?? null);
 
-            $fotoPria = $this->storage->storeUpload($request->file('foto_pria'), 'mempelai');
+            $fotoPria = $this->storage->storeUpload($request->file('foto_pria'), $dirFoto, 'foto-pria');
             $validated['foto_pria'] = $fotoPria ?: ($existing['foto_pria'] ?? null);
 
-            $fotoAnak = $this->storage->storeUpload($request->file('foto_anak'), 'mempelai');
+            $fotoAnak = $this->storage->storeUpload($request->file('foto_anak'), $dirFoto, 'foto-anak');
             $validated['foto_anak'] = $fotoAnak ?: ($existing['foto_anak'] ?? null);
             if ($has('foto_anak') && $validated['foto_anak'] && ! $validated['foto_wanita']) {
                 $validated['foto_wanita'] = $validated['foto_anak'];
             }
 
-            $qris = $this->storage->storeUpload($request->file('qris_image'), 'qris');
+            $qris = $this->storage->storeUpload($request->file('qris_image'), $dirQris, 'qris');
             $validated['qris_image'] = $qris ?: ($existing['qris_image'] ?? null);
 
             $galeriFiles = $request->file('galeri');
-            $newGaleri = $this->storage->storeMultipleUploads(is_array($galeriFiles) ? $galeriFiles : [], 'galeri');
+            $newGaleri = $this->storage->storeMultipleUploads(is_array($galeriFiles) ? $galeriFiles : [], $dirGaleri);
             $validated['galeri'] = array_values(array_merge($existing['galeri'] ?? [], $newGaleri));
         } catch (\InvalidArgumentException $e) {
             throw \Illuminate\Validation\ValidationException::withMessages([
