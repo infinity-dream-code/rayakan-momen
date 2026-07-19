@@ -396,19 +396,39 @@ class InvitationController extends Controller
             $dirQris = 'mempelai/'.$slugKey.'/qris';
 
             $fotoWanita = $this->storage->storeUpload($request->file('foto_wanita'), $dirFoto, 'foto-wanita');
-            $validated['foto_wanita'] = $fotoWanita ?: ($existing['foto_wanita'] ?? null);
+            if ($fotoWanita) {
+                $this->storage->deletePublicPath($existing['foto_wanita'] ?? null);
+                $validated['foto_wanita'] = $fotoWanita;
+            } else {
+                $validated['foto_wanita'] = $existing['foto_wanita'] ?? null;
+            }
 
             $fotoPria = $this->storage->storeUpload($request->file('foto_pria'), $dirFoto, 'foto-pria');
-            $validated['foto_pria'] = $fotoPria ?: ($existing['foto_pria'] ?? null);
+            if ($fotoPria) {
+                $this->storage->deletePublicPath($existing['foto_pria'] ?? null);
+                $validated['foto_pria'] = $fotoPria;
+            } else {
+                $validated['foto_pria'] = $existing['foto_pria'] ?? null;
+            }
 
             $fotoAnak = $this->storage->storeUpload($request->file('foto_anak'), $dirFoto, 'foto-anak');
-            $validated['foto_anak'] = $fotoAnak ?: ($existing['foto_anak'] ?? null);
+            if ($fotoAnak) {
+                $this->storage->deletePublicPath($existing['foto_anak'] ?? null);
+                $validated['foto_anak'] = $fotoAnak;
+            } else {
+                $validated['foto_anak'] = $existing['foto_anak'] ?? null;
+            }
             if ($has('foto_anak') && $validated['foto_anak'] && ! $validated['foto_wanita']) {
                 $validated['foto_wanita'] = $validated['foto_anak'];
             }
 
             $qris = $this->storage->storeUpload($request->file('qris_image'), $dirQris, 'qris');
-            $validated['qris_image'] = $qris ?: ($existing['qris_image'] ?? null);
+            if ($qris) {
+                $this->storage->deletePublicPath($existing['qris_image'] ?? null);
+                $validated['qris_image'] = $qris;
+            } else {
+                $validated['qris_image'] = $existing['qris_image'] ?? null;
+            }
 
             $galeriFiles = $request->file('galeri');
             $newGaleri = $this->storage->storeMultipleUploads(is_array($galeriFiles) ? $galeriFiles : [], $dirGaleri);

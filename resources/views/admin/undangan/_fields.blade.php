@@ -59,14 +59,16 @@
             <label class="form-label">Foto Mempelai Wanita</label>
             <input type="file" name="foto_wanita" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="form-input">
             @if (!empty($u['foto_wanita']))
-                <img src="{{ asset($u['foto_wanita']) }}" alt="" class="mt-2 w-20 h-20 object-cover rounded-full border">
+                <img src="{{ asset($u['foto_wanita']) }}?v={{ @filemtime(public_path($u['foto_wanita'])) ?: time() }}" alt="Foto wanita" class="mt-2 w-20 h-20 object-cover rounded-full border">
+                <p class="text-xs text-gray-400 mt-1 break-all">{{ $u['foto_wanita'] }}</p>
             @endif
         </div>
         <div>
             <label class="form-label">Foto Mempelai Pria</label>
             <input type="file" name="foto_pria" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="form-input">
             @if (!empty($u['foto_pria']))
-                <img src="{{ asset($u['foto_pria']) }}" alt="" class="mt-2 w-20 h-20 object-cover rounded-full border">
+                <img src="{{ asset($u['foto_pria']) }}?v={{ @filemtime(public_path($u['foto_pria'])) ?: time() }}" alt="Foto pria" class="mt-2 w-20 h-20 object-cover rounded-full border">
+                <p class="text-xs text-gray-400 mt-1 break-all">{{ $u['foto_pria'] }}</p>
             @endif
         </div>
     </div>

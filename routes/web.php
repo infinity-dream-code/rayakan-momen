@@ -36,7 +36,7 @@ Route::prefix('panel')->name('admin.')->middleware('demo.admin')->group(function
     Route::post('/undangan', [InvitationController::class, 'store'])->name('undangan.store');
     Route::post('/undangan/purge-expired', [InvitationController::class, 'purgeExpired'])->name('undangan.purge-expired');
     Route::get('/undangan/{id}/edit', [InvitationController::class, 'edit'])->name('undangan.edit');
-    Route::put('/undangan/{id}', [InvitationController::class, 'update'])->name('undangan.update');
+    Route::match(['put', 'post'], '/undangan/{id}', [InvitationController::class, 'update'])->name('undangan.update');
     Route::delete('/undangan/{id}', [InvitationController::class, 'destroy'])->name('undangan.destroy');
     Route::get('/undangan/{id}/laporan', [InvitationController::class, 'laporan'])->name('undangan.laporan');
 });

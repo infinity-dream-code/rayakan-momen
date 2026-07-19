@@ -418,6 +418,11 @@ class InvitationRepository
         return $this->uploads->storeMultipleUploads($files, $folder);
     }
 
+    public function deletePublicPath(?string $relative): void
+    {
+        $this->uploads->deletePublicPath($relative);
+    }
+
     public function forgetClientCache(string $slug): void
     {
         if ($slug === '') {

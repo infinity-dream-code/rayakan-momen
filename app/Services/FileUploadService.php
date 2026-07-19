@@ -44,7 +44,7 @@ class FileUploadService
     /**
      * Simpan gambar ke public/uploads/{folder}/.
      * Contoh folder: mempelai/niko-naswa/foto-mempelai
-     * $basename opsional → foto-wanita.jpg (tanpa ekstensi).
+     * $basename opsional → foto-wanita-xxxx.jpg (versi unik biar cache browser tidak nempel).
      */
     public function storeUpload(?UploadedFile $file, string $folder = 'covers', ?string $basename = null): ?string
     {
@@ -63,17 +63,14 @@ class FileUploadService
         // Always save as .jpg after re-encode (safe + compressible)
         if ($basename !== null && $basename !== '') {
             $safe = Str::slug(pathinfo($basename, PATHINFO_FILENAME), '-');
-            $name = ($safe !== '' ? $safe : 'foto').'.jpg';
+            $safe = $safe !== '' ? $safe : 'foto';
+            // Nama unik tiap upload → ganti foto langsung kelihatan (bukan cache lama)
+            $name = $safe.'-'.now()->format('YmdHis').'-'.Str::lower(Str::random(4)).'.jpg';
         } else {
             $name = Str::uuid().'.jpg';
         }
 
         $dest = $dir.DIRECTORY_SEPARATOR.$name;
-
-        // Timpa file lama dengan nama sama (foto-wanita / foto-pria / qris)
-        if (is_file($dest)) {
-            @unlink($dest);
-        }
 
         $source = $file->getRealPath();
         // Shared hosting: skip kompres berat kalau sudah JPEG kecil

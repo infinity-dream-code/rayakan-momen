@@ -84,22 +84,24 @@ class InvitationTemplateRenderer
 
     /**
      * Ubah assets/ relatif → URL publik di /templates/{tema}/assets/
+     * Termasuk string di JavaScript (kupu-kupu, petal, dll).
      */
     protected function rewriteAssetUrls(string $html, string $tema): string
     {
         $base = rtrim(asset('templates/'.$tema.'/assets'), '/').'/';
 
-        // href="assets/..." / src='assets/...' / src="assets/..."
-        $html = preg_replace(
-            '/\b(href|src)=(["\'])assets\//i',
-            '$1=$2'.$base,
-            $html
-        ) ?? $html;
-
-        // url(assets/...) di CSS inline
+        // url(assets/...) di CSS
         $html = preg_replace(
             '/url\((["\']?)assets\//i',
             'url($1'.$base,
+            $html
+        ) ?? $html;
+
+        // Semua literal "assets/..." atau 'assets/...' (img src, JS fetch, array, dll)
+        // Jangan pakai replace bertingkat supaya tidak dobel-prefix.
+        $html = preg_replace(
+            '/([\'"])assets\//',
+            '$1'.$base,
             $html
         ) ?? $html;
 
@@ -343,7 +345,14 @@ class InvitationTemplateRenderer
             return $path;
         }
 
-        return asset(ltrim($path, '/'));
+        $relative = ltrim($path, '/');
+        $url = asset($relative);
+        $full = public_path($relative);
+        if (is_file($full)) {
+            $url .= (str_contains($url, '?') ? '&' : '?').'v='.filemtime($full);
+        }
+
+        return $url;
     }
 
     protected function replacePhotos(string $html, string $tema, array $u): string
@@ -379,7 +388,7 @@ class InvitationTemplateRenderer
             }
             // Bersihkan URL rusak double-prefix
             $html = preg_replace(
-                '/(<img\b[^>]*\bsrc=")[^"]*templates\/[^"\/]+\/https?:\/\/[^"]*foto-wanita\.jpg(")/i',
+                '/(<img\b[^>]*\bsrc=")[^"]*templates\/[^"\/]+\/https?:\/\/[^"]*foto-wanita[^"]*(")/i',
                 '$1'.e($wanita).'$2',
                 $html
             ) ?? $html;
@@ -394,7 +403,7 @@ class InvitationTemplateRenderer
                 ) ?? $html;
             }
             $html = preg_replace(
-                '/(<img\b[^>]*\bsrc=")[^"]*templates\/[^"\/]+\/https?:\/\/[^"]*foto-pria\.jpg(")/i',
+                '/(<img\b[^>]*\bsrc=")[^"]*templates\/[^"\/]+\/https?:\/\/[^"]*foto-pria[^"]*(")/i',
                 '$1'.e($pria).'$2',
                 $html
             ) ?? $html;
