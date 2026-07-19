@@ -12,34 +12,105 @@ class InvitationTemplateRenderer
 
         if (filled($file)) {
             $path = base_path($file);
-            if (! is_file($path)) {
-                abort(500, 'File template tidak ditemukan: '.$file);
+            if (is_file($path)) {
+                $html = file_get_contents($path);
+                $html = $this->replaceCoupleNames($html, $tema, $undangan);
+                $html = $this->replaceParents($html, $undangan);
+                $html = $this->replaceQuote($html, $undangan);
+                $html = $this->replacePhotos($html, $tema, $undangan);
+                $html = $this->replaceEventDetails($html, $undangan);
+                $html = $this->replaceMaps($html, $undangan);
+                $html = $this->replaceStory($html, $undangan);
+                $html = $this->replaceGallery($html, $undangan);
+                $html = $this->replaceBanks($html, $undangan);
+                $html = $this->injectSeoMeta($html, $undangan, $meta);
+                $html = $this->injectBridge($html, $undangan);
+
+                return $html;
             }
-
-            $html = file_get_contents($path);
-            $html = $this->replaceCoupleNames($html, $tema, $undangan);
-            $html = $this->replaceParents($html, $undangan);
-            $html = $this->replaceQuote($html, $undangan);
-            $html = $this->replacePhotos($html, $tema, $undangan);
-            $html = $this->replaceEventDetails($html, $undangan);
-            $html = $this->replaceMaps($html, $undangan);
-            $html = $this->replaceStory($html, $undangan);
-            $html = $this->replaceGallery($html, $undangan);
-            $html = $this->replaceBanks($html, $undangan);
-            $html = $this->injectBridge($html, $undangan);
-
-            return $html;
+            // Fall through to blade preview if PHP template file is missing
         }
 
-        $blade = $meta['blade'] ?? 'undangan.preview.generic';
         $kategori = $meta['kategori'] ?? ($undangan['kategori'] ?? 'wedding');
+        $blade = $meta['blade'] ?? match ($kategori) {
+            'ultah_anak' => 'undangan.preview.ultah',
+            'couple' => 'undangan.preview.couple',
+            default => 'undangan.preview.wedding',
+        };
 
         return view($blade, [
             'undangan' => $undangan,
             'template' => $meta,
             'kategori' => $kategori,
             'categories' => config('templates.categories', []),
+            'seo' => $this->buildSeo($undangan, $meta),
         ])->render();
+    }
+
+    protected function buildSeo(array $u, array $meta): array
+    {
+        $kat = $meta['kategori'] ?? ($u['kategori'] ?? 'wedding');
+        $slug = $u['slug'] ?? '';
+        $url = url('/'.$slug);
+
+        if ($kat === 'ultah_anak') {
+            $name = $u['nama_anak'] ?? $u['nama_wanita'] ?? 'Ultah';
+            $title = $name.' — Undangan Ulang Tahun';
+            $desc = 'Undangan digital ulang tahun '.$name.'. Dibuat dengan Web Untal.';
+        } elseif ($kat === 'couple') {
+            $name = trim(($u['nama_pria'] ?? '').' & '.($u['nama_wanita'] ?? ''));
+            $title = $name.' — Surat Spesial';
+            $desc = 'Surat digital spesial untuk '.$name.'. Dibuat dengan Web Untal.';
+        } else {
+            $name = trim(($u['nama_wanita'] ?? '').' & '.($u['nama_pria'] ?? ''));
+            $title = $name.' — Undangan Pernikahan';
+            $desc = 'Undangan pernikahan digital '.$name.'. Dibuat dengan Web Untal.';
+        }
+
+        $image = null;
+        foreach (['foto_wanita', 'foto_pria', 'foto_anak', 'cover_image'] as $key) {
+            if (! empty($u[$key])) {
+                $image = url($u[$key]);
+                break;
+            }
+        }
+        if (! $image && ! empty($u['galeri'][0])) {
+            $image = url($u['galeri'][0]);
+        }
+
+        return compact('title', 'desc', 'url', 'image', 'name');
+    }
+
+    protected function injectSeoMeta(string $html, array $u, array $meta): string
+    {
+        $seo = $this->buildSeo($u, $meta);
+        $title = e($seo['title']);
+        $desc = e($seo['desc']);
+        $url = e($seo['url']);
+        $image = e($seo['image'] ?? url('/images/landing/hero-wedding.jpg'));
+
+        $html = preg_replace('/<title>.*?<\/title>/is', '<title>'.$title.'</title>', $html, 1) ?? $html;
+
+        $tags = implode("\n", [
+            '<meta name="description" content="'.$desc.'">',
+            '<link rel="canonical" href="'.$url.'">',
+            '<meta property="og:type" content="website">',
+            '<meta property="og:title" content="'.$title.'">',
+            '<meta property="og:description" content="'.$desc.'">',
+            '<meta property="og:url" content="'.$url.'">',
+            '<meta property="og:image" content="'.$image.'">',
+            '<meta name="twitter:card" content="summary_large_image">',
+            '<meta name="twitter:title" content="'.$title.'">',
+            '<meta name="twitter:description" content="'.$desc.'">',
+            '<meta name="twitter:image" content="'.$image.'">',
+            '<meta name="robots" content="index,follow">',
+        ]);
+
+        if (stripos($html, '</head>') !== false) {
+            $html = preg_replace('/<\/head>/i', $tags."\n</head>", $html, 1) ?? $html;
+        }
+
+        return $html;
     }
 
     protected function replaceCoupleNames(string $html, string $tema, array $u): string

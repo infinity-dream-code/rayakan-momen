@@ -17,7 +17,7 @@
         <div class="grid md:grid-cols-3 gap-5 md:gap-6 mb-16 md:mb-24">
             <a href="#template" class="cat-spotlight reveal" data-jump-cat="wedding" style="--spot:#8b3a3a">
                 <div class="cat-spotlight-media">
-                    <img src="{{ asset('images/landing/cat-wedding.jpg') }}" alt="" loading="lazy">
+                    <img src="{{ asset('images/landing/cat-wedding.jpg') }}" alt="" loading="lazy" decoding="async">
                 </div>
                 <div class="cat-spotlight-body">
                     <i class="fa-solid fa-ring"></i>
@@ -27,7 +27,7 @@
             </a>
             <a href="#template" class="cat-spotlight reveal reveal-delay-1" data-jump-cat="ultah_anak" style="--spot:#e85d75">
                 <div class="cat-spotlight-media">
-                    <img src="{{ asset('images/landing/cat-ultah.jpg') }}" alt="" loading="lazy">
+                    <img src="{{ asset('images/landing/cat-ultah.jpg') }}" alt="" loading="lazy" decoding="async">
                 </div>
                 <div class="cat-spotlight-body">
                     <i class="fa-solid fa-cake-candles"></i>
@@ -37,7 +37,7 @@
             </a>
             <a href="#template" class="cat-spotlight reveal reveal-delay-2" data-jump-cat="couple" style="--spot:#c45c7a">
                 <div class="cat-spotlight-media">
-                    <img src="{{ asset('images/landing/cat-couple.jpg') }}" alt="" loading="lazy">
+                    <img src="{{ asset('images/landing/cat-couple.jpg') }}" alt="" loading="lazy" decoding="async">
                 </div>
                 <div class="cat-spotlight-body">
                     <i class="fa-solid fa-heart"></i>

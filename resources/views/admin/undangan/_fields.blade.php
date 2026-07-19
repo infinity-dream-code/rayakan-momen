@@ -57,14 +57,14 @@
     <div class="grid sm:grid-cols-2 gap-4">
         <div>
             <label class="form-label">Foto Mempelai Wanita</label>
-            <input type="file" name="foto_wanita" accept="image/*" class="form-input">
+            <input type="file" name="foto_wanita" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="form-input">
             @if (!empty($u['foto_wanita']))
                 <img src="{{ asset($u['foto_wanita']) }}" alt="" class="mt-2 w-20 h-20 object-cover rounded-full border">
             @endif
         </div>
         <div>
             <label class="form-label">Foto Mempelai Pria</label>
-            <input type="file" name="foto_pria" accept="image/*" class="form-input">
+            <input type="file" name="foto_pria" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="form-input">
             @if (!empty($u['foto_pria']))
                 <img src="{{ asset($u['foto_pria']) }}" alt="" class="mt-2 w-20 h-20 object-cover rounded-full border">
             @endif
@@ -108,7 +108,7 @@
 @if ($has('foto_anak'))
 <div class="card p-5 sm:p-6 field-group" data-group="foto_anak">
     <h3 class="font-display text-lg mb-4">Foto Anak</h3>
-    <input type="file" name="foto_anak" accept="image/*" class="form-input">
+    <input type="file" name="foto_anak" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="form-input">
     @if (!empty($u['foto_anak'] ?? $u['foto_wanita'] ?? null))
         <img src="{{ asset($u['foto_anak'] ?? $u['foto_wanita']) }}" alt="" class="mt-2 w-20 h-20 object-cover rounded-full border">
     @endif
@@ -137,14 +137,14 @@
     <div class="grid sm:grid-cols-2 gap-4">
         <div>
             <label class="form-label">Foto Pengirim</label>
-            <input type="file" name="foto_pria" accept="image/*" class="form-input">
+            <input type="file" name="foto_pria" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="form-input">
             @if (!empty($u['foto_pria']))
                 <img src="{{ asset($u['foto_pria']) }}" alt="" class="mt-2 w-20 h-20 object-cover rounded-full border">
             @endif
         </div>
         <div>
             <label class="form-label">Foto Penerima</label>
-            <input type="file" name="foto_wanita" accept="image/*" class="form-input">
+            <input type="file" name="foto_wanita" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="form-input">
             @if (!empty($u['foto_wanita']))
                 <img src="{{ asset($u['foto_wanita']) }}" alt="" class="mt-2 w-20 h-20 object-cover rounded-full border">
             @endif
@@ -323,7 +323,7 @@
 @if ($has('galeri'))
 <div class="card p-5 sm:p-6 field-group" data-group="galeri">
     <h3 class="font-display text-lg mb-4">Galeri Foto</h3>
-    <input type="file" name="galeri[]" accept="image/*" multiple class="form-input">
+    <input type="file" name="galeri[]" accept=".jpg,.jpeg,.png,image/jpeg,image/png" multiple class="form-input">
     @if (!empty($u['galeri']))
         <div class="flex flex-wrap gap-2 mt-3">
             @foreach ($u['galeri'] as $g)
@@ -405,7 +405,7 @@
     </div>
 
     <h3 class="font-display text-lg mb-4">QRIS</h3>
-    <input type="file" name="qris_image" accept="image/*" class="form-input mb-6">
+    <input type="file" name="qris_image" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="form-input mb-6">
     @if (!empty($u['qris_image']))
         <img src="{{ asset($u['qris_image']) }}" alt="QRIS" class="mb-6 w-40 h-40 object-contain rounded-xl border bg-white p-2">
     @endif

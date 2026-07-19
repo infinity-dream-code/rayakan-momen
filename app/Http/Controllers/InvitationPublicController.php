@@ -2,36 +2,62 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\InvitationStorage;
+use App\Repositories\InvitationRepository;
 use App\Services\InvitationTemplateRenderer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class InvitationPublicController extends Controller
 {
     public function __construct(
-        protected InvitationStorage $storage,
+        protected InvitationRepository $invitations,
         protected InvitationTemplateRenderer $renderer
     ) {
     }
 
     public function show(string $slug)
     {
-        $undangan = $this->storage->findBySlug($slug);
-        abort_if(! $undangan, 404);
-        abort_if(($undangan['status'] ?? '') !== 'aktif', 404);
+        $slug = Str::lower($slug);
+        $undangan = $this->invitations->findPublicBySlug($slug);
 
-        $this->storage->incrementViews($slug);
-        $undangan = $this->storage->findBySlug($slug);
+        if (! $undangan) {
+            // Distinguish expired/nonaktif (still in DB) vs missing
+            $any = $this->invitations->findBySlug($slug);
+            if ($any) {
+                return response()
+                    ->view('undangan.expired', ['undangan' => $any], 410);
+            }
+            abort(404);
+        }
 
-        $html = $this->renderer->render($undangan);
+        $this->invitations->incrementViews($slug);
 
-        return response($html)->header('Content-Type', 'text/html; charset=UTF-8');
+        $ttl = (int) config('undangan.client_cache_seconds', 300);
+        $cacheKey = config('undangan.cache_key_prefix', 'undangan:html:').$slug;
+
+        $html = Cache::remember($cacheKey, $ttl, function () use ($slug) {
+            $fresh = $this->invitations->findPublicBySlug($slug);
+            if (! $fresh) {
+                return '';
+            }
+
+            return $this->renderer->render($fresh);
+        });
+
+        if ($html === '') {
+            abort(404);
+        }
+
+        return response($html)
+            ->header('Content-Type', 'text/html; charset=UTF-8')
+            ->header('Cache-Control', 'public, max-age='.$ttl);
     }
 
     public function storeUcapan(Request $request, string $slug)
     {
-        $undangan = $this->storage->findBySlug($slug);
-        abort_if(! $undangan || ($undangan['status'] ?? '') !== 'aktif', 404);
+        $undangan = $this->invitations->findPublicBySlug($slug);
+        abort_if(! $undangan, 404);
 
         $data = $request->validate([
             'nama' => 'required|string|max:100',
@@ -39,12 +65,31 @@ class InvitationPublicController extends Controller
             'kehadiran' => 'required|in:hadir,tidak_hadir',
         ]);
 
-        $this->storage->addUcapan($slug, $data);
+        $this->invitations->addUcapan($slug, $data);
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json(['ok' => true, 'message' => 'Ucapan tersimpan.']);
         }
 
         return back()->with('success', 'Terima kasih! Ucapanmu sudah tersimpan.');
+    }
+
+    public function sitemap()
+    {
+        $rows = $this->invitations->slugsForSitemap();
+
+        $xml = view('seo.sitemap', [
+            'landing' => url('/'),
+            'items' => $rows,
+        ])->render();
+
+        return response($xml, 200)->header('Content-Type', 'application/xml; charset=UTF-8');
+    }
+
+    public function robots()
+    {
+        $body = "User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: ".url('/sitemap.xml')."\n";
+
+        return response($body, 200)->header('Content-Type', 'text/plain; charset=UTF-8');
     }
 }

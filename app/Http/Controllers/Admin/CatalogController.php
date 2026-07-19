@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\CatalogStorage;
+use App\Repositories\CatalogRepository;
 use Illuminate\Http\Request;
 
 class CatalogController extends Controller
 {
-    public function __construct(protected CatalogStorage $catalog)
+    public function __construct(protected CatalogRepository $catalog)
     {
     }
 

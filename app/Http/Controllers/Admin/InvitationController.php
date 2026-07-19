@@ -3,22 +3,23 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\InvitationStorage;
+use App\Repositories\InvitationRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class InvitationController extends Controller
 {
-    public function __construct(protected InvitationStorage $storage)
+    public function __construct(protected InvitationRepository $storage)
     {
     }
 
     public function index()
     {
-        $undangan = collect($this->storage->all())->sortByDesc('updated_at')->values()->all();
+        $undangan = $this->storage->allForAdmin();
+        $purgeEligible = $this->storage->countPurgeEligible();
 
-        return view('admin.undangan.index', compact('undangan'));
+        return view('admin.undangan.index', compact('undangan', 'purgeEligible'));
     }
 
     public function create(Request $request)
@@ -42,14 +43,14 @@ class InvitationController extends Controller
             'tema' => ['required', Rule::in($aktifKeys)],
         ]);
 
-        return redirect()
-            ->route('admin.undangan.form')
-            ->cookie('undangan_template', $request->tema, 60 * 24 * 7);
+        $request->session()->put('undangan_template', $request->tema);
+
+        return redirect()->route('admin.undangan.form');
     }
 
     public function form(Request $request)
     {
-        $tema = $request->cookie('undangan_template');
+        $tema = $request->session()->get('undangan_template');
         $info = config('templates.templates.'.$tema);
 
         if (! $tema || ! $info || ! ($info['aktif'] ?? false)) {
@@ -71,9 +72,9 @@ class InvitationController extends Controller
     public function store(Request $request)
     {
         if (! $request->filled('tema')) {
-            $temaCookie = $request->cookie('undangan_template');
-            if ($temaCookie) {
-                $request->merge(['tema' => $temaCookie]);
+            $temaSession = $request->session()->get('undangan_template');
+            if ($temaSession) {
+                $request->merge(['tema' => $temaSession]);
             }
         }
 
@@ -81,12 +82,11 @@ class InvitationController extends Controller
         $data = $this->mapFormData($request, $data);
         $this->storage->create($data);
 
-        $cookie = cookie()->forget('undangan_template');
+        $request->session()->forget('undangan_template');
 
         return redirect()
             ->route('admin.undangan.index')
-            ->with('success', 'Undangan berhasil ditambahkan.')
-            ->withCookie($cookie);
+            ->with('success', 'Undangan berhasil ditambahkan.');
     }
 
     public function edit(string $id)
@@ -127,6 +127,17 @@ class InvitationController extends Controller
         return redirect()->route('admin.undangan.index')->with('success', 'Undangan berhasil dihapus.');
     }
 
+    public function purgeExpired()
+    {
+        $count = $this->storage->deletePurgeEligible();
+
+        return redirect()
+            ->route('admin.undangan.index')
+            ->with('success', $count > 0
+                ? "Berhasil menghapus {$count} undangan nonaktif (≥6 bulan)."
+                : 'Tidak ada data nonaktif yang siap dihapus.');
+    }
+
     public function laporan(string $id)
     {
         $undangan = $this->storage->find($id);
@@ -141,18 +152,13 @@ class InvitationController extends Controller
 
     protected function validated(Request $request, ?string $ignoreId = null): array
     {
-        $existingSlugs = collect($this->storage->all())
-            ->when($ignoreId, fn ($c) => $c->reject(fn ($i) => ($i['id'] ?? '') === $ignoreId))
-            ->pluck('slug')
-            ->map(fn ($s) => Str::lower($s))
-            ->all();
-
-        $reserved = ['admin', 'login', 'logout', 'api', 'css', 'js', 'images', 'uploads', 'storage'];
+        $reserved = ['admin', 'login', 'logout', 'api', 'css', 'js', 'images', 'uploads', 'storage', 'sitemap.xml', 'robots.txt'];
         $tema = $request->input('tema');
         $meta = config('templates.templates.'.$tema, []);
         $kategori = $meta['kategori'] ?? 'wedding';
         $fields = $meta['fields'] ?? [];
         $has = fn (string $g) => in_array($g, $fields, true);
+        $storage = $this->storage;
 
         $rules = [
             'slug' => [
@@ -160,12 +166,12 @@ class InvitationController extends Controller
                 'string',
                 'max:50',
                 'regex:/^[a-z0-9\-]+$/',
-                function ($attribute, $value, $fail) use ($existingSlugs, $reserved) {
+                function ($attribute, $value, $fail) use ($storage, $reserved, $ignoreId) {
                     $value = Str::lower($value);
                     if (in_array($value, $reserved, true)) {
                         $fail('Slug ini tidak boleh digunakan.');
                     }
-                    if (in_array($value, $existingSlugs, true)) {
+                    if ($storage->slugExists($value, $ignoreId)) {
                         $fail('Slug sudah dipakai undangan lain.');
                     }
                 },
@@ -180,11 +186,11 @@ class InvitationController extends Controller
             'kutipan_sumber' => 'nullable|string|max:100',
             'youtube_url' => 'nullable|string|max:500',
             'maps_url' => 'nullable|string|max:500',
-            'galeri.*' => 'nullable|image|max:4096',
-            'qris_image' => 'nullable|image|max:4096',
-            'foto_wanita' => 'nullable|image|max:4096',
-            'foto_pria' => 'nullable|image|max:4096',
-            'foto_anak' => 'nullable|image|max:4096',
+            'galeri.*' => 'nullable|file|mimes:jpg,jpeg,png|mimetypes:image/jpeg,image/png,image/jpg|max:10240',
+            'qris_image' => 'nullable|file|mimes:jpg,jpeg,png|mimetypes:image/jpeg,image/png,image/jpg|max:10240',
+            'foto_wanita' => 'nullable|file|mimes:jpg,jpeg,png|mimetypes:image/jpeg,image/png,image/jpg|max:10240',
+            'foto_pria' => 'nullable|file|mimes:jpg,jpeg,png|mimetypes:image/jpeg,image/png,image/jpg|max:10240',
+            'foto_anak' => 'nullable|file|mimes:jpg,jpeg,png|mimetypes:image/jpeg,image/png,image/jpg|max:10240',
             'pesan_janji' => 'nullable|string|max:800',
             'usia' => 'nullable|string|max:30',
             'ayah_host' => 'nullable|string|max:100',
@@ -369,24 +375,30 @@ class InvitationController extends Controller
             $validated['youtube_url'] = null;
         }
 
-        $fotoWanita = $this->storage->storeUpload($request->file('foto_wanita'), 'mempelai');
-        $validated['foto_wanita'] = $fotoWanita ?: ($existing['foto_wanita'] ?? null);
+        try {
+            $fotoWanita = $this->storage->storeUpload($request->file('foto_wanita'), 'mempelai');
+            $validated['foto_wanita'] = $fotoWanita ?: ($existing['foto_wanita'] ?? null);
 
-        $fotoPria = $this->storage->storeUpload($request->file('foto_pria'), 'mempelai');
-        $validated['foto_pria'] = $fotoPria ?: ($existing['foto_pria'] ?? null);
+            $fotoPria = $this->storage->storeUpload($request->file('foto_pria'), 'mempelai');
+            $validated['foto_pria'] = $fotoPria ?: ($existing['foto_pria'] ?? null);
 
-        $fotoAnak = $this->storage->storeUpload($request->file('foto_anak'), 'mempelai');
-        $validated['foto_anak'] = $fotoAnak ?: ($existing['foto_anak'] ?? null);
-        if ($has('foto_anak') && $validated['foto_anak'] && ! $validated['foto_wanita']) {
-            $validated['foto_wanita'] = $validated['foto_anak'];
+            $fotoAnak = $this->storage->storeUpload($request->file('foto_anak'), 'mempelai');
+            $validated['foto_anak'] = $fotoAnak ?: ($existing['foto_anak'] ?? null);
+            if ($has('foto_anak') && $validated['foto_anak'] && ! $validated['foto_wanita']) {
+                $validated['foto_wanita'] = $validated['foto_anak'];
+            }
+
+            $qris = $this->storage->storeUpload($request->file('qris_image'), 'qris');
+            $validated['qris_image'] = $qris ?: ($existing['qris_image'] ?? null);
+
+            $galeriFiles = $request->file('galeri');
+            $newGaleri = $this->storage->storeMultipleUploads(is_array($galeriFiles) ? $galeriFiles : [], 'galeri');
+            $validated['galeri'] = array_values(array_merge($existing['galeri'] ?? [], $newGaleri));
+        } catch (\InvalidArgumentException $e) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'foto_wanita' => $e->getMessage(),
+            ]);
         }
-
-        $qris = $this->storage->storeUpload($request->file('qris_image'), 'qris');
-        $validated['qris_image'] = $qris ?: ($existing['qris_image'] ?? null);
-
-        $galeriFiles = $request->file('galeri');
-        $newGaleri = $this->storage->storeMultipleUploads(is_array($galeriFiles) ? $galeriFiles : [], 'galeri');
-        $validated['galeri'] = array_values(array_merge($existing['galeri'] ?? [], $newGaleri));
         $validated['cover_image'] = null;
 
         $cerita = [];

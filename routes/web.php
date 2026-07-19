@@ -11,6 +11,9 @@ Route::get('/', function () {
     return view('landing');
 })->name('landing');
 
+Route::get('/sitemap.xml', [InvitationPublicController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', [InvitationPublicController::class, 'robots'])->name('robots');
+
 Route::get('/admin/login', [AuthController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.submit');
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
@@ -24,6 +27,7 @@ Route::prefix('admin')->name('admin.')->middleware('demo.admin')->group(function
     Route::post('/undangan/pilih-template', [InvitationController::class, 'pilihTemplate'])->name('undangan.pilih-template');
     Route::get('/undangan/form', [InvitationController::class, 'form'])->name('undangan.form');
     Route::post('/undangan', [InvitationController::class, 'store'])->name('undangan.store');
+    Route::post('/undangan/purge-expired', [InvitationController::class, 'purgeExpired'])->name('undangan.purge-expired');
     Route::get('/undangan/{id}/edit', [InvitationController::class, 'edit'])->name('undangan.edit');
     Route::put('/undangan/{id}', [InvitationController::class, 'update'])->name('undangan.update');
     Route::delete('/undangan/{id}', [InvitationController::class, 'destroy'])->name('undangan.destroy');

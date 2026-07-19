@@ -8,9 +8,23 @@
 <div class="card overflow-hidden">
     <div class="px-5 py-4 border-b border-[#eee8df] flex items-center justify-between gap-3 flex-wrap">
         <p class="text-sm text-gray-500">Total: <strong class="text-[#1a2234]">{{ count($undangan) }}</strong> undangan</p>
-        <a href="{{ route('admin.undangan.create') }}" class="btn-gold inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm">
-            <i class="fa-solid fa-plus"></i> Tambah Baru
-        </a>
+        <div class="flex items-center gap-2 flex-wrap">
+            @if (($purgeEligible ?? 0) > 0)
+                <form method="POST" action="{{ route('admin.undangan.purge-expired') }}"
+                      onsubmit="return confirm('Hapus {{ $purgeEligible }} undangan nonaktif yang sudah ≥6 bulan? File foto ikut terhapus.')">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm border border-red-200 text-red-600 bg-red-50 hover:bg-red-100">
+                        <i class="fa-solid fa-trash-can"></i>
+                        Hapus nonaktif ({{ $purgeEligible }})
+                    </button>
+                </form>
+            @else
+                <span class="text-xs text-gray-400">Tidak ada data siap purge (≥6 bln)</span>
+            @endif
+            <a href="{{ route('admin.undangan.create') }}" class="btn-gold inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm">
+                <i class="fa-solid fa-plus"></i> Tambah Baru
+            </a>
+        </div>
     </div>
     <div class="overflow-x-auto">
         <table class="w-full text-sm">
@@ -54,7 +68,9 @@
                             <p class="text-[10px] text-gray-400 uppercase tracking-wide mt-0.5">{{ str_replace('_', ' ', $kat) }}</p>
                         </td>
                         <td class="px-5 py-3.5">
-                            @if (($item['status'] ?? '') === 'aktif')
+                            @if (($item['access_state'] ?? 'live') === 'expired')
+                                <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs bg-amber-50 text-amber-800">Expired</span>
+                            @elseif (($item['status'] ?? '') === 'aktif')
                                 <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700">Aktif</span>
                             @else
                                 <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs bg-gray-100 text-gray-500">Nonaktif</span>

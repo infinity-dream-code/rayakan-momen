@@ -3,7 +3,16 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ultah {{ $undangan['nama_anak'] ?? ($undangan['nama_wanita'] ?? 'Si Kecil') }} — {{ $template['nama'] ?? 'Ultah' }}</title>
+    <title>{{ ($seo['title'] ?? null) ?: ('Ultah '.($undangan['nama_anak'] ?? ($undangan['nama_wanita'] ?? 'Si Kecil')).' — '.($template['nama'] ?? 'Ultah')) }}</title>
+    @if (!empty($seo))
+        <meta name="description" content="{{ $seo['desc'] }}">
+        <link rel="canonical" href="{{ $seo['url'] }}">
+        <meta property="og:title" content="{{ $seo['title'] }}">
+        <meta property="og:description" content="{{ $seo['desc'] }}">
+        <meta property="og:url" content="{{ $seo['url'] }}">
+        @if (!empty($seo['image']))<meta property="og:image" content="{{ $seo['image'] }}">@endif
+        <meta name="robots" content="index,follow">
+    @endif
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --pink:#e85d75; --cream:#fff7f9; --ink:#3a2a32; --lilac:#6b5b95; }

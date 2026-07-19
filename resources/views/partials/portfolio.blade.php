@@ -1,6 +1,6 @@
 @php
     $categories = config('templates.categories', []);
-    $catalog = app(\App\Services\CatalogStorage::class);
+    $catalog = app(\App\Repositories\CatalogRepository::class);
     $allTemplates = collect($catalog->templates())
         ->filter(fn ($t) => ($t['aktif_katalog'] ?? true))
         ->all();
@@ -51,6 +51,7 @@
                                 alt="Preview {{ $t['nama'] }}"
                                 class="portfolio-img absolute inset-0 w-full h-full object-cover object-top"
                                 loading="lazy"
+                                decoding="async"
                             >
                         @else
                             <div class="market-placeholder absolute inset-0">
