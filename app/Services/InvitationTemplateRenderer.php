@@ -355,6 +355,20 @@ class InvitationTemplateRenderer
         return $url;
     }
 
+    protected function mediaFileExists(?string $path): bool
+    {
+        if (! filled($path)) {
+            return false;
+        }
+
+        $path = trim((string) $path);
+        if (preg_match('#^https?://#i', $path)) {
+            return true; // remote — biarkan browser yang cek
+        }
+
+        return is_file(public_path(ltrim($path, '/')));
+    }
+
     protected function replacePhotos(string $html, string $tema, array $u): string
     {
         // Marker unik di file default template (jangan str_replace path pendek setelah rewrite)
@@ -375,8 +389,12 @@ class InvitationTemplateRenderer
 
         $map = $markers[$tema] ?? $markers['elegan'];
 
-        $wanita = $this->mediaUrl($u['foto_wanita'] ?? null);
-        $pria = $this->mediaUrl($u['foto_pria'] ?? null);
+        $wanita = (! empty($u['foto_wanita']) && $this->mediaFileExists($u['foto_wanita']))
+            ? $this->mediaUrl($u['foto_wanita'])
+            : null;
+        $pria = (! empty($u['foto_pria']) && $this->mediaFileExists($u['foto_pria']))
+            ? $this->mediaUrl($u['foto_pria'])
+            : null;
 
         if ($wanita) {
             foreach ($map['wanita'] as $marker) {
@@ -774,7 +792,17 @@ HTML;
             return $html;
         }
 
-        $urls = array_values(array_filter(array_map(fn ($p) => $this->mediaUrl($p), $photos)));
+        // Hanya tampilkan foto yang file-nya benar-benar ada
+        $urls = [];
+        foreach ($photos as $p) {
+            if (! $this->mediaFileExists($p)) {
+                continue;
+            }
+            $url = $this->mediaUrl($p);
+            if ($url) {
+                $urls[] = $url;
+            }
+        }
         if (count($urls) === 0) {
             return $html;
         }
@@ -883,7 +911,13 @@ HTML;
             ])->values()->all(),
             'qris' => $this->mediaUrl($u['qris_image'] ?? null),
             'gallery' => array_values(array_filter(array_map(
-                fn ($p) => $this->mediaUrl($p),
+                function ($p) {
+                    if (! $this->mediaFileExists($p)) {
+                        return null;
+                    }
+
+                    return $this->mediaUrl($p);
+                },
                 array_values(array_filter($u['galeri'] ?? []))
             ))),
             'ewallet' => $u['ewallet'] ?? [],

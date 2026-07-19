@@ -119,6 +119,27 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Sembunyikan gambar yang gagal load (404 / broken)
+    function hideBrokenImage(img) {
+        if (!img || img.dataset.brokenHidden === '1') return;
+        img.dataset.brokenHidden = '1';
+        img.removeAttribute('alt');
+        img.style.display = 'none';
+        var box = img.closest('figure.gal-item, figure.gal-formal, button.gal-item, .gal-item, .arch-frame');
+        if (box) {
+            box.style.display = 'none';
+        }
+    }
+
+    document.querySelectorAll('img').forEach(function (img) {
+        img.addEventListener('error', function () {
+            hideBrokenImage(img);
+        });
+        if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) {
+            hideBrokenImage(img);
+        }
+    });
+
     if (cfg.mapsUrl) {
         document.querySelectorAll('a.map-btn').forEach(function (a) {
             a.href = cfg.mapsUrl;
