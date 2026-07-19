@@ -10,10 +10,10 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} (.+)/$
 RewriteRule ^ %1 [L,R=301]
 
-# File/folder asli (css, js, gambar) dilayani langsung
+# File/folder asli (css, js, gambar, uploads) dilayani langsung
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# LiteSpeed / cPanel: pakai PATH_INFO (index.php/path) — pola yang jalan di hosting ini
-RewriteRule ^(.*)$ index.php/$1 [L,QSA]
+# Pretty URL → Laravel (tanpa menampilkan index.php di browser)
+RewriteRule ^ index.php [L]

@@ -16,11 +16,12 @@ class InvitationTemplateRenderer
             if ($html === false) {
                 $html = '';
             } else {
-                $html = $this->rewriteAssetUrls($html, $tema);
+                // Ganti foto dulu (path assets/ relatif), baru rewrite URL asset template
                 $html = $this->replaceCoupleNames($html, $tema, $undangan);
                 $html = $this->replaceParents($html, $undangan);
                 $html = $this->replaceQuote($html, $undangan);
                 $html = $this->replacePhotos($html, $tema, $undangan);
+                $html = $this->rewriteAssetUrls($html, $tema);
                 $html = $this->replaceEventDetails($html, $undangan);
                 $html = $this->replaceMaps($html, $undangan);
                 $html = $this->replaceStory($html, $undangan);
@@ -128,12 +129,12 @@ class InvitationTemplateRenderer
         $image = null;
         foreach (['foto_wanita', 'foto_pria', 'foto_anak', 'cover_image'] as $key) {
             if (! empty($u[$key])) {
-                $image = url($u[$key]);
+                $image = $this->mediaUrl($u[$key]);
                 break;
             }
         }
         if (! $image && ! empty($u['galeri'][0])) {
-            $image = url($u['galeri'][0]);
+            $image = $this->mediaUrl($u['galeri'][0]);
         }
 
         return compact('title', 'desc', 'url', 'image', 'name');
@@ -321,78 +322,81 @@ class InvitationTemplateRenderer
         return implode(' & ', $parts);
     }
 
+    /**
+     * URL publik untuk file upload (hindari double prefix / index.php).
+     */
+    protected function mediaUrl(?string $path): ?string
+    {
+        if (! filled($path)) {
+            return null;
+        }
+
+        $path = trim((string) $path);
+
+        // Sudah absolute
+        if (preg_match('#^https?://#i', $path)) {
+            // Perbaiki URL rusak lama: .../templates/elegan/https://...
+            if (preg_match('#https?://.+(https?://.+)$#i', $path, $m)) {
+                return $m[1];
+            }
+
+            return $path;
+        }
+
+        return asset(ltrim($path, '/'));
+    }
+
     protected function replacePhotos(string $html, string $tema, array $u): string
     {
-        // Default di HTML template (setelah rewriteAssetUrls) + URL demo lama
-        $map = [
+        // Marker unik di file default template (jangan str_replace path pendek setelah rewrite)
+        $markers = [
             'elegan' => [
-                'wanita' => [
-                    'https://i.pinimg.com/736x/de/45/a5/de45a5997368ad7f1afa624dc7d2417a.jpg',
-                    'assets/images/de45a5997368ad7f1afa624dc7d2417a_922181.jpg',
-                ],
-                'pria' => [
-                    'https://i.pinimg.com/736x/d2/79/b8/d279b8a5f1d58d6dbe6c598d0b37b072.jpg',
-                    'assets/images/d279b8a5f1d58d6dbe6c598d0b37b072_8387373.jpg',
-                ],
+                'wanita' => ['de45a5997368ad7f1afa624dc7d2417a'],
+                'pria' => ['d279b8a5f1d58d6dbe6c598d0b37b072'],
             ],
             'classic' => [
-                'wanita' => [
-                    'https://i.pinimg.com/736x/76/20/9d/76209dcd4b79a4849d031c22dc1d7fbc.jpg',
-                ],
-                'pria' => [
-                    'https://i.pinimg.com/736x/0e/f1/3b/0ef13b4f10cc3b4e2594591ef63a9c20.jpg',
-                ],
+                'wanita' => ['76209dcd4b79a4849d031c22dc1d7fbc'],
+                'pria' => ['0ef13b4f10cc3b4e2594591ef63a9c20'],
             ],
             'langit_malam' => [
-                'wanita' => [
-                    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80',
-                ],
-                'pria' => [
-                    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80',
-                ],
+                'wanita' => ['photo-1544005313-94ddf0286df2'],
+                'pria' => ['photo-1500648767791-00dcc994a43e'],
             ],
         ];
 
-        $defaults = $map[$tema] ?? $map['elegan'];
-        $assetBase = rtrim(asset('templates/'.$tema.'/assets'), '/').'/';
+        $map = $markers[$tema] ?? $markers['elegan'];
 
-        if (! empty($u['foto_wanita'])) {
-            $to = asset($u['foto_wanita']);
-            foreach ($defaults['wanita'] as $from) {
-                $html = str_replace($from, $to, $html);
-                if (str_starts_with($from, 'assets/')) {
-                    $html = str_replace($assetBase.substr($from, strlen('assets/')), $to, $html);
-                }
+        $wanita = $this->mediaUrl($u['foto_wanita'] ?? null);
+        $pria = $this->mediaUrl($u['foto_pria'] ?? null);
+
+        if ($wanita) {
+            foreach ($map['wanita'] as $marker) {
+                $html = preg_replace(
+                    '/(<img\b[^>]*\bsrc=")[^"]*'.preg_quote($marker, '/').'[^"]*(")/i',
+                    '$1'.e($wanita).'$2',
+                    $html
+                ) ?? $html;
             }
-            // Fallback: ganti img di kartu mempelai wanita
+            // Bersihkan URL rusak double-prefix
             $html = preg_replace(
-                '/(<div class="arch-frame"[^>]*>\s*<img\s+src=")[^"]+("\s+alt="[^"]*"[^>]*>)/i',
-                '$1'.e($to).'$2',
-                $html,
-                1
+                '/(<img\b[^>]*\bsrc=")[^"]*templates\/[^"\/]+\/https?:\/\/[^"]*foto-wanita\.jpg(")/i',
+                '$1'.e($wanita).'$2',
+                $html
             ) ?? $html;
         }
 
-        if (! empty($u['foto_pria'])) {
-            $to = asset($u['foto_pria']);
-            foreach ($defaults['pria'] as $from) {
-                $html = str_replace($from, $to, $html);
-                if (str_starts_with($from, 'assets/')) {
-                    $html = str_replace($assetBase.substr($from, strlen('assets/')), $to, $html);
-                }
+        if ($pria) {
+            foreach ($map['pria'] as $marker) {
+                $html = preg_replace(
+                    '/(<img\b[^>]*\bsrc=")[^"]*'.preg_quote($marker, '/').'[^"]*(")/i',
+                    '$1'.e($pria).'$2',
+                    $html
+                ) ?? $html;
             }
-            // Kartu kedua (pria) — ganti img arch-frame yang masih default
             $html = preg_replace(
-                '/(<div class="arch-frame"[^>]*>\s*<img\s+src=")https?:\/\/rayakanmomen\.com\/templates\/elegan\/assets\/images\/[^"]+(")/i',
-                '$1'.e($to).'$2',
-                $html,
-                1
-            ) ?? $html;
-            $html = preg_replace(
-                '/(<div class="arch-frame"[^>]*>\s*<img\s+src=")[^"]*templates\/[^"]+\/assets\/images\/[^"]+(")/i',
-                '$1'.e($to).'$2',
-                $html,
-                1
+                '/(<img\b[^>]*\bsrc=")[^"]*templates\/[^"\/]+\/https?:\/\/[^"]*foto-pria\.jpg(")/i',
+                '$1'.e($pria).'$2',
+                $html
             ) ?? $html;
         }
 
@@ -761,7 +765,10 @@ HTML;
             return $html;
         }
 
-        $urls = array_map(fn ($p) => asset($p), $photos);
+        $urls = array_values(array_filter(array_map(fn ($p) => $this->mediaUrl($p), $photos)));
+        if (count($urls) === 0) {
+            return $html;
+        }
         $altCouple = trim(($u['nama_wanita'] ?? '').' & '.($u['nama_pria'] ?? ''));
         $altCouple = e($altCouple !== ' & ' ? $altCouple : 'Galeri');
 
@@ -865,11 +872,14 @@ HTML;
                 'ucapan' => $w['ucapan'] ?? '',
                 'kehadiran' => ($w['kehadiran'] ?? '') === 'hadir' ? 'Hadir' : 'Tidak Hadir',
             ])->values()->all(),
-            'qris' => ! empty($u['qris_image']) ? asset($u['qris_image']) : null,
+            'qris' => $this->mediaUrl($u['qris_image'] ?? null),
+            'gallery' => array_values(array_filter(array_map(
+                fn ($p) => $this->mediaUrl($p),
+                array_values(array_filter($u['galeri'] ?? []))
+            ))),
             'ewallet' => $u['ewallet'] ?? [],
             'rekening' => $u['rekening'] ?? [],
             'mapsUrl' => $u['maps_url'] ?? null,
-            'gallery' => array_map(fn ($p) => asset($p), array_values(array_filter($u['galeri'] ?? []))),
         ];
 
         $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

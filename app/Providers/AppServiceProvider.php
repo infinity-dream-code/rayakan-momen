@@ -39,26 +39,20 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Hosting LiteSpeed: pretty URL sering 404. Hanya index.php/path yang jalan.
-        $uri = (string) ($_SERVER['REQUEST_URI'] ?? '');
-        $script = (string) ($_SERVER['SCRIPT_NAME'] ?? '');
-        $viaIndexPhp = str_contains($uri, '/index.php')
-            || str_ends_with($script, '/index.php')
-            || str_ends_with($script, 'index.php');
-
-        if (! $viaIndexPhp) {
-            return;
-        }
-
+        // Pastikan URL absolut pakai APP_URL (tanpa /index.php)
         $root = rtrim((string) config('app.url'), '/');
-        if ($root === '' || str_ends_with($root, '/index.php')) {
+        if ($root === '') {
             return;
         }
 
-        // asset()/CSS/JS tetap di domain root (bukan /index.php/css/...)
-        config(['app.asset_url' => $root]);
+        if (str_ends_with($root, '/index.php')) {
+            $root = substr($root, 0, -strlen('/index.php'));
+        }
 
-        // route()/redirect()/form action → /index.php/panel/...
-        URL::forceRootUrl($root.'/index.php');
+        URL::forceRootUrl($root);
+
+        if (str_starts_with($root, 'https://')) {
+            URL::forceScheme('https');
+        }
     }
 }

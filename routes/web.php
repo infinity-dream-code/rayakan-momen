@@ -15,8 +15,8 @@ Route::get('/sitemap.xml', [InvitationPublicController::class, 'sitemap'])->name
 Route::get('/robots.txt', [InvitationPublicController::class, 'robots'])->name('robots');
 
 /*
-| Login rahasia: /index.php/SmartLoginAdmin
-| Panel setelah login tetap di /index.php/panel/...
+| Login rahasia: /SmartLoginAdmin
+| Panel: /panel/...
 */
 Route::get('/SmartLoginAdmin', [AuthController::class, 'showLogin'])->name('admin.login');
 Route::post('/SmartLoginAdmin', [AuthController::class, 'login'])->name('admin.login.submit');
