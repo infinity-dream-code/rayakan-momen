@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <radialGradient id="petalGrad" cx="50%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FFE8F0"/>
+      <stop offset="55%" stop-color="#FFB8D0"/>
+      <stop offset="100%" stop-color="#F08EAE"/>
+    </radialGradient>
+  </defs>
+  <g transform="translate(50,50)">
+    <path fill="url(#petalGrad)" stroke="#E07A98" stroke-width="1.35" stroke-linejoin="round" d="M0,-22 C-5,-17 -9,-9 -8,-1 C-7,6 -2,11 0,13 C2,11 7,6 8,-1 C9,-9 5,-17 0,-22 Z" transform="rotate(0)"/>
+    <path fill="url(#petalGrad)" stroke="#E07A98" stroke-width="1.35" stroke-linejoin="round" d="M0,-22 C-5,-17 -9,-9 -8,-1 C-7,6 -2,11 0,13 C2,11 7,6 8,-1 C9,-9 5,-17 0,-22 Z" transform="rotate(72)"/>
+    <path fill="url(#petalGrad)" stroke="#E07A98" stroke-width="1.35" stroke-linejoin="round" d="M0,-22 C-5,-17 -9,-9 -8,-1 C-7,6 -2,11 0,13 C2,11 7,6 8,-1 C9,-9 5,-17 0,-22 Z" transform="rotate(144)"/>
+    <path fill="url(#petalGrad)" stroke="#E07A98" stroke-width="1.35" stroke-linejoin="round" d="M0,-22 C-5,-17 -9,-9 -8,-1 C-7,6 -2,11 0,13 C2,11 7,6 8,-1 C9,-9 5,-17 0,-22 Z" transform="rotate(216)"/>
+    <path fill="url(#petalGrad)" stroke="#E07A98" stroke-width="1.35" stroke-linejoin="round" d="M0,-22 C-5,-17 -9,-9 -8,-1 C-7,6 -2,11 0,13 C2,11 7,6 8,-1 C9,-9 5,-17 0,-22 Z" transform="rotate(288)"/>
+    <circle cx="0" cy="0" r="4.2" fill="#FF9BB8"/>
+    <line x1="0" y1="0" x2="0" y2="-9" stroke="#D86A88" stroke-width="1.1" stroke-linecap="round"/>
+    <line x1="0" y1="0" x2="8.6" y2="-2.8" stroke="#D86A88" stroke-width="1.1" stroke-linecap="round"/>
+    <line x1="0" y1="0" x2="5.3" y2="7.3" stroke="#D86A88" stroke-width="1.1" stroke-linecap="round"/>
+    <line x1="0" y1="0" x2="-5.3" y2="7.3" stroke="#D86A88" stroke-width="1.1" stroke-linecap="round"/>
+    <line x1="0" y1="0" x2="-8.6" y2="-2.8" stroke="#D86A88" stroke-width="1.1" stroke-linecap="round"/>
+    <circle cx="0" cy="-9" r="1.5" fill="#FFB347"/>
+    <circle cx="8.6" cy="-2.8" r="1.5" fill="#FFB347"/>
+    <circle cx="5.3" cy="7.3" r="1.5" fill="#FFB347"/>
+    <circle cx="-5.3" cy="7.3" r="1.5" fill="#FFB347"/>
+    <circle cx="-8.6" cy="-2.8" r="1.5" fill="#FFB347"/>
+  </g>
+</svg>

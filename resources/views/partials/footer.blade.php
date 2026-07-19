@@ -1,0 +1,76 @@
+<footer id="kontak" class="footer-dark pt-16 pb-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+            <div class="lg:col-span-1">
+                <a href="#beranda" class="font-display text-2xl text-gold-light-accent tracking-wide inline-block mb-4">
+                    Web Untal
+                </a>
+                <p class="text-sm leading-relaxed text-on-dark-soft">
+                    Marketplace undangan digital — wedding, ultah anak, dan couple. Pilih template, lihat harga, siap share lewat WhatsApp.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="text-on-dark font-medium text-sm mb-4 tracking-wide">Menu Cepat</h4>
+                <ul class="space-y-2.5">
+                    <li><a href="#beranda" class="footer-link">Beranda</a></li>
+                    <li><a href="#layanan" class="footer-link">Layanan</a></li>
+                    <li><a href="#template" class="footer-link">Template &amp; Harga</a></li>
+                    <li><a href="#faq" class="footer-link">FAQ</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-on-dark font-medium text-sm mb-4 tracking-wide">Kontak</h4>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="https://wa.me/6285777743388"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="footer-link inline-flex items-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-gold-accent"></i>
+                            0857-7774-3388
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:halo@webuntal.com" class="footer-link inline-flex items-center gap-2">
+                            <i class="fa-solid fa-envelope text-gold-accent"></i>
+                            halo@webuntal.com
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-on-dark font-medium text-sm mb-4 tracking-wide">Sosial Media</h4>
+                <div class="flex gap-3">
+                    <a href="https://instagram.com/web_untal"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="social-btn"
+                       aria-label="Instagram Web Untal">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+                    <a href="https://tiktok.com/@web_untal"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="social-btn"
+                       aria-label="TikTok Web Untal">
+                        <i class="fa-brands fa-tiktok"></i>
+                    </a>
+                    <a href="https://wa.me/6285777743388"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="social-btn"
+                       aria-label="WhatsApp Web Untal">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-white/10 pt-6 text-center text-xs text-on-dark-soft">
+            &copy; 2026 Web Untal. All rights reserved.
+        </div>
+    </div>
+</footer>
