@@ -24,12 +24,12 @@
                 <h4 class="text-on-dark font-medium text-sm mb-4 tracking-wide">Kontak</h4>
                 <ul class="space-y-3">
                     <li>
-                        <a href="https://wa.me/6285777743388"
+                        <a href="https://wa.me/6285777433886"
                            target="_blank"
                            rel="noopener noreferrer"
                            class="footer-link inline-flex items-center gap-2">
                             <i class="fa-brands fa-whatsapp text-gold-accent"></i>
-                            0857-7774-3388
+                            0857-7743-3886
                         </a>
                     </li>
                     <li>
@@ -58,7 +58,7 @@
                        aria-label="TikTok Rayakan Momen">
                         <i class="fa-brands fa-tiktok"></i>
                     </a>
-                    <a href="https://wa.me/6285777743388"
+                    <a href="https://wa.me/6285777433886"
                        target="_blank"
                        rel="noopener noreferrer"
                        class="social-btn"

@@ -4,7 +4,7 @@
     $allTemplates = collect($catalog->templates())
         ->filter(fn ($t) => ($t['aktif_katalog'] ?? true))
         ->all();
-    $waNumber = '6285777743388';
+    $waNumber = '6285777433886';
 @endphp
 
 <section id="template" class="relative section-light py-24 md:py-32 overflow-hidden">

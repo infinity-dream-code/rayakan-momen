@@ -1,7 +1,26 @@
-/* Base reset (preflight off) */
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
+@tailwind base;
 @tailwind utilities;
+
+/* Brand text helpers used across landing (not always generated) */
+@layer base {
+    html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+
+    body {
+        font-family: Poppins, sans-serif;
+        color: #12161f;
+        background-color: #0e1320;
+        overflow-x: hidden;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    button {
+        cursor: pointer;
+    }
+}

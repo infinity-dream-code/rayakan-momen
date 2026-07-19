@@ -22,7 +22,7 @@
         <p class="text-on-dark-muted text-sm sm:text-base mb-10 max-w-md mx-auto leading-relaxed">
             Wedding, ultah anak, atau couple — konsultasi gratis. Pilih template, lihat demo, lalu chat kami.
         </p>
-        <a href="https://wa.me/6285777743388?text=Halo%20saya%20mau%20tanya%20tentang%20undangan%20digital"
+        <a href="https://wa.me/6285777433886?text=Halo%20saya%20mau%20tanya%20tentang%20undangan%20digital"
            target="_blank"
            rel="noopener noreferrer"
            class="btn-gold px-9 py-4 rounded-full text-base">

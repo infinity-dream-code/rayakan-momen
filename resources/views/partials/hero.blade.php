@@ -1,4 +1,4 @@
-﻿<section id="beranda" class="hero-stage">
+<section id="beranda" class="hero-stage">
     <div class="hero-media" aria-hidden="true">
         <div class="hero-slides" id="heroSlides">
             <div class="hero-slide is-active" data-label="Wedding">
@@ -54,14 +54,14 @@
         </h1>
 
         <p class="hero-lead hero-in hero-in-3">
-            Wedding, ulang tahun anak, dan couple — pilih template, lihat demo, lalu bagikan lewat WhatsApp.
+            Wedding, ulang tahun anak, dan couple � pilih template, lihat demo, lalu bagikan lewat WhatsApp.
         </p>
 
         <div class="hero-actions hero-in hero-in-4">
             <a href="#template" class="btn-gold px-8 py-3.5 rounded-full text-sm">
                 Jelajahi Template
             </a>
-            <a href="https://wa.me/6285777743388?text=Halo%20Web%20Untal%2C%20saya%20mau%20chat%20soal%20undangan%20digital"
+            <a href="https://wa.me/6285777433886?text=Halo%20Web%20Untal%2C%20saya%20mau%20chat%20soal%20undangan%20digital"
                target="_blank"
                rel="noopener noreferrer"
                class="btn-outline-gold px-8 py-3.5 rounded-full text-sm">
