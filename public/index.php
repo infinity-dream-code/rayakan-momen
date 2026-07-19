@@ -7,44 +7,30 @@ define('LARAVEL_START', microtime(true));
 
 /*
 |--------------------------------------------------------------------------
-| Check If The Application Is Under Maintenance
+| Lokasi project Laravel
 |--------------------------------------------------------------------------
-|
-| If the application is in maintenance / demo mode via the "down" command
-| we will load this file so that any pre-rendered content can be shown
-| instead of starting the framework, which could cause an exception.
-|
+| public_html bisa terpisah dari project. Atur di laravel-path.php
+| (lihat laravel-path.example.php).
 */
+$laravelPath = require __DIR__.'/laravel-path.php';
+if (! is_string($laravelPath) || $laravelPath === '') {
+    $laravelPath = dirname(__DIR__); // default: sibling structure public/../
+}
+$laravelPath = rtrim(str_replace('\\', '/', $laravelPath), '/');
 
-if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
+if (! is_file($laravelPath.'/vendor/autoload.php')) {
+    http_response_code(500);
+    echo 'Laravel project tidak ditemukan. Edit <code>laravel-path.php</code> di public_html supaya mengarah ke folder project (yang berisi vendor/). Path sekarang: '.htmlspecialchars($laravelPath);
+    exit;
+}
+
+if (file_exists($maintenance = $laravelPath.'/storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Register The Auto Loader
-|--------------------------------------------------------------------------
-|
-| Composer provides a convenient, automatically generated class loader for
-| this application. We just need to utilize it! We'll simply require it
-| into the script here so we don't need to manually load our classes.
-|
-*/
+require $laravelPath.'/vendor/autoload.php';
 
-require __DIR__.'/../vendor/autoload.php';
-
-/*
-|--------------------------------------------------------------------------
-| Run The Application
-|--------------------------------------------------------------------------
-|
-| Once we have the application, we can handle the incoming request using
-| the application's HTTP kernel. Then, we will send the response back
-| to this client's browser, allowing them to enjoy our application.
-|
-*/
-
-$app = require_once __DIR__.'/../bootstrap/app.php';
+$app = require_once $laravelPath.'/bootstrap/app.php';
 
 $kernel = $app->make(Kernel::class);
 
