@@ -1,1 +1,7 @@
+/* Base reset (preflight off) */
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
 @tailwind utilities;
