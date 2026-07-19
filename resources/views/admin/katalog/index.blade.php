@@ -2,12 +2,11 @@
 
 @section('title', 'Harga Katalog')
 @section('heading', 'Harga & Diskon Katalog')
-@section('subheading', 'Atur harga tiap produk — diskon persen otomatis hitung harga final (sementara JSON, nanti DB)')
+@section('subheading', 'Atur harga tiap produk — diskon % otomatis menghitung harga final (tersimpan di database)')
 
 @section('content')
 <form method="POST" action="{{ route('admin.katalog.update') }}" class="space-y-8 pb-24 md:pb-0" id="katalogForm">
     @csrf
-    @method('PUT')
 
     @foreach ($grouped as $katId => $items)
         @php $kat = $categories[$katId] ?? ['nama' => $katId, 'icon' => 'fa-layer-group', 'warna' => '#c9a84c']; @endphp

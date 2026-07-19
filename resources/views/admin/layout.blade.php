@@ -40,7 +40,7 @@
                 <a href="{{ route('admin.dashboard') }}" class="font-display text-xl text-[#e8d5a3]">
                     Rayakan Momen
                 </a>
-                <p class="text-white/40 text-xs mt-1">Panel Admin Demo</p>
+                <p class="text-white/40 text-xs mt-1">Panel Admin</p>
             </div>
             <nav class="flex-1 px-3 py-5 space-y-1">
                 <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm">

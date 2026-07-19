@@ -25,7 +25,7 @@ Route::post('/panel/logout', [AuthController::class, 'logout'])->name('admin.log
 Route::prefix('panel')->name('admin.')->middleware('demo.admin')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/katalog', [CatalogController::class, 'index'])->name('katalog.index');
-    Route::put('/katalog', [CatalogController::class, 'update'])->name('katalog.update');
+    Route::match(['put', 'post'], '/katalog', [CatalogController::class, 'update'])->name('katalog.update');
     Route::get('/undangan', [InvitationController::class, 'index'])->name('undangan.index');
     Route::get('/undangan/buat', [InvitationController::class, 'create'])->name('undangan.create');
     Route::post('/undangan/pilih-template', [InvitationController::class, 'pilihTemplate'])->name('undangan.pilih-template');

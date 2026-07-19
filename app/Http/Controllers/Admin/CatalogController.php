@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Repositories\CatalogRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class CatalogController extends Controller
 {
@@ -16,7 +18,8 @@ class CatalogController extends Controller
     {
         $categories = config('templates.categories', []);
         $templates = $this->catalog->templates();
-        $grouped = collect($templates)->groupBy('kategori');
+        // preserveKeys: jangan hilangkan key template (elegan, classic, …)
+        $grouped = collect($templates)->groupBy('kategori', preserveKeys: true);
 
         return view('admin.katalog.index', compact('categories', 'templates', 'grouped'));
     }
@@ -28,12 +31,14 @@ class CatalogController extends Controller
             $items = [];
         }
 
+        $known = config('templates.templates', []);
         $cleaned = [];
+
         foreach ($items as $key => $row) {
             if (! is_string($key) || ! is_array($row)) {
                 continue;
             }
-            if (! array_key_exists($key, config('templates.templates', []))) {
+            if (! array_key_exists($key, $known)) {
                 continue;
             }
             $cleaned[$key] = [
@@ -43,10 +48,24 @@ class CatalogController extends Controller
             ];
         }
 
-        $this->catalog->updateMany($cleaned);
+        if ($cleaned === []) {
+            return redirect()
+                ->route('admin.katalog.index')
+                ->with('error', 'Tidak ada data harga yang valid untuk disimpan. Coba refresh halaman lalu simpan lagi.');
+        }
+
+        try {
+            $this->catalog->updateMany($cleaned);
+        } catch (Throwable $e) {
+            Log::error('Gagal simpan katalog: '.$e->getMessage());
+
+            return redirect()
+                ->route('admin.katalog.index')
+                ->with('error', 'Gagal menyimpan ke database. Pastikan tabel catalog_templates sudah di-migrate. ('.$e->getMessage().')');
+        }
 
         return redirect()
             ->route('admin.katalog.index')
-            ->with('success', 'Harga & diskon katalog berhasil disimpan.');
+            ->with('success', 'Harga & diskon katalog berhasil disimpan ('.count($cleaned).' produk).');
     }
 }
