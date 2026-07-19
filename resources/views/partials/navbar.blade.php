@@ -14,15 +14,15 @@
                 <li><a href="#kontak" class="nav-link">Kontak</a></li>
             </ul>
 
-            <div class="flex items-center gap-3">
-                <a href="https://wa.me/6285777433886?text=Halo%20Web%20Untal%2C%20saya%20ingin%20pesan%20undangan%20digital"
+            <div class="flex items-center gap-2 sm:gap-3">
+                <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20undangan%20digital"
                    target="_blank"
                    rel="noopener noreferrer"
-                   class="btn-gold hidden sm:inline-flex px-5 py-2.5 rounded-full text-sm">
+                   class="btn-gold nav-cta px-5 py-2.5 rounded-full text-sm">
                     <i class="fa-brands fa-whatsapp"></i>
-                    Pesan Sekarang
+                    <span>Pesan Sekarang</span>
                 </a>
-                <button id="hamburger" type="button" class="lg:hidden text-gold-light-accent text-xl w-10 h-10 flex items-center justify-center" aria-label="Buka menu">
+                <button id="hamburger" type="button" class="nav-hamburger text-gold-light-accent text-xl w-10 h-10 flex items-center justify-center" aria-label="Buka menu">
                     <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
@@ -48,7 +48,7 @@
         <li><a href="#kontak" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Kontak</a></li>
     </ul>
     <div class="px-5 mt-4">
-        <a href="https://wa.me/6285777433886?text=Halo%20Web%20Untal%2C%20saya%20ingin%20pesan%20undangan%20digital"
+        <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20undangan%20digital"
            target="_blank"
            rel="noopener noreferrer"
            class="btn-gold mobile-nav-link w-full py-3 rounded-full text-sm">
