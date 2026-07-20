@@ -1,5 +1,5 @@
 @if (!empty($campaign['image_url']))
-<div id="campaignPopup" class="campaign-popup" role="dialog" aria-modal="true" aria-label="Campaign">
+<div id="campaignPopup" class="campaign-popup is-hidden" role="dialog" aria-modal="true" aria-label="Campaign">
     <div class="campaign-popup__backdrop" data-campaign-close></div>
     <div class="campaign-popup__box">
         <button type="button" class="campaign-popup__close" data-campaign-close aria-label="Tutup">&times;</button>
@@ -75,17 +75,27 @@
     var popup = document.getElementById('campaignPopup');
     if (!popup) return;
 
-    var timer;
+    var showDelay = 800;
+    var visibleMs = 1500;
+    var showTimer;
+    var closeTimer;
+
     function closePopup() {
         popup.classList.add('is-hidden');
-        if (timer) clearTimeout(timer);
+        if (showTimer) clearTimeout(showTimer);
+        if (closeTimer) clearTimeout(closeTimer);
+    }
+
+    function showPopup() {
+        popup.classList.remove('is-hidden');
+        closeTimer = setTimeout(closePopup, visibleMs);
     }
 
     popup.querySelectorAll('[data-campaign-close]').forEach(function (el) {
         el.addEventListener('click', closePopup);
     });
 
-    timer = setTimeout(closePopup, 1500);
+    showTimer = setTimeout(showPopup, showDelay);
 })();
 </script>
 @endif
