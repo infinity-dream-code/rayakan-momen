@@ -54,9 +54,13 @@ class InvitationPublicController extends Controller
             abort(404);
         }
 
+        // Token CSRF selalu fresh (HTML bisa dari cache)
+        $token = csrf_token();
+        $html = preg_replace('/"csrf"\s*:\s*"[^"]*"/', '"csrf":"'.$token.'"', $html) ?? $html;
+
         return response($html)
             ->header('Content-Type', 'text/html; charset=UTF-8')
-            ->header('Cache-Control', 'public, max-age='.$ttl);
+            ->header('Cache-Control', 'private, no-cache, must-revalidate');
     }
 
     public function storeUcapan(Request $request, string $slug)

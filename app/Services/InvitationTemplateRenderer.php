@@ -28,6 +28,7 @@ class InvitationTemplateRenderer
                 $html = $this->replaceGallery($html, $undangan);
                 $html = $this->replaceBanks($html, $undangan);
                 $html = $this->attachImageErrorHandlers($html);
+                $html = $this->injectCopyright($html);
                 $html = $this->injectSeoMeta($html, $undangan, $meta);
                 $html = $this->injectBridge($html, $undangan);
 
@@ -433,28 +434,48 @@ class InvitationTemplateRenderer
 
     protected function replaceMaps(string $html, array $u): string
     {
-        $url = trim((string) ($u['maps_url'] ?? ''));
-        if ($url === '') {
+        $akad = trim((string) ($u['maps_url'] ?? ''));
+        $resepsi = trim((string) ($u['maps_url_resepsi'] ?? ''));
+        if ($resepsi === '') {
+            $resepsi = $akad;
+        }
+
+        if ($akad === '' && $resepsi === '') {
             return $html;
         }
 
-        $safe = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+        $i = 0;
+        $html = preg_replace_callback(
+            '/(<a\b[^>]*\bclass="[^"]*(?:map-btn|event-map)[^"]*"[^>]*\bhref=")[^"]*(")/i',
+            function (array $m) use (&$i, $akad, $resepsi) {
+                $url = $i === 0 ? ($akad ?: $resepsi) : ($resepsi ?: $akad);
+                $i++;
 
-        $html = str_replace('href="https://maps.google.com"', 'href="'.$safe.'"', $html);
-        $html = str_replace("href='https://maps.google.com'", "href='".$safe."'", $html);
-        $html = str_replace('href="https://maps.google.com/"', 'href="'.$safe.'"', $html);
-
-        $html = preg_replace(
-            '/(<a\b[^>]*\bclass="[^"]*map-btn[^"]*"[^>]*\bhref=")[^"]*(")/i',
-            '$1'.$safe.'$2',
+                return $m[1].htmlspecialchars($url, ENT_QUOTES, 'UTF-8').$m[2];
+            },
             $html
         ) ?? $html;
 
-        $html = preg_replace(
-            '/(<a\b[^>]*\bhref=")[^"]*("[^>]*\bclass="[^"]*map-btn[^"]*")/i',
-            '$1'.$safe.'$2',
-            $html
-        ) ?? $html;
+        // href dulu baru class
+        if ($i === 0) {
+            $html = preg_replace_callback(
+                '/(<a\b[^>]*\bhref=")[^"]*("[^>]*\bclass="[^"]*(?:map-btn|event-map)[^"]*")/i',
+                function (array $m) use (&$i, $akad, $resepsi) {
+                    $url = $i === 0 ? ($akad ?: $resepsi) : ($resepsi ?: $akad);
+                    $i++;
+
+                    return $m[1].htmlspecialchars($url, ENT_QUOTES, 'UTF-8').$m[2];
+                },
+                $html
+            ) ?? $html;
+        }
+
+        // Fallback template default
+        if ($akad !== '') {
+            $safe = htmlspecialchars($akad, ENT_QUOTES, 'UTF-8');
+            $html = str_replace('href="https://maps.google.com"', 'href="'.$safe.'"', $html);
+            $html = str_replace('href="https://maps.google.com/"', 'href="'.$safe.'"', $html);
+        }
 
         return $html;
     }
@@ -881,19 +902,66 @@ HTML;
 
     protected function replaceBanks(string $html, array $u): string
     {
-        $rekening = $u['rekening'] ?? [];
-        if (count($rekening) === 0) {
-            return $html;
+        $rekening = array_values(array_filter(
+            $u['rekening'] ?? [],
+            fn ($r) => filled($r['bank'] ?? null) || filled($r['nomor'] ?? null)
+        ));
+
+        $cards = '';
+        foreach ($rekening as $i => $r) {
+            $name = trim((string) ($r['bank'] ?? ''));
+            if ($name === '') {
+                $name = 'Rekening';
+            } elseif (! preg_match('/^bank\b/i', $name)) {
+                $name = 'Bank '.$name;
+            }
+
+            $atas = trim((string) ($r['atas_nama'] ?? ''));
+            $nomor = trim((string) ($r['nomor'] ?? ''));
+            $id = 'rek'.($i + 1);
+
+            $cards .= '<div class="bank-card">'
+                .'<p class="bank-name">'.e($name).'</p>'
+                .($atas !== '' ? '<p class="acc-name">'.e($atas).'</p>' : '')
+                .'<div class="acc-row">'
+                .'<span class="acc-num" id="'.$id.'">'.e($nomor).'</span>'
+                .'<button type="button" class="copy-btn" data-target="'.$id.'">Salin</button>'
+                .'</div></div>';
         }
 
-        // Replace first two account numbers & names when available
-        if (isset($rekening[0])) {
-            $html = preg_replace('/\b1234567890\b/', e($rekening[0]['nomor'] ?? '1234567890'), $html, 1);
-            $html = preg_replace('/\b4520117788\b/', e($rekening[0]['nomor'] ?? '4520117788'), $html, 1);
-        }
-        if (isset($rekening[1])) {
-            $html = preg_replace('/\b0987654321\b/', e($rekening[1]['nomor'] ?? '0987654321'), $html, 1);
-            $html = preg_replace('/\b1330099211\b/', e($rekening[1]['nomor'] ?? '1330099211'), $html, 1);
+        // Ganti seluruh isi #bankList (buang demo BCA/Mandiri/BNI template)
+        $replaced = preg_replace(
+            '/(<div[^>]*\bid=["\']bankList["\'][^>]*>)([\s\S]*?)(<\/div>)/i',
+            '$1'.$cards.'$3',
+            $html,
+            1
+        );
+
+        return $replaced ?? $html;
+    }
+
+    /**
+     * Footer credit Rayakan Momen.
+     */
+    protected function injectCopyright(string $html): string
+    {
+        $year = date('Y');
+        $credit = '<p class="rm-copyright" style="margin-top:20px;opacity:0.55;font-family:Jost,sans-serif;font-size:0.68rem;letter-spacing:1px;">'
+            .'Copyright &copy; '.$year
+            .' <a href="https://rayakanmomen.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">rayakanmomen.com</a>'
+            .'</p>';
+
+        // Ganti teks demo "Dibuat dengan ❤ — 2026"
+        $html = preg_replace(
+            '/<p[^>]*>\s*Dibuat dengan[\s\S]*?<\/p>/iu',
+            $credit,
+            $html,
+            1
+        ) ?? $html;
+
+        // Kalau belum ada, sisipkan sebelum penutup footer
+        if (! str_contains($html, 'rm-copyright') && stripos($html, '</footer>') !== false) {
+            $html = str_ireplace('</footer>', $credit."\n</footer>", $html);
         }
 
         return $html;
@@ -924,6 +992,7 @@ HTML;
             'ewallet' => $u['ewallet'] ?? [],
             'rekening' => $u['rekening'] ?? [],
             'mapsUrl' => $u['maps_url'] ?? null,
+            'mapsUrlResepsi' => $u['maps_url_resepsi'] ?? null,
         ];
 
         $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        // Form ucapan publik (HTML undangan di-cache → CSRF token sering basi → 419)
+        '*/ucapan',
     ];
 }

@@ -265,7 +265,21 @@
 @if ($has('maps'))
 <div class="card p-5 sm:p-6 field-group" data-group="maps">
     <h3 class="font-display text-lg mb-4">Google Maps</h3>
-    <input type="url" name="maps_url" value="{{ old('maps_url', $u['maps_url'] ?? '') }}" class="form-input" placeholder="https://maps.google.com/...">
+    <p class="text-xs text-gray-500 mb-3">
+        Buka Google Maps → pilih lokasi → <strong>Bagikan</strong> → salin link.
+        Boleh pakai link pendek (<code>maps.app.goo.gl/...</code>).
+    </p>
+    <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+            <label class="form-label">Lokasi Akad / Acara utama</label>
+            <input type="text" name="maps_url" value="{{ old('maps_url', $u['maps_url'] ?? '') }}" class="form-input" placeholder="https://maps.app.goo.gl/... atau https://maps.google.com/...">
+        </div>
+        <div>
+            <label class="form-label">Lokasi Resepsi <span class="text-gray-400">(opsional)</span></label>
+            <input type="text" name="maps_url_resepsi" value="{{ old('maps_url_resepsi', $u['maps_url_resepsi'] ?? '') }}" class="form-input" placeholder="Kosongkan jika sama dengan akad">
+            <p class="text-xs text-gray-400 mt-1">Kalau kosong, tombol Resepsi pakai link Akad.</p>
+        </div>
+    </div>
 </div>
 @endif
 

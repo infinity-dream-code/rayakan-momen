@@ -12,7 +12,7 @@ class AuthController extends Controller
     public function showLogin()
     {
         if (session('demo_admin_logged_in')) {
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('admin.undangan.index');
         }
 
         return view('admin.login');
@@ -33,10 +33,13 @@ class AuthController extends Controller
             $request->session()->put('demo_admin_name', $user->name);
             $request->session()->put('demo_admin_id', $user->id);
 
-            return redirect()->route('admin.dashboard')->with('success', 'Selamat datang kembali!');
+            // Langsung ke daftar undangan (hindari /panel/ bentrok folder fisik)
+            return redirect()
+                ->route('admin.undangan.index')
+                ->with('success', 'Selamat datang kembali!');
         }
 
-        return back()->withInput($request->only('email'))->with('error', 'Email atau password salah.');
+        return back()->withInput($request->only('email'))->with('error', 'Email atau password salah. Pastikan seeder admin sudah dijalankan.');
     }
 
     public function logout(Request $request)

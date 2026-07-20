@@ -195,7 +195,8 @@ class InvitationController extends Controller
             'kutipan' => 'nullable|string|max:800',
             'kutipan_sumber' => 'nullable|string|max:100',
             'youtube_url' => 'nullable|string|max:500',
-            'maps_url' => 'nullable|string|max:500',
+            'maps_url' => 'nullable|string|max:1000',
+            'maps_url_resepsi' => 'nullable|string|max:1000',
             'galeri.*' => 'nullable|file|mimes:jpg,jpeg,png|mimetypes:image/jpeg,image/png,image/jpg|max:10240',
             'qris_image' => 'nullable|file|mimes:jpg,jpeg,png|mimetypes:image/jpeg,image/png,image/jpg|max:10240',
             'foto_wanita' => 'nullable|file|mimes:jpg,jpeg,png|mimetypes:image/jpeg,image/png,image/jpg|max:10240',
@@ -378,9 +379,9 @@ class InvitationController extends Controller
             );
         }
 
-        if (! empty($validated['maps_url']) && ! filter_var($validated['maps_url'], FILTER_VALIDATE_URL)) {
-            $validated['maps_url'] = null;
-        }
+        $validated['maps_url'] = $this->normalizeMapsUrl($request->input('maps_url'));
+        $validated['maps_url_resepsi'] = $this->normalizeMapsUrl($request->input('maps_url_resepsi'));
+
         if (! empty($validated['youtube_url']) && ! filter_var($validated['youtube_url'], FILTER_VALIDATE_URL)) {
             $validated['youtube_url'] = null;
         }
@@ -562,5 +563,31 @@ class InvitationController extends Controller
         }
 
         return implode(' & ', $parts);
+    }
+
+    /**
+     * Normalisasi link Google Maps (terima short link & tanpa https).
+     */
+    protected function normalizeMapsUrl(?string $url): ?string
+    {
+        $url = trim((string) $url);
+        if ($url === '') {
+            return null;
+        }
+
+        if (! preg_match('#^https?://#i', $url)) {
+            $url = 'https://'.$url;
+        }
+
+        if (filter_var($url, FILTER_VALIDATE_URL)) {
+            return $url;
+        }
+
+        // Beberapa share-link Maps gagal FILTER_VALIDATE_URL tapi tetap valid dipakai
+        if (preg_match('#(google\.[^/]+/maps|maps\.app\.goo\.gl|goo\.gl/maps|maps\.google\.)#i', $url)) {
+            return $url;
+        }
+
+        return null;
     }
 }

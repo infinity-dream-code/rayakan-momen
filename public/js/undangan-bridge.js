@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var kehadiran = kehadiranRaw.toLowerCase().indexOf('tidak') >= 0 ? 'tidak_hadir' : 'hadir';
 
             var body = new FormData();
-            body.append('_token', cfg.csrf);
+            if (cfg.csrf) body.append('_token', cfg.csrf);
             body.append('nama', nama);
             body.append('ucapan', ucapan);
             body.append('kehadiran', kehadiran);
@@ -70,13 +70,31 @@ document.addEventListener('DOMContentLoaded', function () {
             var btn = form.querySelector('button[type="submit"], .submit-btn, button');
             if (btn) btn.disabled = true;
 
+            var headers = {
+                'X-Requested-With': 'XMLHttpRequest',
+                Accept: 'application/json'
+            };
+            if (cfg.csrf) {
+                headers['X-CSRF-TOKEN'] = cfg.csrf;
+            }
+
             fetch(cfg.ucapanUrl, {
                 method: 'POST',
                 body: body,
-                headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' }
+                headers: headers,
+                credentials: 'same-origin'
             })
                 .then(function (res) {
-                    if (!res.ok) throw new Error('Gagal kirim');
+                    if (res.status === 419) {
+                        throw new Error('Sesi kedaluwarsa. Refresh halaman lalu coba lagi.');
+                    }
+                    if (res.status === 422) {
+                        throw new Error('Data ucapan tidak valid. Cek nama & isi ucapan.');
+                    }
+                    if (!res.ok) throw new Error('Gagal mengirim ucapan (kode ' + res.status + ').');
+                    return res.json().catch(function () { return {}; });
+                })
+                .then(function () {
                     cfg.wishes = cfg.wishes || [];
                     cfg.wishes.unshift({
                         nama: nama,
@@ -91,8 +109,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         alert('Terima kasih! Ucapanmu sudah tersimpan.');
                     }
                 })
-                .catch(function () {
-                    alert('Gagal mengirim ucapan. Coba lagi.');
+                .catch(function (err) {
+                    alert((err && err.message) ? err.message : 'Gagal mengirim ucapan. Coba lagi.');
                 })
                 .finally(function () {
                     if (btn) btn.disabled = false;
@@ -111,34 +129,58 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    if (cfg.qris) {
-        var bankList = document.getElementById('bankList');
-        if (bankList) {
+    function buildBankCard(name, atasNama, nomor, id) {
+        var el = document.createElement('div');
+        el.className = 'bank-card';
+        var label = name || 'Rekening';
+        if (label && !/^bank\b/i.test(label)) label = 'Bank ' + label;
+        el.innerHTML =
+            '<p class="bank-name">' + escapeHtml(label) + '</p>' +
+            (atasNama ? '<p class="acc-name">' + escapeHtml(atasNama) + '</p>' : '') +
+            '<div class="acc-row"><span class="acc-num" id="' + id + '">' + escapeHtml(nomor || '') + '</span>' +
+            '<button type="button" class="copy-btn" data-target="' + id + '">Salin</button></div>';
+        return el;
+    }
+
+    var bankList = document.getElementById('bankList');
+    if (bankList) {
+        // Buang kartu demo template, bangun ulang dari data admin saja
+        bankList.innerHTML = '';
+
+        (cfg.rekening || []).forEach(function (r, i) {
+            if (!r || (!r.bank && !r.nomor)) return;
+            bankList.appendChild(buildBankCard(r.bank, r.atas_nama, r.nomor, 'rek' + (i + 1)));
+        });
+
+        if (cfg.qris) {
             var qrisBox = document.createElement('div');
             qrisBox.className = 'bank-card';
             qrisBox.style.textAlign = 'center';
             qrisBox.innerHTML =
                 '<p class="bank-name" style="margin-bottom:10px;">Scan QRIS</p>' +
                 '<img src="' + cfg.qris + '" alt="QRIS" style="width:180px;height:180px;object-fit:contain;margin:0 auto;display:block;background:#fff;padding:8px;border-radius:12px;">';
-            bankList.insertBefore(qrisBox, bankList.firstChild);
+            bankList.appendChild(qrisBox);
         }
-    }
 
-    if (cfg.ewallet && cfg.ewallet.length) {
-        var bankList2 = document.getElementById('bankList');
-        if (bankList2) {
-            cfg.ewallet.forEach(function (w, i) {
-                if (!w.tipe && !w.nomor) return;
-                var el = document.createElement('div');
-                el.className = 'bank-card';
-                el.innerHTML =
-                    '<p class="bank-name">' + escapeHtml(w.tipe) + '</p>' +
-                    '<p class="acc-name">a.n. ' + escapeHtml(w.atas_nama || '') + '</p>' +
-                    '<div class="acc-row"><span class="acc-num" id="ew' + i + '">' + escapeHtml(w.nomor || '') + '</span>' +
-                    '<button type="button" class="copy-btn" data-target="ew' + i + '">Salin</button></div>';
-                bankList2.appendChild(el);
+        (cfg.ewallet || []).forEach(function (w, i) {
+            if (!w || (!w.tipe && !w.nomor)) return;
+            bankList.appendChild(buildBankCard(w.tipe, w.atas_nama, w.nomor, 'ew' + i));
+        });
+
+        // Re-bind tombol salin
+        bankList.querySelectorAll('.copy-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var target = document.getElementById(btn.getAttribute('data-target'));
+                if (!target) return;
+                var text = target.textContent.trim();
+                if (!text) return;
+                navigator.clipboard.writeText(text).then(function () {
+                    var old = btn.textContent;
+                    btn.textContent = 'Tersalin!';
+                    setTimeout(function () { btn.textContent = old; }, 1500);
+                });
             });
-        }
+        });
     }
 
     syncBankListHeight();
@@ -167,17 +209,27 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    if (cfg.mapsUrl) {
-        document.querySelectorAll('a.map-btn').forEach(function (a) {
-            a.href = cfg.mapsUrl;
+    if (cfg.mapsUrl || cfg.mapsUrlResepsi) {
+        var mapLinks = document.querySelectorAll('a.map-btn, a.event-map');
+        mapLinks.forEach(function (a, i) {
+            var u = i === 0
+                ? (cfg.mapsUrl || cfg.mapsUrlResepsi)
+                : (cfg.mapsUrlResepsi || cfg.mapsUrl);
+            if (!u) return;
+            a.href = u;
             a.target = '_blank';
             a.rel = 'noopener noreferrer';
         });
 
-        document.querySelectorAll('.event-card').forEach(function (card) {
-            if (card.querySelector('a.map-btn, a[data-maps]')) return;
+        // Kalau kartu event belum punya tombol maps, tambahkan
+        document.querySelectorAll('.event-card').forEach(function (card, i) {
+            if (card.querySelector('a.map-btn, a.event-map, a[data-maps]')) return;
+            var u = i === 0
+                ? (cfg.mapsUrl || cfg.mapsUrlResepsi)
+                : (cfg.mapsUrlResepsi || cfg.mapsUrl);
+            if (!u) return;
             var link = document.createElement('a');
-            link.href = cfg.mapsUrl;
+            link.href = u;
             link.target = '_blank';
             link.rel = 'noopener noreferrer';
             link.className = 'map-btn';

@@ -32,6 +32,7 @@ class InvitationRepository
         'waktu_resepsi_mulai', 'waktu_resepsi_selesai',
         'tanggal_spesial', 'tanggal_acara', 'waktu_acara', 'waktu_acara_mulai', 'waktu_acara_selesai',
         'tempat_acara', 'alamat_acara', 'pesan_janji',
+        'maps_url_resepsi',
     ];
 
     public function allForAdmin(): array

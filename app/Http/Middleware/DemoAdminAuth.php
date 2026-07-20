@@ -11,7 +11,7 @@ class DemoAdminAuth
     public function handle(Request $request, Closure $next): Response
     {
         if (! $request->session()->get('demo_admin_logged_in')) {
-            return redirect()->route('admin.login')->with('error', 'Silakan login dulu untuk mengakses panel admin.');
+            return redirect('/SmartLoginAdmin')->with('error', 'Silakan login dulu untuk mengakses panel admin.');
         }
 
         return $next($request);
