@@ -85,7 +85,7 @@
         el.addEventListener('click', closePopup);
     });
 
-    timer = setTimeout(closePopup, 3000);
+    timer = setTimeout(closePopup, 1500);
 })();
 </script>
 @endif

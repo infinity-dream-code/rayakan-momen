@@ -2,7 +2,7 @@
 
 @section('title', 'Campaign')
 @section('heading', 'Campaign Landing Page')
-@section('subheading', 'Popup gambar di halaman awal — auto tutup 3 detik, bisa ditutup dengan tombol X')
+@section('subheading', 'Popup gambar di halaman awal — auto tutup 1,5 detik, bisa ditutup dengan tombol X')
 
 @section('content')
 <div class="card p-5 sm:p-6 max-w-2xl">
