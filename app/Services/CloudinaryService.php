@@ -35,21 +35,31 @@ class CloudinaryService
             'folder' => $folder,
             'timestamp' => $timestamp,
         ];
-        ksort($params);
-        $signature = sha1(http_build_query($params).$apiSecret);
+        $signature = $this->signParams($params, $apiSecret);
 
-        $response = Http::timeout(60)
+        $response = Http::timeout(90)
+            ->connectTimeout(15)
             ->asMultipart()
-            ->attach('file', file_get_contents($file->getRealPath()), $file->getClientOriginalName())
+            ->attach(
+                'file',
+                fopen($file->getRealPath(), 'rb'),
+                $file->getClientOriginalName(),
+                ['Content-Type' => $file->getMimeType() ?: 'application/octet-stream']
+            )
             ->post("https://api.cloudinary.com/v1_1/{$cloud}/image/upload", [
                 'api_key' => $apiKey,
-                'timestamp' => $timestamp,
+                'timestamp' => (string) $timestamp,
                 'signature' => $signature,
                 'folder' => $folder,
             ]);
 
         if (! $response->successful()) {
-            throw new InvalidArgumentException('Upload Cloudinary gagal. Coba lagi atau periksa kredensial.');
+            $message = (string) ($response->json('error.message') ?? '');
+            if ($message !== '') {
+                throw new InvalidArgumentException('Upload Cloudinary gagal: '.$message);
+            }
+
+            throw new InvalidArgumentException('Upload Cloudinary gagal (HTTP '.$response->status().').');
         }
 
         $data = $response->json();
@@ -81,15 +91,31 @@ class CloudinaryService
             'public_id' => $publicId,
             'timestamp' => $timestamp,
         ];
-        ksort($params);
-        $signature = sha1(http_build_query($params).$apiSecret);
+        $signature = $this->signParams($params, $apiSecret);
 
         Http::timeout(30)->asForm()->post("https://api.cloudinary.com/v1_1/{$cloud}/image/destroy", [
             'public_id' => $publicId,
             'api_key' => $apiKey,
-            'timestamp' => $timestamp,
+            'timestamp' => (string) $timestamp,
             'signature' => $signature,
         ]);
+    }
+
+    /**
+     * Cloudinary signature: sorted key=value (tanpa URL-encode) + api_secret.
+     */
+    protected function signParams(array $params, string $apiSecret): string
+    {
+        ksort($params);
+        $parts = [];
+        foreach ($params as $key => $value) {
+            if ($value === null || $value === '') {
+                continue;
+            }
+            $parts[] = $key.'='.$value;
+        }
+
+        return sha1(implode('&', $parts).$apiSecret);
     }
 
     protected function assertSafeImage(UploadedFile $file): void

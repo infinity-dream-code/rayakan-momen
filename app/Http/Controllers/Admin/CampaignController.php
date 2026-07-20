@@ -58,9 +58,16 @@ class CampaignController extends Controller
         } catch (InvalidArgumentException $e) {
             return back()->with('error', $e->getMessage());
         } catch (Throwable $e) {
-            Log::error('Gagal simpan campaign: '.$e->getMessage());
+            Log::error('Gagal simpan campaign: '.$e->getMessage(), [
+                'exception' => $e,
+            ]);
 
-            return back()->with('error', 'Gagal menyimpan campaign. Coba lagi.');
+            $msg = 'Gagal menyimpan campaign. Coba lagi.';
+            if (config('app.debug')) {
+                $msg .= ' ('.$e->getMessage().')';
+            }
+
+            return back()->with('error', $msg);
         }
 
         if ($aktif && ! filled($imageUrl)) {
