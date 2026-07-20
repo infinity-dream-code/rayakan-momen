@@ -941,36 +941,27 @@ HTML;
     }
 
     /**
-     * Footer credit Rayakan Momen — gaya sama seperti template asli.
+     * Footer credit Rayakan Momen.
      */
     protected function injectCopyright(string $html): string
     {
-        $credit = '<p style="margin-top:20px;opacity:0.5;">Copyright &copy; rayakanmomen.com</p>';
+        $year = date('Y');
+        $credit = '<p class="rm-copyright" style="margin-top:20px;opacity:0.55;font-family:Jost,sans-serif;font-size:0.68rem;letter-spacing:1px;">'
+            .'Copyright &copy; '.$year
+            .' <a href="https://rayakanmomen.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">rayakanmomen.com</a>'
+            .'</p>';
 
-        // Ganti teks demo / copyright lama
+        // Ganti teks demo "Dibuat dengan ❤ — 2026"
         $html = preg_replace(
-            '/<p[^>]*>\s*(?:Dibuat dengan|Copyright)[\s\S]*?<\/p>/iu',
+            '/<p[^>]*>\s*Dibuat dengan[\s\S]*?<\/p>/iu',
             $credit,
             $html,
             1
         ) ?? $html;
 
-        if (! str_contains($html, 'rayakanmomen.com') && stripos($html, '</footer>') !== false) {
+        // Kalau belum ada, sisipkan sebelum penutup footer
+        if (! str_contains($html, 'rm-copyright') && stripos($html, '</footer>') !== false) {
             $html = str_ireplace('</footer>', $credit."\n</footer>", $html);
-        }
-
-        // Perbaiki mismatch id section RSVP di template (#rsvp vs #ucapan)
-        $fixCss = '<style id="rm-layout-fix">'
-            .'#ucapan,#rsvp{background:var(--ivory,#FBF4E8);}'
-            .'.wrap{max-width:480px;width:100%;margin-left:auto;margin-right:auto;}'
-            .'#bankList,.bank-list{width:100%;max-width:100%;box-sizing:border-box;}'
-            .'#gift .bank-card{max-width:100%;box-sizing:border-box;}'
-            .'#gift .bank-card .acc-row{display:flex;gap:12px;justify-content:space-between;align-items:center;}'
-            .'#gift .bank-card .copy-btn{flex-shrink:0;}'
-            .'</style>';
-
-        if (! str_contains($html, 'rm-layout-fix') && stripos($html, '</head>') !== false) {
-            $html = str_ireplace('</head>', $fixCss."\n</head>", $html);
         }
 
         return $html;
