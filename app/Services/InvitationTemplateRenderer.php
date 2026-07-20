@@ -929,15 +929,54 @@ HTML;
                 .'</div></div>';
         }
 
-        // Ganti seluruh #bankList sampai sebelum section berikutnya (jangan berhenti di </div> pertama)
+        // Ganti isi #bankList saja; JANGAN telan </section> penutup #gift
+        // (lookahead lama (?=<section) membuat #ucapan+footer jadi anak #gift → layout hancur)
         $replaced = preg_replace(
-            '/<div([^>]*\bid=["\']bankList["\'][^>]*)>[\s\S]*?(?=<section\b)/i',
-            '<div$1>'.$cards.'</div>'."\n        ",
+            '/(<div[^>]*\bid=["\']bankList["\'][^>]*>)[\s\S]*?(?=<\/section>\s*<section\b)/i',
+            '$1'.$cards.'</div>'."\n        ",
             $html,
             1
         );
 
-        return $replaced ?? $html;
+        if ($replaced === null || $replaced === $html) {
+            // Fallback: template tanpa section berikutnya — ganti sampai penutup bankList ber-depth
+            $replaced = $this->replaceBankListByDepth($html, $cards);
+        }
+
+        return $replaced;
+    }
+
+    /**
+     * Ganti konten #bankList dengan menghitung kedalaman </div> (aman untuk nested .bank-card).
+     */
+    protected function replaceBankListByDepth(string $html, string $cards): string
+    {
+        if (! preg_match('/<div[^>]*\bid=["\']bankList["\'][^>]*>/i', $html, $m, PREG_OFFSET_CAPTURE)) {
+            return $html;
+        }
+
+        $open = $m[0][0];
+        $start = $m[0][1];
+        $pos = $start + strlen($open);
+        $depth = 1;
+        $len = strlen($html);
+
+        while ($pos < $len && $depth > 0) {
+            $nextOpen = stripos($html, '<div', $pos);
+            $nextClose = stripos($html, '</div>', $pos);
+            if ($nextClose === false) {
+                return $html;
+            }
+            if ($nextOpen !== false && $nextOpen < $nextClose) {
+                $depth++;
+                $pos = $nextOpen + 4;
+            } else {
+                $depth--;
+                $pos = $nextClose + 6;
+            }
+        }
+
+        return substr($html, 0, $start).$open.$cards.'</div>'.substr($html, $pos);
     }
 
     /**
@@ -962,18 +1001,6 @@ HTML;
         // Kalau belum ada, sisipkan sebelum penutup footer
         if (! str_contains($html, 'rm-copyright') && stripos($html, '</footer>') !== false) {
             $html = str_ireplace('</footer>', $credit."\n</footer>", $html);
-        }
-
-        // Perbaikan chrome template: ucapan bg, bottom bar, tombol musik di kolom
-        if (! str_contains($html, 'rm-chrome-fix') && stripos($html, '</head>') !== false) {
-            $chromeCss = '<style id="rm-chrome-fix">'
-                .'#ucapan,#rsvp{background:var(--ivory,#FBF4E8);}'
-                .'.wrap{overflow-x:clip;overflow-y:visible;}'
-                .'footer{padding-bottom:130px;}'
-                .'.navbar{width:min(400px,calc(100% - 32px),448px);max-width:calc(100vw - 32px);z-index:200;}'
-                .'.music-btn{right:max(22px,calc(50vw - 240px + 22px));left:auto;}'
-                .'</style>';
-            $html = str_ireplace('</head>', $chromeCss."\n</head>", $html);
         }
 
         return $html;
