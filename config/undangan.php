@@ -32,7 +32,8 @@ return [
     | Only jpg/jpeg/png. Double extensions rejected. Auto-compress to max_kb.
     */
     'upload_max_kb' => (int) env('UPLOAD_MAX_KB', 500),
-    'upload_max_dimension' => (int) env('UPLOAD_MAX_DIMENSION', 1920),
+    // 1280px cukup untuk undangan; lebih kecil = update foto jauh lebih cepat di shared hosting
+    'upload_max_dimension' => (int) env('UPLOAD_MAX_DIMENSION', 1280),
 
     /*
     |--------------------------------------------------------------------------

@@ -396,7 +396,9 @@ class InvitationController extends Controller
             $dirGaleri = 'mempelai/'.$slugKey.'/galeri';
             $dirQris = 'mempelai/'.$slugKey.'/qris';
 
-            $fotoWanita = $this->storage->storeUpload($request->file('foto_wanita'), $dirFoto, 'foto-wanita');
+            $fotoWanita = $request->hasFile('foto_wanita')
+                ? $this->storage->storeUpload($request->file('foto_wanita'), $dirFoto, 'foto-wanita')
+                : null;
             if ($fotoWanita) {
                 $this->storage->deletePublicPath($existing['foto_wanita'] ?? null);
                 $validated['foto_wanita'] = $fotoWanita;
@@ -404,7 +406,9 @@ class InvitationController extends Controller
                 $validated['foto_wanita'] = $existing['foto_wanita'] ?? null;
             }
 
-            $fotoPria = $this->storage->storeUpload($request->file('foto_pria'), $dirFoto, 'foto-pria');
+            $fotoPria = $request->hasFile('foto_pria')
+                ? $this->storage->storeUpload($request->file('foto_pria'), $dirFoto, 'foto-pria')
+                : null;
             if ($fotoPria) {
                 $this->storage->deletePublicPath($existing['foto_pria'] ?? null);
                 $validated['foto_pria'] = $fotoPria;
@@ -412,7 +416,9 @@ class InvitationController extends Controller
                 $validated['foto_pria'] = $existing['foto_pria'] ?? null;
             }
 
-            $fotoAnak = $this->storage->storeUpload($request->file('foto_anak'), $dirFoto, 'foto-anak');
+            $fotoAnak = $request->hasFile('foto_anak')
+                ? $this->storage->storeUpload($request->file('foto_anak'), $dirFoto, 'foto-anak')
+                : null;
             if ($fotoAnak) {
                 $this->storage->deletePublicPath($existing['foto_anak'] ?? null);
                 $validated['foto_anak'] = $fotoAnak;
@@ -423,7 +429,9 @@ class InvitationController extends Controller
                 $validated['foto_wanita'] = $validated['foto_anak'];
             }
 
-            $qris = $this->storage->storeUpload($request->file('qris_image'), $dirQris, 'qris');
+            $qris = $request->hasFile('qris_image')
+                ? $this->storage->storeUpload($request->file('qris_image'), $dirQris, 'qris')
+                : null;
             if ($qris) {
                 $this->storage->deletePublicPath($existing['qris_image'] ?? null);
                 $validated['qris_image'] = $qris;
@@ -432,7 +440,10 @@ class InvitationController extends Controller
             }
 
             $galeriFiles = $request->file('galeri');
-            $newGaleri = $this->storage->storeMultipleUploads(is_array($galeriFiles) ? $galeriFiles : [], $dirGaleri);
+            $newGaleri = [];
+            if (is_array($galeriFiles) && count(array_filter($galeriFiles)) > 0) {
+                $newGaleri = $this->storage->storeMultipleUploads($galeriFiles, $dirGaleri);
+            }
             $validated['galeri'] = array_values(array_merge($existing['galeri'] ?? [], $newGaleri));
         } catch (\InvalidArgumentException $e) {
             throw \Illuminate\Validation\ValidationException::withMessages([

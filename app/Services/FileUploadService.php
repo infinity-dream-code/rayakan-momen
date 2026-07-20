@@ -38,7 +38,8 @@ class FileUploadService
     public function __construct()
     {
         $this->maxBytes = max(100 * 1024, (int) config('undangan.upload_max_kb', 500) * 1024);
-        $this->maxDimension = max(640, (int) config('undangan.upload_max_dimension', 1920));
+        // Shared hosting: default lebih kecil biar resize cepat
+        $this->maxDimension = max(640, (int) config('undangan.upload_max_dimension', 1280));
     }
 
     /**
@@ -52,7 +53,7 @@ class FileUploadService
             return null;
         }
 
-        $this->assertSafeImage($file);
+        $info = $this->assertSafeImage($file);
 
         $folder = $this->sanitizeFolder($folder);
         $dir = public_path('uploads/'.$folder);
@@ -60,34 +61,18 @@ class FileUploadService
             File::makeDirectory($dir, 0755, true);
         }
 
-        // Always save as .jpg after re-encode (safe + compressible)
         if ($basename !== null && $basename !== '') {
             $safe = Str::slug(pathinfo($basename, PATHINFO_FILENAME), '-');
             $safe = $safe !== '' ? $safe : 'foto';
-            // Nama unik tiap upload → ganti foto langsung kelihatan (bukan cache lama)
             $name = $safe.'-'.now()->format('YmdHis').'-'.Str::lower(Str::random(4)).'.jpg';
         } else {
             $name = Str::uuid().'.jpg';
         }
 
         $dest = $dir.DIRECTORY_SEPARATOR.$name;
-
         $source = $file->getRealPath();
-        // Shared hosting: skip kompres berat kalau sudah JPEG kecil
-        $mime = (string) $file->getMimeType();
-        $size = (int) $file->getSize();
-        if (
-            in_array($mime, ['image/jpeg', 'image/jpg'], true)
-            && $size > 0
-            && $size <= $this->maxBytes
-            && @getimagesize($source) !== false
-        ) {
-            if (! @copy($source, $dest)) {
-                $this->compressToJpeg($source, $dest);
-            }
-        } else {
-            $this->compressToJpeg($source, $dest);
-        }
+
+        $this->saveAsJpegFast($source, $dest, $info);
 
         if (! is_file($dest) || filesize($dest) < 32) {
             @unlink($dest);
@@ -162,8 +147,10 @@ class FileUploadService
 
     /**
      * Validate extension, MIME, and block double-extension filenames.
+     *
+     * @return array{0:int,1:int,2:int} getimagesize result (w, h, type)
      */
-    public function assertSafeImage(UploadedFile $file): void
+    public function assertSafeImage(UploadedFile $file): array
     {
         if (! $file->isValid()) {
             throw new InvalidArgumentException('Upload gagal. File tidak valid.');
@@ -174,7 +161,6 @@ class FileUploadService
             throw new InvalidArgumentException('Nama file tidak valid.');
         }
 
-        // Normalize: only basename, no path tricks
         $base = basename(str_replace(['\\', '/'], '', $original));
         $lower = strtolower($base);
 
@@ -187,7 +173,6 @@ class FileUploadService
             throw new InvalidArgumentException('Hanya file JPG, JPEG, atau PNG yang diperbolehkan.');
         }
 
-        // Prefer guessExtension / mime from content, not client claim
         $mime = $file->getMimeType() ?: '';
         $guessExt = strtolower((string) $file->guessExtension());
 
@@ -199,7 +184,6 @@ class FileUploadService
             throw new InvalidArgumentException('Isi file bukan gambar JPG/PNG yang sah.');
         }
 
-        // Must be a real image (getimagesize reads binary header)
         $realPath = $file->getRealPath();
         $info = @getimagesize($realPath);
         if ($info === false || empty($info[0]) || empty($info[1])) {
@@ -211,22 +195,21 @@ class FileUploadService
             throw new InvalidArgumentException('Format gambar harus JPEG atau PNG.');
         }
 
-        // Cap raw upload before compress (10MB) to avoid memory bombs
         if ($file->getSize() > 10 * 1024 * 1024) {
             throw new InvalidArgumentException('Ukuran file terlalu besar (maks 10MB sebelum kompresi).');
         }
+
+        return $info;
     }
 
     protected function hasDoubleExtension(string $filenameLower): bool
     {
-        // foto.php.jpg / foto.jpg.php / archive.tar.gz.jpg
         $parts = explode('.', $filenameLower);
         if (count($parts) < 2) {
-            return true; // no extension
+            return true;
         }
 
-        // Check every segment except the last: if it looks like an extension → double ext
-        $last = array_pop($parts); // final ext
+        $last = array_pop($parts);
         if (! in_array($last, $this->allowedExt, true)) {
             return true;
         }
@@ -244,44 +227,70 @@ class FileUploadService
     }
 
     /**
-     * Re-encode & compress image to JPEG under ~500KB (cepat di shared hosting).
+     * Simpan sebagai JPEG — prioritas kecepatan di shared hosting.
+     *
+     * @param  array{0:int,1:int,2:int}  $info
      */
-    protected function compressToJpeg(string $sourcePath, string $destPath): void
+    protected function saveAsJpegFast(string $sourcePath, string $destPath, array $info): void
     {
-        if (! function_exists('imagecreatefromstring')) {
-            copy($sourcePath, $destPath);
+        if (! function_exists('imagecreatefromjpeg')) {
+            if (! @copy($sourcePath, $destPath)) {
+                throw new InvalidArgumentException('GD tidak tersedia dan copy gagal.');
+            }
 
             return;
         }
 
-        $binary = @file_get_contents($sourcePath);
-        if ($binary === false) {
-            throw new InvalidArgumentException('Tidak bisa membaca file gambar.');
+        $width = (int) $info[0];
+        $height = (int) $info[1];
+        $type = (int) $info[2];
+        $size = (int) (@filesize($sourcePath) ?: 0);
+        $max = min($this->maxDimension, 1200);
+        $needsResize = $width > $max || $height > $max;
+
+        // JPEG sudah kecil + resolusi OK → copy langsung (paling cepat)
+        if ($type === IMAGETYPE_JPEG && ! $needsResize && $size > 0 && $size <= $this->maxBytes) {
+            if (! @copy($sourcePath, $destPath)) {
+                throw new InvalidArgumentException('Gagal menyimpan gambar.');
+            }
+
+            return;
         }
 
-        $src = @imagecreatefromstring($binary);
+        $src = match ($type) {
+            IMAGETYPE_JPEG => @imagecreatefromjpeg($sourcePath),
+            IMAGETYPE_PNG => @imagecreatefrompng($sourcePath),
+            default => false,
+        };
+
         if ($src === false) {
             throw new InvalidArgumentException('Gagal membuka gambar untuk kompresi.');
         }
 
-        $width = imagesx($src);
-        $height = imagesy($src);
-
-        // Shared hosting: batasi resolusi agar tidak timeout
-        $max = min($this->maxDimension, 1100);
-        if ($width > $max || $height > $max) {
+        if ($needsResize) {
             $ratio = min($max / $width, $max / $height);
             $newW = max(1, (int) round($width * $ratio));
             $newH = max(1, (int) round($height * $ratio));
-            $resized = imagecreatetruecolor($newW, $newH);
-            $white = imagecolorallocate($resized, 255, 255, 255);
-            imagefill($resized, 0, 0, $white);
-            imagecopyresampled($resized, $src, 0, 0, 0, 0, $newW, $newH, $width, $height);
-            imagedestroy($src);
-            $src = $resized;
+
+            if (function_exists('imagescale')) {
+                $scaled = imagescale($src, $newW, $newH, IMG_BILINEAR_FIXED);
+                imagedestroy($src);
+                if ($scaled === false) {
+                    throw new InvalidArgumentException('Gagal resize gambar.');
+                }
+                $src = $scaled;
+            } else {
+                $resized = imagecreatetruecolor($newW, $newH);
+                $white = imagecolorallocate($resized, 255, 255, 255);
+                imagefill($resized, 0, 0, $white);
+                imagecopyresampled($resized, $src, 0, 0, 0, 0, $newW, $newH, $width, $height);
+                imagedestroy($src);
+                $src = $resized;
+            }
             $width = $newW;
             $height = $newH;
-        } else {
+        } elseif ($type === IMAGETYPE_PNG) {
+            // PNG → JPEG: flatten ke putih (hindari transparansi hitam)
             $canvas = imagecreatetruecolor($width, $height);
             $white = imagecolorallocate($canvas, 255, 255, 255);
             imagefill($canvas, 0, 0, $white);
@@ -290,28 +299,22 @@ class FileUploadService
             $src = $canvas;
         }
 
-        // Satu pass kualitas (hindari binary-search yang berat di shared hosting)
-        $quality = 72;
-        ob_start();
-        imagejpeg($src, null, $quality);
-        $data = ob_get_clean();
-
-        if ($data === false || $data === '') {
+        // Tulis langsung ke file (hindari buffer memori ob_*)
+        $quality = 70;
+        if (! @imagejpeg($src, $destPath, $quality)) {
             imagedestroy($src);
             throw new InvalidArgumentException('Gagal kompres gambar.');
         }
 
-        // Kalau masih terlalu besar, turunkan kualitas sekali lagi
-        if (strlen($data) > $this->maxBytes) {
-            ob_start();
-            imagejpeg($src, null, 55);
-            $data = ob_get_clean() ?: $data;
+        // Kalau masih kebesaran, satu pass kualitas lebih rendah
+        clearstatcache(true, $destPath);
+        if (is_file($destPath) && filesize($destPath) > $this->maxBytes) {
+            if (! @imagejpeg($src, $destPath, 52)) {
+                imagedestroy($src);
+                throw new InvalidArgumentException('Gagal kompres gambar.');
+            }
         }
 
         imagedestroy($src);
-
-        if (file_put_contents($destPath, $data) === false) {
-            throw new InvalidArgumentException('Gagal menyimpan gambar. Cek permission folder uploads.');
-        }
     }
 }
