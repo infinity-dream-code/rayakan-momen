@@ -20,6 +20,8 @@ Route::get('/robots.txt', [InvitationPublicController::class, 'robots'])->name('
 */
 Route::get('/SmartLoginAdmin', [AuthController::class, 'showLogin'])->name('admin.login');
 Route::post('/SmartLoginAdmin', [AuthController::class, 'login'])->name('admin.login.submit');
+Route::get('/SmartLoginAdmin/pin', [AuthController::class, 'showPin'])->name('admin.pin');
+Route::post('/SmartLoginAdmin/pin', [AuthController::class, 'verifyPin'])->name('admin.pin.submit');
 Route::post('/panel/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
 // Redirect lama → login baru

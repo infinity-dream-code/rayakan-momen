@@ -135,6 +135,86 @@ class FileUploadService
         return implode('/', $clean);
     }
 
+    /**
+     * Simpan file audio MP3 ke public/uploads/{folder}/.
+     */
+    public function storeAudioUpload(?UploadedFile $file, string $folder = 'music', ?string $basename = null): ?string
+    {
+        if (! $file) {
+            return null;
+        }
+
+        $this->assertSafeAudio($file);
+
+        $folder = $this->sanitizeFolder($folder);
+        $dir = public_path('uploads/'.$folder);
+        if (! File::isDirectory($dir)) {
+            File::makeDirectory($dir, 0755, true);
+        }
+
+        if ($basename !== null && $basename !== '') {
+            $safe = Str::slug(pathinfo($basename, PATHINFO_FILENAME), '-');
+            $safe = $safe !== '' ? $safe : 'musik';
+            $name = $safe.'-'.now()->format('YmdHis').'-'.Str::lower(Str::random(4)).'.mp3';
+        } else {
+            $name = Str::uuid().'.mp3';
+        }
+
+        $dest = $dir.DIRECTORY_SEPARATOR.$name;
+        if (! @copy($file->getRealPath(), $dest)) {
+            throw new InvalidArgumentException('Gagal menyimpan file musik.');
+        }
+
+        if (! is_file($dest) || filesize($dest) < 64) {
+            @unlink($dest);
+            throw new InvalidArgumentException('File musik tidak valid.');
+        }
+
+        return 'uploads/'.$folder.'/'.$name;
+    }
+
+    public function assertSafeAudio(UploadedFile $file): void
+    {
+        if (! $file->isValid()) {
+            throw new InvalidArgumentException('Upload musik gagal. File tidak valid.');
+        }
+
+        $original = $file->getClientOriginalName();
+        if ($original === '' || str_contains($original, "\0")) {
+            throw new InvalidArgumentException('Nama file musik tidak valid.');
+        }
+
+        $base = basename(str_replace(['\\', '/'], '', $original));
+        $lower = strtolower($base);
+        $parts = explode('.', $lower);
+        if (count($parts) !== 2 || $parts[1] !== 'mp3') {
+            throw new InvalidArgumentException('Hanya file .mp3 yang diperbolehkan (tanpa double ekstensi).');
+        }
+
+        $mime = strtolower((string) ($file->getMimeType() ?: ''));
+        $allowedMime = ['audio/mpeg', 'audio/mp3', 'audio/mpeg3', 'audio/x-mpeg-3', 'application/octet-stream'];
+        if ($mime !== '' && ! in_array($mime, $allowedMime, true)) {
+            throw new InvalidArgumentException('Tipe file ditolak. Upload MP3 asli.');
+        }
+
+        // Max 8MB
+        if ($file->getSize() > 8 * 1024 * 1024) {
+            throw new InvalidArgumentException('Ukuran musik terlalu besar (maks 8MB).');
+        }
+
+        // Header ID3 / MPEG frame sync kasar
+        $fh = @fopen($file->getRealPath(), 'rb');
+        if ($fh === false) {
+            throw new InvalidArgumentException('Tidak bisa membaca file musik.');
+        }
+        $head = fread($fh, 3) ?: '';
+        fclose($fh);
+        $ok = $head === 'ID3' || (strlen($head) >= 2 && ord($head[0]) === 0xFF && (ord($head[1]) & 0xE0) === 0xE0);
+        if (! $ok) {
+            throw new InvalidArgumentException('File bukan MP3 yang valid.');
+        }
+    }
+
     public function deletePublicPath(?string $relative): void
     {
         if (! $relative) {

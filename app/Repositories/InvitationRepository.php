@@ -414,6 +414,11 @@ class InvitationRepository
         return $this->uploads->storeUpload($file, $folder, $basename);
     }
 
+    public function storeAudioUpload($file, string $folder = 'music', ?string $basename = null): ?string
+    {
+        return $this->uploads->storeAudioUpload($file, $folder, $basename);
+    }
+
     public function storeMultipleUploads(array $files, string $folder = 'galeri'): array
     {
         return $this->uploads->storeMultipleUploads($files, $folder);
@@ -539,6 +544,11 @@ class InvitationRepository
         }
         foreach ($data['galeri'] ?? [] as $g) {
             $this->uploads->deletePublicPath($g);
+        }
+
+        $music = $data['youtube_url'] ?? null;
+        if (is_string($music) && str_starts_with($music, 'uploads/')) {
+            $this->uploads->deletePublicPath($music);
         }
 
         // Hapus folder pasangan: uploads/mempelai/{slug}/

@@ -195,6 +195,8 @@ class InvitationController extends Controller
             'kutipan' => 'nullable|string|max:800',
             'kutipan_sumber' => 'nullable|string|max:100',
             'youtube_url' => 'nullable|string|max:500',
+            'music_mp3' => 'nullable|file|max:8192',
+            'music_reset' => 'nullable|boolean',
             'maps_url' => 'nullable|string|max:1000',
             'maps_url_resepsi' => 'nullable|string|max:1000',
             'galeri.*' => 'nullable|file|mimes:jpg,jpeg,png|max:10240',
@@ -292,6 +294,8 @@ class InvitationController extends Controller
             $validated['foto_wanita'],
             $validated['foto_pria'],
             $validated['foto_anak'],
+            $validated['music_mp3'],
+            $validated['music_reset'],
             $validated['waktu_akad_mulai'],
             $validated['waktu_akad_selesai'],
             $validated['waktu_resepsi_mulai'],
@@ -382,12 +386,16 @@ class InvitationController extends Controller
         $validated['maps_url'] = $this->normalizeMapsUrl($request->input('maps_url'));
         $validated['maps_url_resepsi'] = $this->normalizeMapsUrl($request->input('maps_url_resepsi'));
 
-        if (! empty($validated['youtube_url']) && ! filter_var($validated['youtube_url'], FILTER_VALIDATE_URL)) {
-            $validated['youtube_url'] = null;
+        // Kolom youtube_url sekarang menyimpan path MP3 lokal; buang URL lama / nilai aneh dari request
+        if (! empty($validated['youtube_url'])) {
+            $yu = (string) $validated['youtube_url'];
+            if (preg_match('#^https?://#i', $yu) || ! str_starts_with($yu, 'uploads/')) {
+                $validated['youtube_url'] = null;
+            }
         }
 
         try {
-            // uploads/mempelai/{slug}/foto-mempelai|galeri|qris/
+            // uploads/mempelai/{slug}/foto-mempelai|galeri|qris|music/
             $slugKey = Str::slug((string) ($validated['slug'] ?? ($existing['slug'] ?? 'undangan')), '-');
             if ($slugKey === '') {
                 $slugKey = 'undangan';
@@ -395,6 +403,7 @@ class InvitationController extends Controller
             $dirFoto = 'mempelai/'.$slugKey.'/foto-mempelai';
             $dirGaleri = 'mempelai/'.$slugKey.'/galeri';
             $dirQris = 'mempelai/'.$slugKey.'/qris';
+            $dirMusic = 'mempelai/'.$slugKey.'/music';
 
             $fotoWanita = $request->hasFile('foto_wanita')
                 ? $this->storage->storeUpload($request->file('foto_wanita'), $dirFoto, 'foto-wanita')
@@ -445,9 +454,30 @@ class InvitationController extends Controller
                 $newGaleri = $this->storage->storeMultipleUploads($galeriFiles, $dirGaleri);
             }
             $validated['galeri'] = array_values(array_merge($existing['galeri'] ?? [], $newGaleri));
+
+            // Musik MP3 per undangan → uploads/mempelai/{slug}/music/
+            $existingMusic = $existing['youtube_url'] ?? null;
+            if (is_string($existingMusic) && preg_match('#^https?://#i', $existingMusic)) {
+                $existingMusic = null; // buang URL YouTube lama
+            }
+
+            if ($request->boolean('music_reset')) {
+                $this->storage->deletePublicPath($existingMusic);
+                $validated['youtube_url'] = null;
+            } elseif ($request->hasFile('music_mp3')) {
+                $musicPath = $this->storage->storeAudioUpload($request->file('music_mp3'), $dirMusic, 'musik');
+                if ($musicPath) {
+                    $this->storage->deletePublicPath($existingMusic);
+                    $validated['youtube_url'] = $musicPath;
+                } else {
+                    $validated['youtube_url'] = $existingMusic;
+                }
+            } else {
+                $validated['youtube_url'] = $existingMusic;
+            }
         } catch (\InvalidArgumentException $e) {
             throw \Illuminate\Validation\ValidationException::withMessages([
-                'foto_wanita' => $e->getMessage(),
+                'music_mp3' => $e->getMessage(),
             ]);
         }
         $validated['cover_image'] = null;

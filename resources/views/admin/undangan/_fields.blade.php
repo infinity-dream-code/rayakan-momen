@@ -330,9 +330,24 @@
 @endif
 
 @if ($has('youtube'))
+@php
+    $musicPath = old('youtube_url', $u['youtube_url'] ?? '');
+    $isLocalMusic = is_string($musicPath) && $musicPath !== '' && ! preg_match('#^https?://#i', $musicPath);
+@endphp
 <div class="card p-5 sm:p-6 field-group" data-group="youtube">
-    <h3 class="font-display text-lg mb-4">Musik / YouTube</h3>
-    <input type="url" name="youtube_url" value="{{ old('youtube_url', $u['youtube_url'] ?? '') }}" class="form-input" placeholder="https://www.youtube.com/watch?v=...">
+    <h3 class="font-display text-lg mb-4">Musik Undangan (MP3)</h3>
+    <p class="text-xs text-gray-500 mb-3">Upload lagu .mp3 (maks 8MB). Kosongkan = pakai musik default template.</p>
+    <input type="file" name="music_mp3" accept=".mp3,audio/mpeg" class="form-input">
+    @if ($isLocalMusic)
+        <div class="mt-3 flex flex-wrap items-center gap-3">
+            <audio controls preload="none" class="max-w-full" src="{{ asset($musicPath) }}?v={{ @filemtime(public_path($musicPath)) ?: time() }}"></audio>
+            <label class="text-sm text-gray-600 flex items-center gap-2">
+                <input type="checkbox" name="music_reset" value="1" class="rounded border-gray-300">
+                Hapus &amp; pakai musik default template
+            </label>
+            <p class="text-xs text-gray-400 break-all w-full">{{ $musicPath }}</p>
+        </div>
+    @endif
 </div>
 @endif
 

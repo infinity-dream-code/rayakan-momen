@@ -69,10 +69,18 @@ class InvitationPublicController extends Controller
         abort_if(! $undangan, 404);
 
         $data = $request->validate([
-            'nama' => 'required|string|max:100',
-            'ucapan' => 'required|string|max:500',
+            'nama' => ['required', 'string', 'max:100', 'regex:/^[^<>\'"]+$/u'],
+            'ucapan' => ['required', 'string', 'max:60', 'regex:/^[^<>\'"]+$/u'],
             'kehadiran' => 'required|in:hadir,tidak_hadir',
+        ], [
+            'nama.regex' => 'Nama tidak boleh berisi karakter < > \' "',
+            'ucapan.max' => 'Ucapan maksimal 60 karakter.',
+            'ucapan.regex' => 'Ucapan tidak boleh berisi karakter < > \' "',
         ]);
+
+        // Extra sanitize (prepared statement sudah aman; ini cegah XSS di tampilan)
+        $data['nama'] = preg_replace('/[<>\'"]+/u', '', trim($data['nama'])) ?? '';
+        $data['ucapan'] = preg_replace('/[<>\'"]+/u', '', trim($data['ucapan'])) ?? '';
 
         $this->invitations->addUcapan($slug, $data);
 

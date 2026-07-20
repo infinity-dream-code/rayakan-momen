@@ -46,6 +46,14 @@ document.addEventListener('DOMContentLoaded', function () {
         list.innerHTML = '';
     }
 
+    var FORBIDDEN_CHARS = /[<>'"]/;
+    var UCAPAN_MAX = 60;
+
+    var fmsgEl = document.getElementById('fmsg');
+    if (fmsgEl) {
+        fmsgEl.setAttribute('maxlength', String(UCAPAN_MAX));
+    }
+
     if (form) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -56,6 +64,14 @@ document.addEventListener('DOMContentLoaded', function () {
             var ucapan = ((document.getElementById('fmsg') || {}).value || '').trim();
             if (!nama || !ucapan) {
                 alert('Nama dan ucapan wajib diisi.');
+                return;
+            }
+            if (ucapan.length > UCAPAN_MAX) {
+                alert('Ucapan maksimal ' + UCAPAN_MAX + ' karakter.');
+                return;
+            }
+            if (FORBIDDEN_CHARS.test(nama) || FORBIDDEN_CHARS.test(ucapan)) {
+                alert('Nama/ucapan tidak boleh berisi karakter < > \' "');
                 return;
             }
 
@@ -89,7 +105,16 @@ document.addEventListener('DOMContentLoaded', function () {
                         throw new Error('Sesi kedaluwarsa. Refresh halaman lalu coba lagi.');
                     }
                     if (res.status === 422) {
-                        throw new Error('Data ucapan tidak valid. Cek nama & isi ucapan.');
+                        return res.json().then(function (payload) {
+                            var msg = 'Data ucapan tidak valid. Cek nama & isi ucapan.';
+                            if (payload && payload.errors) {
+                                var first = Object.values(payload.errors)[0];
+                                if (first && first[0]) msg = first[0];
+                            } else if (payload && payload.message) {
+                                msg = payload.message;
+                            }
+                            throw new Error(msg);
+                        });
                     }
                     if (!res.ok) throw new Error('Gagal mengirim ucapan (kode ' + res.status + ').');
                     return res.json().catch(function () { return {}; });

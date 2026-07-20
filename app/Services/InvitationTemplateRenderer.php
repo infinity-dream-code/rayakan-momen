@@ -22,6 +22,8 @@ class InvitationTemplateRenderer
                 $html = $this->replaceQuote($html, $undangan);
                 $html = $this->replacePhotos($html, $tema, $undangan);
                 $html = $this->injectCoupleConfig($html, $tema, $undangan);
+                $html = $this->injectUltahData($html, $tema, $undangan);
+                $html = $this->replaceMusic($html, $undangan);
                 $html = $this->rewriteAssetUrls($html, $tema);
                 $html = $this->replaceEventDetails($html, $undangan);
                 $html = $this->replaceMaps($html, $undangan);
@@ -70,7 +72,10 @@ class InvitationTemplateRenderer
             'elegan' => 'template_undangan/template_wedding/template 1/index.html',
             'classic' => 'template_undangan/template_wedding/template 2/index.html',
             'langit_malam' => 'template_undangan/template_wedding/template 3/index.html',
+            'adat_jawa' => 'template_undangan/template_wedding/wedding_adat_jawa/template 4/index.html',
             'couple_surat' => 'template_undangan/template couple/index.html',
+            'ultah_candyland' => 'template_undangan/template_ultah/template ultah 1/index.html',
+            'ultah_bintang' => 'template_undangan/template_ultah/template ultah 2/index.blade.php',
         ];
 
         if (isset($sourceMap[$tema])) {
@@ -209,6 +214,19 @@ class InvitationTemplateRenderer
                 ['Alvaro', $pria],
                 ['KANAYA', mb_strtoupper($wanita)],
                 ['ALVARO', mb_strtoupper($pria)],
+            ],
+            'adat_jawa' => [
+                ['Shinta Laras Putri, S.Pd.', $wanitaL],
+                ['Rama Khrisna Putra, S.T.', $priaL],
+                ['SHINTA LARAS PUTRI, S.PD.', mb_strtoupper($wanitaL)],
+                ['RAMA KHRISNA PUTRA, S.T.', mb_strtoupper($priaL)],
+                ['Laras &amp; Khrisna', $wanita.' & '.$pria],
+                ['Laras & Khrisna', $wanita.' & '.$pria],
+                ['#LarasKhrisna', '#'.preg_replace('/\s+/', '', $wanita.$pria)],
+                ['Laras', $wanita],
+                ['Khrisna', $pria],
+                ['LARAS', mb_strtoupper($wanita)],
+                ['KHRISNA', mb_strtoupper($pria)],
             ],
             default => [
                 ['NICO WARDHANA', mb_strtoupper($priaL)],
@@ -389,6 +407,10 @@ class InvitationTemplateRenderer
                 'wanita' => ['photo-1544005313-94ddf0286df2'],
                 'pria' => ['photo-1500648767791-00dcc994a43e'],
             ],
+            'adat_jawa' => [
+                'wanita' => ['Ruliff-Refina-CPW'],
+                'pria' => ['Ruliff-Refina-CPP'],
+            ],
         ];
 
         $map = $markers[$tema] ?? $markers['elegan'];
@@ -530,6 +552,17 @@ class InvitationTemplateRenderer
                 1
             ) ?? $html;
 
+            // Adat Jawa cover date: 22 · 11 · 2026
+            $coverDot = $this->formatDateCoverDots($mainDate);
+            if ($coverDot !== '') {
+                $html = preg_replace(
+                    '/(<p class="cover-date"[^>]*>)([\s\S]*?)(<\/p>)/i',
+                    '$1'.e($coverDot).'$3',
+                    $html,
+                    1
+                ) ?? $html;
+            }
+
             $html = preg_replace(
                 '/(<p class="footer-date"[^>]*>)([\s\S]*?)(<\/p>)/i',
                 '$1'.e($footer).'$3',
@@ -638,6 +671,15 @@ class InvitationTemplateRenderer
             return \Illuminate\Support\Carbon::parse($date)->locale('id')->translatedFormat('l · d F Y');
         } catch (\Throwable $e) {
             return (string) $date;
+        }
+    }
+
+    protected function formatDateCoverDots(?string $date): string
+    {
+        try {
+            return \Illuminate\Support\Carbon::parse($date)->format('d · m · Y');
+        } catch (\Throwable $e) {
+            return '';
         }
     }
 
@@ -806,6 +848,28 @@ HTML;
             ) ?? $html;
         }
 
+        // Adat Jawa (template4): .story-rail
+        if (str_contains($html, 'class="story-rail"')) {
+            $chapters = '';
+            foreach ($cerita as $c) {
+                $tahun = e(trim((string) ($c['tahun'] ?? '')));
+                $judul = e(trim((string) ($c['judul'] ?? '')));
+                $desc = e(trim((string) ($c['deskripsi'] ?? '')));
+                $chapters .= '<article class="story-chapter reveal">'
+                    .'<span class="chapter-year">'.$tahun.'</span>'
+                    .'<h3>'.$judul.'</h3>'
+                    .'<p>'.$desc.'</p>'
+                    .'</article>';
+            }
+
+            $html = preg_replace(
+                '/(<div class="story-rail"[^>]*>)([\s\S]*?)(<\/div>\s*<\/div>\s*<\/section>)/i',
+                '$1'.$chapters.'$3',
+                $html,
+                1
+            ) ?? $html;
+        }
+
         return $html;
     }
 
@@ -897,6 +961,34 @@ HTML;
                 $html,
                 1
             ) ?? $html;
+
+            // Sync lightbox JS array
+            $jsItems = [];
+            foreach ($urls as $i => $url) {
+                $jsItems[] = '{ src: '.json_encode($url).', alt: "Foto '.($i + 1).'" }';
+            }
+            $html = preg_replace(
+                '/const galleryItems = \[[\s\S]*?\];/',
+                'const galleryItems = ['.implode(',', $jsItems).'];',
+                $html,
+                1
+            ) ?? $html;
+        }
+
+        // Adat Jawa (template4): .gallery-grid
+        if (str_contains($html, 'class="gallery-grid"')) {
+            $items = '';
+            foreach ($urls as $i => $url) {
+                $items .= '<button type="button" class="gal-item" data-gal="'.$i.'" aria-label="Foto '.($i + 1).'">'
+                    .'<img src="'.e($url).'" alt="" loading="lazy">'
+                    .'</button>';
+            }
+            $html = preg_replace(
+                '/(<div class="gallery-grid"[^>]*>)([\s\S]*?)(<\/div>\s*<\/section>)/i',
+                '$1'.$items.'$3',
+                $html,
+                1
+            ) ?? $html;
         }
 
         return $html;
@@ -982,6 +1074,365 @@ HTML;
     }
 
     /**
+     * Isi data admin ke 2 template ulang tahun (Candyland + Pesta Bintang).
+     */
+    protected function injectUltahData(string $html, string $tema, array $u): string
+    {
+        if (! in_array($tema, ['ultah_candyland', 'ultah_bintang'], true)) {
+            return $html;
+        }
+
+        $nama = trim((string) (($u['nama_anak'] ?? '') ?: ($u['nama_wanita'] ?? '')));
+        if ($nama === '') {
+            $nama = $tema === 'ultah_bintang' ? 'Keiko' : 'Kirana';
+        }
+
+        $usiaRaw = trim((string) ($u['usia'] ?? ($u['nama_pria'] ?? '')));
+        $usiaNum = (int) preg_replace('/\D+/', '', $usiaRaw);
+        if ($usiaNum <= 0) {
+            $usiaNum = $tema === 'ultah_bintang' ? 7 : 5;
+        }
+
+        $demoName = $tema === 'ultah_bintang' ? 'Keiko' : 'Kirana';
+        $demoAge = $tema === 'ultah_bintang' ? 7 : 5;
+
+        // Ganti nama demo (urutan: panjang dulu)
+        $html = str_replace(
+            [$demoName, mb_strtoupper($demoName)],
+            [$nama, mb_strtoupper($nama)],
+            $html
+        );
+
+        // Usia: ke-5 / ke-7, "5 tahun", "udahan 5 tahun"
+        $html = preg_replace('/\bke-'.$demoAge.'\b/iu', 'ke-'.$usiaNum, $html) ?? $html;
+        $html = preg_replace('/\b'.$demoAge.'\s*tahun\b/iu', $usiaNum.' tahun', $html) ?? $html;
+        $html = preg_replace('/\budah\s+'.$demoAge.'\s+tahun\b/iu', 'udah '.$usiaNum.' tahun', $html) ?? $html;
+
+        $tanggal = $u['tanggal_acara'] ?? $u['tanggal_akad'] ?? $u['tanggal_spesial'] ?? null;
+        $waktu = trim((string) ($u['waktu_acara'] ?? $u['waktu_akad'] ?? ''));
+        $tempat = trim((string) (($u['tempat_acara'] ?? '') ?: ($u['tempat_akad'] ?? '')));
+        $alamat = trim((string) (($u['alamat_acara'] ?? '') ?: ($u['alamat_akad'] ?? '')));
+        $lokasi = trim($tempat.($alamat !== '' && $alamat !== $tempat ? ', '.$alamat : ''));
+        $maps = trim((string) ($u['maps_url'] ?? ''));
+        $kutipan = trim((string) ($u['kutipan'] ?? ''));
+        $dress = trim((string) ($u['dress_code'] ?? ''));
+
+        $ayah = trim((string) ($u['ayah_host'] ?? ($u['ayah_pria'] ?? '')));
+        $ibu = trim((string) ($u['ibu_host'] ?? ($u['ibu_pria'] ?? '')));
+        $ortu = '';
+        if ($ayah !== '' || $ibu !== '') {
+            $ortu = trim(
+                ($ayah !== '' ? 'Bapak '.$ayah : '').
+                ($ayah !== '' && $ibu !== '' ? ' & ' : '').
+                ($ibu !== '' ? 'Ibu '.$ibu : '')
+            );
+        }
+
+        $fotoAnak = null;
+        foreach (['foto_anak', 'foto_wanita', 'foto_pria'] as $key) {
+            if (! empty($u[$key]) && $this->mediaFileExists($u[$key])) {
+                $fotoAnak = $this->mediaUrl($u[$key]);
+                break;
+            }
+        }
+
+        $galeriUrls = [];
+        foreach ($u['galeri'] ?? [] as $g) {
+            if ($this->mediaFileExists($g) && ($url = $this->mediaUrl($g))) {
+                $galeriUrls[] = $url;
+            }
+        }
+
+        // Tanggal & countdown
+        if (filled($tanggal)) {
+            try {
+                $dt = \Carbon\Carbon::parse($tanggal)->locale('id');
+                $dateLabel = $dt->translatedFormat('l, j F Y');
+                $timeStart = '10:00';
+                if (preg_match('/(\d{1,2}[:.]\d{2})/', $waktu, $m)) {
+                    $timeStart = str_replace('.', ':', $m[1]);
+                }
+                if (strlen($timeStart) === 4) {
+                    $timeStart = '0'.$timeStart;
+                }
+                $isoLocal = $dt->format('Y-m-d').'T'.$timeStart.':00+07:00';
+
+                if ($tema === 'ultah_candyland') {
+                    $html = preg_replace(
+                        '/(<h3 class="font-display font-bold text-xl mb-1">Hari &amp; Tanggal<\/h3>\s*<p>)[^<]+(<\/p>)/iu',
+                        '$1'.e($dateLabel).'$2',
+                        $html,
+                        1
+                    ) ?? $html;
+                    if ($waktu !== '') {
+                        $html = preg_replace(
+                            '/(<h3 class="font-display font-bold text-xl mb-1">Waktu<\/h3>\s*<p>)[^<]+(<\/p>)/iu',
+                            '$1'.e($waktu).'$2',
+                            $html,
+                            1
+                        ) ?? $html;
+                    }
+                    if ($lokasi !== '') {
+                        $locHtml = e($tempat !== '' ? $tempat : $lokasi);
+                        if ($alamat !== '' && $alamat !== $tempat) {
+                            $locHtml .= '<br>'.e($alamat);
+                        }
+                        $html = preg_replace(
+                            '/(<h3 class="font-display font-bold text-xl mb-1">Lokasi<\/h3>\s*<p>)[\s\S]*?(<\/p>)/iu',
+                            '$1'.$locHtml.'$2',
+                            $html,
+                            1
+                        ) ?? $html;
+                    }
+                    $html = preg_replace(
+                        "/const target = new Date\('2026-08-09T10:00:00\+07:00'\)\.getTime\(\);/",
+                        "const target = new Date('".$isoLocal."').getTime();",
+                        $html,
+                        1
+                    ) ?? $html;
+                }
+
+                if ($tema === 'ultah_bintang') {
+                    $html = preg_replace(
+                        '/(Menuju Hari Spesialnya[\s\S]*?<h3[^>]*>)[\s\S]*?(<\/h3>)/iu',
+                        '$1<i class="fa-solid fa-calendar-days mr-1"></i> '.e($dateLabel).'$2',
+                        $html,
+                        1
+                    ) ?? $html;
+                    $html = preg_replace(
+                        '/(<p class="font-display font-600 text-lg">)Sabtu, 15 Agustus 2026(<\/p>)/u',
+                        '$1'.e($dateLabel).'$2',
+                        $html,
+                        1
+                    ) ?? $html;
+                    $html = preg_replace(
+                        "/const target = new Date\('2026-08-15T10:00:00\+07:00'\)\.getTime\(\);/",
+                        "const target = new Date('".$isoLocal."').getTime();",
+                        $html,
+                        1
+                    ) ?? $html;
+                }
+            } catch (\Throwable) {
+                // ignore bad date
+            }
+        }
+
+        if ($maps !== '') {
+            $html = preg_replace(
+                '/(<a\b[^>]*href=")https?:\/\/maps\.google\.com[^"]*(")/i',
+                '$1'.e($maps).'$2',
+                $html
+            ) ?? $html;
+            $html = preg_replace(
+                '/(<a\b[^>]*href=")https?:\/\/(?:www\.)?google\.com\/maps[^"]*(")/i',
+                '$1'.e($maps).'$2',
+                $html
+            ) ?? $html;
+        }
+
+        if ($ortu !== '') {
+            $html = preg_replace(
+                '/Dengan penuh cinta,<br>Bapak Andi &amp; Ibu Sinta Prananta/u',
+                'Dengan penuh cinta,<br>'.e($ortu),
+                $html,
+                1
+            ) ?? $html;
+        }
+
+        if ($dress !== '' && $tema === 'ultah_candyland') {
+            $html = preg_replace(
+                '/(Boleh banget! Kirana senang kalau teman-temannya datang dengan)[^<]+/u',
+                'Boleh banget! '.e($nama).' senang kalau teman-temannya datang dengan '.e($dress).'.',
+                $html,
+                1
+            ) ?? $html;
+            // nama already replaced above so pattern might be nama not Kirana
+            $html = preg_replace(
+                '/(Boleh banget! '.preg_quote($nama, '/').' senang kalau teman-temannya datang dengan)[^<]+/u',
+                'Boleh banget! '.e($nama).' senang kalau teman-temannya datang dengan '.e($dress).'.',
+                $html,
+                1
+            ) ?? $html;
+        }
+
+        if ($kutipan !== '' && $tema === 'ultah_bintang') {
+            $html = preg_replace(
+                '/(<p class="font-script text-2xl text-\[var\(--pink-deeper\)\] leading-relaxed">)[\s\S]*?(<\/p>)/u',
+                '$1"'.e($kutipan).'"$2',
+                $html,
+                1
+            ) ?? $html;
+        }
+
+        // Foto anak (hero)
+        if ($fotoAnak) {
+            if ($tema === 'ultah_candyland') {
+                $html = preg_replace(
+                    '/(<img src=")assets\/images\/photo-1503454537195-1dcabb73ffb9_4759712\.jpg(")/i',
+                    '$1'.e($fotoAnak).'$2',
+                    $html,
+                    1
+                ) ?? $html;
+            }
+            if ($tema === 'ultah_bintang') {
+                $html = preg_replace(
+                    '/(<img src=")assets\/images\/photo-1717205964281-ab2bd111dcb2_8989027\.jpg(")/i',
+                    '$1'.e($fotoAnak).'$2',
+                    $html,
+                    1
+                ) ?? $html;
+            }
+        }
+
+        // Galeri Candyland (HTML grid)
+        if ($tema === 'ultah_candyland' && $galeriUrls !== []) {
+            $items = '';
+            foreach ($galeriUrls as $i => $url) {
+                $items .= '<div class="gallery-item reveal" data-i="'.$i.'"><div class="shot"><img src="'.e($url).'" alt="" loading="lazy"></div><p class="cap">Momen '.($i + 1).'</p></div>';
+            }
+            $html = preg_replace(
+                '/(<div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-5 md:gap-7" id="gallery">)[\s\S]*?(<\/div>\s*<p class="text-center text-sm)/i',
+                '$1'.$items.'$2',
+                $html,
+                1
+            ) ?? $html;
+        }
+
+        // Galeri + timeline Bintang (JS arrays)
+        if ($tema === 'ultah_bintang') {
+            if ($galeriUrls !== []) {
+                $film = [];
+                foreach ($galeriUrls as $i => $url) {
+                    $film[] = ['src' => $url, 'cap' => 'Momen '.($i + 1)];
+                }
+                $jsonFilm = json_encode($film, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $html = preg_replace(
+                    '/const filmPhotos = \[[\s\S]*?\];/',
+                    'const filmPhotos = '.$jsonFilm.';',
+                    $html,
+                    1
+                ) ?? $html;
+                $html = preg_replace(
+                    '/const gridPhotos = \[[\s\S]*?\];/',
+                    'const gridPhotos = '.$jsonFilm.';',
+                    $html,
+                    1
+                ) ?? $html;
+            }
+
+            $cerita = array_values(array_filter($u['cerita'] ?? [], fn ($c) => filled($c['tahun'] ?? null) || filled($c['judul'] ?? null) || filled($c['deskripsi'] ?? null)));
+            if ($cerita !== []) {
+                $timeline = [];
+                foreach ($cerita as $c) {
+                    $age = (int) preg_replace('/\D+/', '', (string) ($c['tahun'] ?? ''));
+                    $text = trim((string) (($c['deskripsi'] ?? '') ?: ($c['judul'] ?? '')));
+                    if ($text === '') {
+                        continue;
+                    }
+                    $timeline[] = [
+                        'age' => $age > 0 ? $age : count($timeline) + 1,
+                        'text' => $text,
+                        'icon' => '✨',
+                    ];
+                }
+                if ($timeline !== []) {
+                    $jsonTl = json_encode($timeline, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    $html = preg_replace(
+                        '/const timelineData = \[[\s\S]*?\];/',
+                        'const timelineData = '.$jsonTl.';',
+                        $html,
+                        1
+                    ) ?? $html;
+                }
+            }
+        }
+
+        // Susunan acara Candyland
+        if ($tema === 'ultah_candyland') {
+            $jadwal = array_values(array_filter($u['jadwal'] ?? [], fn ($j) => filled($j['jam'] ?? null) || filled($j['judul'] ?? null)));
+            if ($jadwal !== []) {
+                $icons = ['fa-door-open', 'fa-gamepad', 'fa-cake-candles', 'fa-utensils', 'fa-gift', 'fa-heart'];
+                $items = '';
+                foreach ($jadwal as $i => $j) {
+                    $icon = $icons[$i % count($icons)];
+                    $title = trim(($j['jam'] ?? '').' — '.($j['judul'] ?? ''));
+                    $desc = trim((string) ($j['deskripsi'] ?? ''));
+                    $items .= '<div class="timeline-item"><div class="timeline-dot"><i class="fa-solid '.$icon.'"></i></div>'
+                        .'<p class="font-bold font-display">'.e($title).'</p>'
+                        .($desc !== '' ? '<p class="text-sm opacity-80">'.e($desc).'</p>' : '')
+                        .'</div>';
+                }
+                $html = preg_replace(
+                    '/(<div class="timeline">)[\s\S]*?(<\/div>\s*<\/div>\s*<!-- cake -->)/i',
+                    '$1'.$items.'</div></div><!-- cake -->',
+                    $html,
+                    1
+                ) ?? $html;
+            }
+        }
+
+        $title = e($nama.' Ulang Tahun ke-'.$usiaNum.'!');
+        $html = preg_replace('/<title>.*?<\/title>/is', '<title>'.$title.'</title>', $html, 1) ?? $html;
+
+        return $html;
+    }
+
+    /**
+     * Path musik custom dari admin (disimpan di kolom youtube_url).
+     * Null = pakai default template.
+     */
+    protected function resolveMusicUrl(array $u): ?string
+    {
+        $raw = trim((string) ($u['youtube_url'] ?? ''));
+        if ($raw === '' || preg_match('#^https?://#i', $raw)) {
+            return null;
+        }
+
+        if (! $this->mediaFileExists($raw)) {
+            return null;
+        }
+
+        return $this->mediaUrl($raw);
+    }
+
+    /**
+     * Ganti sumber <audio> template dengan MP3 upload (kalau ada).
+     */
+    protected function replaceMusic(string $html, array $u): string
+    {
+        $url = $this->resolveMusicUrl($u);
+        if ($url === null) {
+            return $html;
+        }
+
+        $safe = e($url);
+
+        // <source src="assets/audio/....mp3">
+        $html = preg_replace(
+            '/(<source\b[^>]*\bsrc=")[^"]*assets\/audio\/[^"]+(\.mp3[^"]*)(")/i',
+            '$1'.$safe.'$3',
+            $html
+        ) ?? $html;
+
+        // <audio ... src="assets/audio/....mp3">
+        $html = preg_replace(
+            '/(<audio\b[^>]*\bsrc=")[^"]*assets\/audio\/[^"]+(\.mp3[^"]*)(")/i',
+            '$1'.$safe.'$3',
+            $html
+        ) ?? $html;
+
+        // CONFIG.musikUrl (couple) — absolute atau relatif
+        $html = preg_replace(
+            '/("musikUrl"\s*:\s*")(?:[^"\\\\]|\\\\.)*(")/',
+            '$1'.str_replace(['\\', '"'], ['\\\\', '\\"'], $url).'$2',
+            $html,
+            1
+        ) ?? $html;
+
+        return $html;
+    }
+
+    /**
      * Isi CONFIG JS di template Couple (Surat Spesial) dari data admin.
      */
     protected function injectCoupleConfig(string $html, string $tema, array $u): string
@@ -1054,13 +1505,10 @@ HTML;
             ];
         }
 
-        // YouTube tidak bisa di <audio>; pakai file lokal template kalau ada
-        $musik = '';
-        $localMusik = public_path('templates/couple_surat/assets/audio/Donne-Maula-Bercinta-Lewat-Kata.mp3');
-        if (is_file($localMusik)) {
-            $musik = asset('templates/couple_surat/assets/audio/Donne-Maula-Bercinta-Lewat-Kata.mp3');
-        } elseif (filled($u['youtube_url'] ?? null) && preg_match('#\.(mp3|m4a|ogg)(\?|$)#i', (string) $u['youtube_url'])) {
-            $musik = (string) $u['youtube_url'];
+        // Musik custom (MP3 upload) atau default template
+        $musik = $this->resolveMusicUrl($u);
+        if ($musik === null) {
+            $musik = 'assets/audio/Donne-Maula-Bercinta-Lewat-Kata.mp3';
         }
 
         $janji = $pesan !== '' ? $pesan : 'Aku janji akan jadi rumah yang hangat buatmu.';
@@ -1147,8 +1595,8 @@ HTML;
             'ucapanUrl' => url('/'.($u['slug'] ?? '').'/ucapan'),
             'csrf' => csrf_token(),
             'wishes' => collect($u['ucapan_tersimpan'] ?? [])->map(fn ($w) => [
-                'nama' => $w['nama'] ?? '',
-                'ucapan' => $w['ucapan'] ?? '',
+                'nama' => preg_replace('/[<>\'"]+/u', '', (string) ($w['nama'] ?? '')) ?? '',
+                'ucapan' => mb_substr(preg_replace('/[<>\'"]+/u', '', (string) ($w['ucapan'] ?? '')) ?? '', 0, 60),
                 'kehadiran' => ($w['kehadiran'] ?? '') === 'hadir' ? 'Hadir' : 'Tidak Hadir',
             ])->values()->all(),
             'qris' => $this->mediaUrl($u['qris_image'] ?? null),
