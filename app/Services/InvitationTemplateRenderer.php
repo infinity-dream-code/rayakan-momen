@@ -964,6 +964,15 @@ HTML;
             $html = str_ireplace('</footer>', $credit."\n</footer>", $html);
         }
 
+        // Template 1: CSS #rsvp tapi HTML id="ucapan" → section ucapan ikut warna footer
+        if (! str_contains($html, 'rm-ucapan-bg') && stripos($html, '</head>') !== false) {
+            $html = str_ireplace(
+                '</head>',
+                '<style id="rm-ucapan-bg">#ucapan,#rsvp{background:var(--ivory,#FBF4E8);}</style>'."\n</head>",
+                $html
+            );
+        }
+
         return $html;
     }
 
