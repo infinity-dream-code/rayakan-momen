@@ -1,15 +1,15 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InvitationController;
 use App\Http\Controllers\InvitationPublicController;
+use App\Http\Controllers\LandingController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('landing');
-})->name('landing');
+Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 Route::get('/sitemap.xml', [InvitationPublicController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt', [InvitationPublicController::class, 'robots'])->name('robots');
@@ -29,6 +29,7 @@ Route::redirect('/panel/login', '/SmartLoginAdmin', 301);
 
 Route::prefix('panel')->name('admin.')->middleware('demo.admin')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::match(['put', 'post'], '/campaign', [CampaignController::class, 'update'])->name('campaign.update');
     Route::get('/katalog', [CatalogController::class, 'index'])->name('katalog.index');
     Route::match(['put', 'post'], '/katalog', [CatalogController::class, 'update'])->name('katalog.update');
     Route::get('/undangan', [InvitationController::class, 'index'])->name('undangan.index');

@@ -71,6 +71,8 @@
 
     @include('partials.footer')
 
+    @include('partials.campaign-popup')
+
     <script src="{{ asset('js/app.js') }}?v={{ $appJsVer }}" defer></script>
 </body>
 </html>

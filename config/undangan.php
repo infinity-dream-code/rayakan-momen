@@ -50,6 +50,8 @@ return [
     */
     'cloudinary' => [
         'cloud' => env('CLOUDINARY_CLOUD', 'dxzgu46tz'),
+        'api_key' => env('CLOUDINARY_API_KEY'),
+        'api_secret' => env('CLOUDINARY_API_SECRET'),
         'images' => [
             'hero_wedding' => 'v1784457031/hero-wedding_vacgsf.jpg',
             'hero_couple' => 'v1784457040/hero-couple_dgocbe.jpg',
