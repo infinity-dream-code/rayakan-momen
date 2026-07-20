@@ -18,6 +18,13 @@ class CampaignController extends Controller
     ) {
     }
 
+    public function index()
+    {
+        return view('admin.campaign.index', [
+            'campaign' => $this->campaigns->get(),
+        ]);
+    }
+
     public function update(Request $request)
     {
         $request->validate([
@@ -67,7 +74,7 @@ class CampaignController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.dashboard')
+            ->route('admin.campaign.index')
             ->with('success', $aktif ? 'Campaign aktif dan akan tampil di landing page.' : 'Campaign disimpan (nonaktif).');
     }
 }

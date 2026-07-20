@@ -29,6 +29,7 @@ Route::redirect('/panel/login', '/SmartLoginAdmin', 301);
 
 Route::prefix('panel')->name('admin.')->middleware('demo.admin')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/campaign', [CampaignController::class, 'index'])->name('campaign.index');
     Route::match(['put', 'post'], '/campaign', [CampaignController::class, 'update'])->name('campaign.update');
     Route::get('/katalog', [CatalogController::class, 'index'])->name('katalog.index');
     Route::match(['put', 'post'], '/katalog', [CatalogController::class, 'update'])->name('katalog.update');
