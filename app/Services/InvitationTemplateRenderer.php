@@ -941,40 +941,36 @@ HTML;
     }
 
     /**
-     * Footer credit Rayakan Momen.
+     * Footer credit Rayakan Momen — gaya sama seperti template asli.
      */
     protected function injectCopyright(string $html): string
     {
-        $year = date('Y');
-        $credit = '<p class="rm-copyright" style="margin-top:20px;opacity:0.55;font-family:Jost,sans-serif;font-size:0.68rem;letter-spacing:1px;">'
-            .'Copyright &copy; '.$year
-            .' <a href="https://rayakanmomen.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">rayakanmomen.com</a>'
-            .'</p>';
+        $credit = '<p style="margin-top:20px;opacity:0.5;">Copyright &copy; rayakanmomen.com</p>';
 
-        // Ganti teks demo "Dibuat dengan ❤ — 2026"
+        // Ganti teks demo / copyright lama
         $html = preg_replace(
-            '/<p[^>]*>\s*Dibuat dengan[\s\S]*?<\/p>/iu',
+            '/<p[^>]*>\s*(?:Dibuat dengan|Copyright)[\s\S]*?<\/p>/iu',
             $credit,
             $html,
             1
         ) ?? $html;
 
-        // Kalau belum ada, sisipkan sebelum penutup footer
-        if (! str_contains($html, 'rm-copyright') && stripos($html, '</footer>') !== false) {
+        if (! str_contains($html, 'rayakanmomen.com') && stripos($html, '</footer>') !== false) {
             $html = str_ireplace('</footer>', $credit."\n</footer>", $html);
         }
 
-        // Pastikan undangan tetap max 480px di desktop (jaga layout bank/gift)
-        $desktopFix = '<style id="rm-desktop-fix">'
-            .'.wrap{max-width:480px!important;width:100%;margin-left:auto!important;margin-right:auto!important;}'
+        // Perbaiki mismatch id section RSVP di template (#rsvp vs #ucapan)
+        $fixCss = '<style id="rm-layout-fix">'
+            .'#ucapan,#rsvp{background:var(--ivory,#FBF4E8);}'
+            .'.wrap{max-width:480px;width:100%;margin-left:auto;margin-right:auto;}'
             .'#bankList,.bank-list{width:100%;max-width:100%;box-sizing:border-box;}'
-            .'.bank-card{max-width:100%;box-sizing:border-box;}'
-            .'.bank-card .acc-row{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;}'
-            .'.bank-card .copy-btn{flex-shrink:0;}'
+            .'#gift .bank-card{max-width:100%;box-sizing:border-box;}'
+            .'#gift .bank-card .acc-row{display:flex;gap:12px;justify-content:space-between;align-items:center;}'
+            .'#gift .bank-card .copy-btn{flex-shrink:0;}'
             .'</style>';
 
-        if (stripos($html, '</head>') !== false) {
-            $html = str_ireplace('</head>', $desktopFix."\n</head>", $html);
+        if (! str_contains($html, 'rm-layout-fix') && stripos($html, '</head>') !== false) {
+            $html = str_ireplace('</head>', $fixCss."\n</head>", $html);
         }
 
         return $html;
@@ -1038,7 +1034,7 @@ JS;
     }
 
     /**
-     * Pasang onerror di semua <img> supaya yang 404 langsung hilang.
+     * Pasang onerror hanya di foto upload/galeri — jangan sentuh deco template.
      */
     protected function attachImageErrorHandlers(string $html): string
     {
@@ -1048,7 +1044,15 @@ JS;
                 return $m[0];
             }
 
-            // Buang alt teks biar tidak muncul "Kenangan..." saat broken
+            // Hanya foto undangan (uploads / galeri), biarkan asset template utuh
+            $isUpload = preg_match('/src=(["\'])[^"\']*\/uploads\//i', $attrs)
+                || preg_match('/src=(["\'])[^"\']*galeri-/i', $attrs)
+                || preg_match('/src=(["\'])[^"\']*foto-(?:wanita|pria|anak)/i', $attrs);
+
+            if (! $isUpload) {
+                return $m[0];
+            }
+
             if (! preg_match('/\balt\s*=/i', $attrs)) {
                 $attrs .= ' alt=""';
             } else {
