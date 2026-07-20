@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var nama = (w.nama || w.name || '').trim();
             var msg = (w.ucapan || w.msg || '').trim();
             var hadir = formatHadir(w.kehadiran || w.confirm || '');
-            var who = nama + (hadir ? ' · ' + hadir : '');
+            var who = nama + (hadir ? ' \u00B7 ' + hadir : '');
 
             var item = document.createElement('div');
             item.className = 'wish-item';

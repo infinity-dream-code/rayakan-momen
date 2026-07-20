@@ -43,7 +43,8 @@
             background: var(--ivory);
             min-height: 100vh;
             box-shadow: 0 0 80px rgba(67, 20, 31, 0.18);
-            overflow: hidden;
+            overflow-x: clip;
+            overflow-y: visible;
         }
 
         h1,
@@ -3288,7 +3289,7 @@
             background: var(--wine-deep);
             color: var(--gold-soft);
             text-align: center;
-            padding: 48px 24px 100px;
+            padding: 48px 24px 130px;
             position: relative;
         }
 
@@ -3325,7 +3326,8 @@
             bottom: max(18px, env(safe-area-inset-bottom, 0px));
             left: 50%;
             transform: translateX(-50%);
-            width: min(400px, calc(100% - 32px));
+            width: min(400px, calc(100% - 32px), 448px);
+            max-width: calc(100vw - 32px);
             padding: 5px;
             background: rgba(251, 244, 232, 0.94);
             backdrop-filter: blur(16px);
@@ -3402,7 +3404,8 @@
         .music-btn {
             position: fixed;
             bottom: 92px;
-            right: 22px;
+            /* Tempel ke tepi kanan kolom undangan (480px), bukan tepi layar */
+            right: max(22px, calc(50vw - 240px + 22px));
             width: 44px;
             height: 44px;
             border-radius: 50%;
@@ -3732,11 +3735,6 @@
             </div>
         </div>
 
-        <div class="music-btn" id="musicBtn">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" />
-            </svg>
-        </div>
         <audio id="song" loop preload="auto">
             <source src="assets/audio/1783229812697-483fb537-81d6-4395-bebd-1d2ff4ba53a1_8608357.mp3" type="audio/mpeg">
         </audio>
@@ -4055,33 +4053,39 @@
             <p style="margin-top:20px;opacity:0.5;">Dibuat dengan ❤ — 2026</p>
         </footer>
 
-        <nav class="navbar" id="navbar">
-            <div class="nav-inner">
-                <div class="nav-indicator" id="navIndicator" aria-hidden="true"></div>
-                <a href="#top" class="nav-item active" data-nav="top" aria-label="Beranda"><svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3z" />
-                    </svg></a>
-                <a href="#couple" class="nav-item" data-nav="couple" aria-label="Mempelai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-                        <circle cx="9" cy="8" r="3" />
-                        <circle cx="17" cy="8" r="3" />
-                        <path d="M2 21c0-4 3-7 7-7s7 3 7 7" />
-                        <path d="M13 21c0-3 2-5 5-5s5 2 5 5" />
-                    </svg></a>
-                <a href="#event" class="nav-item" data-nav="event" aria-label="Acara"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-                        <rect x="3" y="5" width="18" height="16" rx="1" />
-                        <path d="M8 3v4M16 3v4M3 10h18" />
-                    </svg></a>
-                <a href="#gift" class="nav-item" data-nav="gift" aria-label="Hadiah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-                        <rect x="3" y="9" width="18" height="12" rx="1" />
-                        <path d="M3 9h18M12 9v12M12 9c-2-4-8-4-8 0s6 4 8 0zm0 0c2-4 8-4 8 0s-6 4-8 0z" />
-                    </svg></a>
-                <a href="#ucapan" class="nav-item" data-nav="ucapan" aria-label="Ucapan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-                        <path d="M4 4h16v12H8l-4 4z" />
-                    </svg></a>
-            </div>
-        </nav>
-
     </div>
+
+    <div class="music-btn" id="musicBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" />
+        </svg>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-inner">
+            <div class="nav-indicator" id="navIndicator" aria-hidden="true"></div>
+            <a href="#top" class="nav-item active" data-nav="top" aria-label="Beranda"><svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3z" />
+                </svg></a>
+            <a href="#couple" class="nav-item" data-nav="couple" aria-label="Mempelai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                    <circle cx="9" cy="8" r="3" />
+                    <circle cx="17" cy="8" r="3" />
+                    <path d="M2 21c0-4 3-7 7-7s7 3 7 7" />
+                    <path d="M13 21c0-3 2-5 5-5s5 2 5 5" />
+                </svg></a>
+            <a href="#event" class="nav-item" data-nav="event" aria-label="Acara"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                    <rect x="3" y="5" width="18" height="16" rx="1" />
+                    <path d="M8 3v4M16 3v4M3 10h18" />
+                </svg></a>
+            <a href="#gift" class="nav-item" data-nav="gift" aria-label="Hadiah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                    <rect x="3" y="9" width="18" height="12" rx="1" />
+                    <path d="M3 9h18M12 9v12M12 9c-2-4-8-4-8 0s6 4 8 0zm0 0c2-4 8-4 8 0s-6 4-8 0z" />
+                </svg></a>
+            <a href="#ucapan" class="nav-item" data-nav="ucapan" aria-label="Ucapan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                    <path d="M4 4h16v12H8l-4 4z" />
+                </svg></a>
+        </div>
+    </nav>
 
     <div class="gal-lightbox" id="galLightbox" aria-hidden="true">
         <button type="button" class="gal-lightbox-close" id="galLightboxClose" aria-label="Tutup">

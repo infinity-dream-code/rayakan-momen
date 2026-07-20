@@ -964,13 +964,16 @@ HTML;
             $html = str_ireplace('</footer>', $credit."\n</footer>", $html);
         }
 
-        // Template 1: CSS #rsvp tapi HTML id="ucapan" → section ucapan ikut warna footer
-        if (! str_contains($html, 'rm-ucapan-bg') && stripos($html, '</head>') !== false) {
-            $html = str_ireplace(
-                '</head>',
-                '<style id="rm-ucapan-bg">#ucapan,#rsvp{background:var(--ivory,#FBF4E8);}</style>'."\n</head>",
-                $html
-            );
+        // Perbaikan chrome template: ucapan bg, bottom bar, tombol musik di kolom
+        if (! str_contains($html, 'rm-chrome-fix') && stripos($html, '</head>') !== false) {
+            $chromeCss = '<style id="rm-chrome-fix">'
+                .'#ucapan,#rsvp{background:var(--ivory,#FBF4E8);}'
+                .'.wrap{overflow-x:clip;overflow-y:visible;}'
+                .'footer{padding-bottom:130px;}'
+                .'.navbar{width:min(400px,calc(100% - 32px),448px);max-width:calc(100vw - 32px);z-index:200;}'
+                .'.music-btn{right:max(22px,calc(50vw - 240px + 22px));left:auto;}'
+                .'</style>';
+            $html = str_ireplace('</head>', $chromeCss."\n</head>", $html);
         }
 
         return $html;
