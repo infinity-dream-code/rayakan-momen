@@ -44,10 +44,9 @@ class FileUploadService
 
     /**
      * Simpan gambar ke public/uploads/{folder}/.
-     * Contoh folder: mempelai/niko-naswa/foto-mempelai
-     * $basename opsional → foto-wanita-xxxx.jpg (versi unik biar cache browser tidak nempel).
+     * $maxDimension opsional — galeri pakai lebih kecil biar cepat.
      */
-    public function storeUpload(?UploadedFile $file, string $folder = 'covers', ?string $basename = null): ?string
+    public function storeUpload(?UploadedFile $file, string $folder = 'covers', ?string $basename = null, ?int $maxDimension = null): ?string
     {
         if (! $file) {
             return null;
@@ -72,7 +71,7 @@ class FileUploadService
         $dest = $dir.DIRECTORY_SEPARATOR.$name;
         $source = $file->getRealPath();
 
-        $this->saveAsJpegFast($source, $dest, $info);
+        $this->saveAsJpegFast($source, $dest, $info, $maxDimension);
 
         if (! is_file($dest) || filesize($dest) < 32) {
             @unlink($dest);
@@ -86,11 +85,13 @@ class FileUploadService
     {
         $paths = [];
         $folder = $this->sanitizeFolder($folder);
+        // Galeri: max 1000px — cukup untuk undangan, jauh lebih cepat di shared hosting
+        $galeriMax = 1000;
 
         foreach ($files as $i => $file) {
             if ($file instanceof UploadedFile) {
                 $label = 'galeri-'.now()->format('Ymd-His').'-'.($i + 1);
-                $path = $this->storeUpload($file, $folder, $label);
+                $path = $this->storeUpload($file, $folder, $label, $galeriMax);
                 if ($path) {
                     $paths[] = $path;
                 }
@@ -146,6 +147,40 @@ class FileUploadService
     }
 
     /**
+     * Hapus seluruh folder uploads/mempelai/{slug}/ (foto, galeri, qris).
+     */
+    public function deleteInvitationFolder(string $slug): void
+    {
+        $slug = Str::slug(Str::lower($slug), '-');
+        if ($slug === '') {
+            return;
+        }
+
+        $relative = 'uploads/mempelai/'.$slug;
+        $full = public_path($relative);
+
+        // Safety: hanya boleh di dalam uploads/mempelai/
+        $root = realpath(public_path('uploads/mempelai'));
+        $real = realpath($full);
+        if ($root === false || $real === false) {
+            // Folder belum ada / sudah kosong
+            if (File::isDirectory($full)) {
+                File::deleteDirectory($full);
+            }
+
+            return;
+        }
+
+        if (! str_starts_with($real, $root.DIRECTORY_SEPARATOR) && $real !== $root) {
+            return;
+        }
+
+        if (File::isDirectory($real)) {
+            File::deleteDirectory($real);
+        }
+    }
+
+    /**
      * Validate extension, MIME, and block double-extension filenames.
      *
      * @return array{0:int,1:int,2:int} getimagesize result (w, h, type)
@@ -174,14 +209,9 @@ class FileUploadService
         }
 
         $mime = $file->getMimeType() ?: '';
-        $guessExt = strtolower((string) $file->guessExtension());
 
         if (! in_array($mime, $this->allowedMime, true)) {
             throw new InvalidArgumentException('Tipe file ditolak. Upload gambar JPG/PNG asli.');
-        }
-
-        if ($guessExt && ! in_array($guessExt, ['jpg', 'jpeg', 'png'], true)) {
-            throw new InvalidArgumentException('Isi file bukan gambar JPG/PNG yang sah.');
         }
 
         $realPath = $file->getRealPath();
@@ -231,7 +261,7 @@ class FileUploadService
      *
      * @param  array{0:int,1:int,2:int}  $info
      */
-    protected function saveAsJpegFast(string $sourcePath, string $destPath, array $info): void
+    protected function saveAsJpegFast(string $sourcePath, string $destPath, array $info, ?int $maxDimension = null): void
     {
         if (! function_exists('imagecreatefromjpeg')) {
             if (! @copy($sourcePath, $destPath)) {
@@ -245,11 +275,14 @@ class FileUploadService
         $height = (int) $info[1];
         $type = (int) $info[2];
         $size = (int) (@filesize($sourcePath) ?: 0);
-        $max = min($this->maxDimension, 1200);
+        $configured = $maxDimension ?? $this->maxDimension;
+        $max = min(max(640, $configured), 1200);
+        // Client-side biasanya sudah ≤1280 & <800KB — anggap siap pakai
+        $fastCopyLimit = max($this->maxBytes, 900 * 1024);
         $needsResize = $width > $max || $height > $max;
 
         // JPEG sudah kecil + resolusi OK → copy langsung (paling cepat)
-        if ($type === IMAGETYPE_JPEG && ! $needsResize && $size > 0 && $size <= $this->maxBytes) {
+        if ($type === IMAGETYPE_JPEG && ! $needsResize && $size > 0 && $size <= $fastCopyLimit) {
             if (! @copy($sourcePath, $destPath)) {
                 throw new InvalidArgumentException('Gagal menyimpan gambar.');
             }
@@ -290,7 +323,6 @@ class FileUploadService
             $width = $newW;
             $height = $newH;
         } elseif ($type === IMAGETYPE_PNG) {
-            // PNG → JPEG: flatten ke putih (hindari transparansi hitam)
             $canvas = imagecreatetruecolor($width, $height);
             $white = imagecolorallocate($canvas, 255, 255, 255);
             imagefill($canvas, 0, 0, $white);
@@ -299,14 +331,12 @@ class FileUploadService
             $src = $canvas;
         }
 
-        // Tulis langsung ke file (hindari buffer memori ob_*)
         $quality = 70;
         if (! @imagejpeg($src, $destPath, $quality)) {
             imagedestroy($src);
             throw new InvalidArgumentException('Gagal kompres gambar.');
         }
 
-        // Kalau masih kebesaran, satu pass kualitas lebih rendah
         clearstatcache(true, $destPath);
         if (is_file($destPath) && filesize($destPath) > $this->maxBytes) {
             if (! @imagejpeg($src, $destPath, 52)) {

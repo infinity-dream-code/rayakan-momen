@@ -540,5 +540,11 @@ class InvitationRepository
         foreach ($data['galeri'] ?? [] as $g) {
             $this->uploads->deletePublicPath($g);
         }
+
+        // Hapus folder pasangan: uploads/mempelai/{slug}/
+        $slug = (string) ($data['slug'] ?? '');
+        if ($slug !== '') {
+            $this->uploads->deleteInvitationFolder($slug);
+        }
     }
 }

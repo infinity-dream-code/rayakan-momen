@@ -86,7 +86,7 @@
                                 <a href="{{ route('admin.undangan.edit', $item['id']) }}" class="w-8 h-8 rounded-lg bg-[#faf7f2] flex items-center justify-center text-[#1a2234] hover:text-[#c9a84c]" title="Edit">
                                     <i class="fa-solid fa-pen text-xs"></i>
                                 </a>
-                                <form method="POST" action="{{ route('admin.undangan.destroy', $item['id']) }}" onsubmit="return confirm('Hapus undangan ini?')">
+                                <form method="POST" action="{{ route('admin.undangan.destroy', $item['id']) }}" onsubmit="return confirm('Hapus permanen undangan ini?\nData, foto, galeri, dan folder uploads ikut terhapus.')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-100" title="Hapus">

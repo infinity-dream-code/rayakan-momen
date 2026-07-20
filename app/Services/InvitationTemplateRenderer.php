@@ -21,6 +21,7 @@ class InvitationTemplateRenderer
                 $html = $this->replaceParents($html, $undangan);
                 $html = $this->replaceQuote($html, $undangan);
                 $html = $this->replacePhotos($html, $tema, $undangan);
+                $html = $this->injectCoupleConfig($html, $tema, $undangan);
                 $html = $this->rewriteAssetUrls($html, $tema);
                 $html = $this->replaceEventDetails($html, $undangan);
                 $html = $this->replaceMaps($html, $undangan);
@@ -69,6 +70,7 @@ class InvitationTemplateRenderer
             'elegan' => 'template_undangan/template_wedding/template 1/index.html',
             'classic' => 'template_undangan/template_wedding/template 2/index.html',
             'langit_malam' => 'template_undangan/template_wedding/template 3/index.html',
+            'couple_surat' => 'template_undangan/template couple/index.html',
         ];
 
         if (isset($sourceMap[$tema])) {
@@ -977,6 +979,138 @@ HTML;
         }
 
         return substr($html, 0, $start).$open.$cards.'</div>'.substr($html, $pos);
+    }
+
+    /**
+     * Isi CONFIG JS di template Couple (Surat Spesial) dari data admin.
+     */
+    protected function injectCoupleConfig(string $html, string $tema, array $u): string
+    {
+        if ($tema !== 'couple_surat' || ! str_contains($html, 'const CONFIG = {')) {
+            return $html;
+        }
+
+        $namaCewek = trim((string) ($u['nama_wanita'] ?? '')) ?: 'Sayangku';
+        $namaPengirim = trim((string) ($u['nama_pria'] ?? '')) ?: 'Aku';
+        $quote = trim((string) ($u['kutipan'] ?? ''));
+        if ($quote === '') {
+            $quote = 'kamu adalah bab favoritku dalam cerita yang belum selesai kutulis.';
+        }
+
+        $tanggal = $u['tanggal_spesial'] ?? $u['tanggal_akad'] ?? null;
+        $tanggalLahir = '07-25';
+        if (filled($tanggal)) {
+            try {
+                $tanggalLahir = \Carbon\Carbon::parse($tanggal)->format('m-d');
+            } catch (\Throwable) {
+                // keep default
+            }
+        }
+
+        $pesan = trim((string) ($u['pesan_janji'] ?? ''));
+        $suratLines = [];
+        if ($pesan !== '') {
+            $suratLines = preg_split('/\R+/u', $pesan) ?: [];
+            $suratLines = array_values(array_filter(array_map('trim', $suratLines)));
+        }
+        if ($suratLines === []) {
+            $suratLines = [$quote];
+        }
+
+        $alasan = array_values(array_filter(array_map(
+            fn ($a) => trim((string) $a),
+            $u['alasan_sayang'] ?? []
+        )));
+        if ($alasan === []) {
+            $alasan = ['Karena kamu adalah kamu'];
+        }
+
+        $fotos = [];
+        foreach (['foto_pria', 'foto_wanita'] as $key) {
+            if (! empty($u[$key]) && $this->mediaFileExists($u[$key])) {
+                $url = $this->mediaUrl($u[$key]);
+                if ($url) {
+                    $fotos[] = $url;
+                }
+            }
+        }
+        foreach ($u['galeri'] ?? [] as $g) {
+            if (! $this->mediaFileExists($g)) {
+                continue;
+            }
+            $url = $this->mediaUrl($g);
+            if ($url) {
+                $fotos[] = $url;
+            }
+        }
+        $fotos = array_values(array_unique($fotos));
+        if ($fotos === []) {
+            // Fallback demo di folder template
+            $fotos = [
+                'assets/images/photo-1516589178581-6cd7833ae3b2_6731985.jpg',
+                'assets/images/photo-1522673607200-164d1b6ce486_7916109.jpg',
+                'assets/images/photo-1518199266791-5375a83190b7_4673335.jpg',
+                'assets/images/photo-1519741497674-611481863552_1714527.jpg',
+            ];
+        }
+
+        // YouTube tidak bisa di <audio>; pakai file lokal template kalau ada
+        $musik = '';
+        $localMusik = public_path('templates/couple_surat/assets/audio/Donne-Maula-Bercinta-Lewat-Kata.mp3');
+        if (is_file($localMusik)) {
+            $musik = asset('templates/couple_surat/assets/audio/Donne-Maula-Bercinta-Lewat-Kata.mp3');
+        } elseif (filled($u['youtube_url'] ?? null) && preg_match('#\.(mp3|m4a|ogg)(\?|$)#i', (string) $u['youtube_url'])) {
+            $musik = (string) $u['youtube_url'];
+        }
+
+        $janji = $pesan !== '' ? $pesan : 'Aku janji akan jadi rumah yang hangat buatmu.';
+
+        $config = [
+            'namaCewek' => $namaCewek,
+            'namaPengirim' => $namaPengirim,
+            'tanggalLahir' => $tanggalLahir,
+            'quote' => $quote,
+            'suratCinta' => $suratLines,
+            'alasan' => $alasan,
+            'foto' => $fotos,
+            'musikUrl' => $musik,
+            'janji' => $janji,
+            'loveNotes' => [
+                'Ciuman ini spesial buatmu',
+                'Aku sayang kamu, lebih dari kemarin',
+                'Semoga harimu selembut pelukan ini',
+                'Kamu adalah favoritku di dunia ini',
+            ],
+        ];
+
+        $json = json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        if ($json === false) {
+            return $html;
+        }
+
+        $block = "<script>\nconst CONFIG = {$json};\n</script>";
+
+        $replaced = preg_replace(
+            '/<!--\s*=+\s*CONFIG\s*=+\s*-->\s*<script>[\s\S]*?const CONFIG\s*=\s*\{[\s\S]*?\};\s*<\/script>/i',
+            '<!-- =================== CONFIG =================== -->'."\n".$block,
+            $html,
+            1
+        );
+
+        if ($replaced === null || $replaced === $html) {
+            $replaced = preg_replace(
+                '/<script>\s*const CONFIG\s*=\s*\{[\s\S]*?\};\s*<\/script>/i',
+                $block,
+                $html,
+                1
+            ) ?? $html;
+        }
+
+        // Judul tab
+        $title = e($namaCewek.' — Surat Spesial');
+        $replaced = preg_replace('/<title>.*?<\/title>/is', '<title>'.$title.'</title>', $replaced, 1) ?? $replaced;
+
+        return $replaced;
     }
 
     /**

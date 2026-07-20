@@ -122,7 +122,7 @@
     </div>
 
     <div class="flex flex-wrap gap-3">
-        <button type="submit" class="btn-gold px-6 py-3 rounded-full text-sm">
+        <button type="submit" id="btnSimpanUndangan" class="btn-gold px-6 py-3 rounded-full text-sm">
             <i class="fa-solid fa-floppy-disk mr-2"></i>
             {{ $mode === 'create' ? 'Simpan Undangan' : 'Update Undangan' }}
         </button>
@@ -241,5 +241,99 @@ function addEwallet() {
     `;
     list.appendChild(row);
 }
+
+/** Kompres foto di browser sebelum upload — biar simpan undangan tidak 8–10 detik. */
+function compressImageFile(file, maxSide, quality) {
+    return new Promise(function (resolve) {
+        if (!file || !/^image\/(jpeg|jpg|png)$/i.test(file.type)) {
+            resolve(file);
+            return;
+        }
+        // Sudah kecil: lewati
+        if (file.size <= 450 * 1024) {
+            resolve(file);
+            return;
+        }
+
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = function () {
+            URL.revokeObjectURL(url);
+            let w = img.naturalWidth || img.width;
+            let h = img.naturalHeight || img.height;
+            if (!w || !h) {
+                resolve(file);
+                return;
+            }
+            if (w > maxSide || h > maxSide) {
+                const ratio = Math.min(maxSide / w, maxSide / h);
+                w = Math.max(1, Math.round(w * ratio));
+                h = Math.max(1, Math.round(h * ratio));
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+            canvas.toBlob(function (blob) {
+                if (!blob || blob.size >= file.size) {
+                    resolve(file);
+                    return;
+                }
+                const name = (file.name || 'foto.jpg').replace(/\.(png|jpeg|jpg)$/i, '.jpg');
+                resolve(new File([blob], name, { type: 'image/jpeg', lastModified: Date.now() }));
+            }, 'image/jpeg', quality);
+        };
+        img.onerror = function () {
+            URL.revokeObjectURL(url);
+            resolve(file);
+        };
+        img.src = url;
+    });
+}
+
+async function compressFormImages(form) {
+    const inputs = form.querySelectorAll('input[type="file"]');
+    for (const input of inputs) {
+        if (!input.files || !input.files.length) continue;
+        const maxSide = input.name === 'galeri[]' ? 1000 : 1280;
+        const quality = input.name === 'galeri[]' ? 0.72 : 0.78;
+        const dt = new DataTransfer();
+        for (const file of Array.from(input.files)) {
+            dt.items.add(await compressImageFile(file, maxSide, quality));
+        }
+        input.files = dt.files;
+    }
+}
+
+(function () {
+    const form = document.getElementById('undanganForm');
+    const btn = document.getElementById('btnSimpanUndangan');
+    if (!form) return;
+
+    let submitting = false;
+    form.addEventListener('submit', function (e) {
+        if (submitting) return;
+        e.preventDefault();
+        submitting = true;
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyiapkan foto…';
+        }
+        compressFormImages(form).then(function () {
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyimpan…';
+            HTMLFormElement.prototype.submit.call(form);
+        }).catch(function () {
+            submitting = false;
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i>Simpan Undangan';
+            }
+            alert('Gagal kompres foto. Coba lagi atau kurangi ukuran foto.');
+        });
+    });
+})();
 </script>
 @endsection

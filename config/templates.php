@@ -261,7 +261,7 @@ return [
             'warna' => '#c45c7a',
             'harga' => 150000,
             'preview' => null,
-            'file' => null,
+            'file' => 'template_undangan/template couple/index.html',
             'blade' => 'undangan.preview.couple',
             'demo_url' => 'https://for-my-love-five-rho.vercel.app/',
             'aktif' => true,
