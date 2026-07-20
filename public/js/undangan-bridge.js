@@ -144,6 +144,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var bankList = document.getElementById('bankList');
     if (bankList) {
+        // Hapus kartu bank demo yang "bocor" di luar #bankList (bug HTML lama)
+        var giftSection = bankList.closest('section') || document.getElementById('gift');
+        if (giftSection) {
+            giftSection.querySelectorAll('.bank-card').forEach(function (card) {
+                if (!bankList.contains(card)) card.remove();
+            });
+        }
+
         // Buang kartu demo template, bangun ulang dari data admin saja
         bankList.innerHTML = '';
 

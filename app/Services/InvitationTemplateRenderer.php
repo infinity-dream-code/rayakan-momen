@@ -929,10 +929,10 @@ HTML;
                 .'</div></div>';
         }
 
-        // Ganti seluruh isi #bankList (buang demo BCA/Mandiri/BNI template)
+        // Ganti seluruh #bankList sampai sebelum section berikutnya (jangan berhenti di </div> pertama)
         $replaced = preg_replace(
-            '/(<div[^>]*\bid=["\']bankList["\'][^>]*>)([\s\S]*?)(<\/div>)/i',
-            '$1'.$cards.'$3',
+            '/<div([^>]*\bid=["\']bankList["\'][^>]*)>[\s\S]*?(?=<section\b)/i',
+            '<div$1>'.$cards.'</div>'."\n        ",
             $html,
             1
         );
@@ -962,6 +962,19 @@ HTML;
         // Kalau belum ada, sisipkan sebelum penutup footer
         if (! str_contains($html, 'rm-copyright') && stripos($html, '</footer>') !== false) {
             $html = str_ireplace('</footer>', $credit."\n</footer>", $html);
+        }
+
+        // Pastikan undangan tetap max 480px di desktop (jaga layout bank/gift)
+        $desktopFix = '<style id="rm-desktop-fix">'
+            .'.wrap{max-width:480px!important;width:100%;margin-left:auto!important;margin-right:auto!important;}'
+            .'#bankList,.bank-list{width:100%;max-width:100%;box-sizing:border-box;}'
+            .'.bank-card{max-width:100%;box-sizing:border-box;}'
+            .'.bank-card .acc-row{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;}'
+            .'.bank-card .copy-btn{flex-shrink:0;}'
+            .'</style>';
+
+        if (stripos($html, '</head>') !== false) {
+            $html = str_ireplace('</head>', $desktopFix."\n</head>", $html);
         }
 
         return $html;
