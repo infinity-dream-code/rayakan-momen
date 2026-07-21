@@ -9,6 +9,12 @@
     $fmt = fn (int $n) => 'Rp '.number_format($n, 0, ',', '.');
 @endphp
 
+<div class="flex flex-wrap items-center justify-end gap-3 mb-6">
+    <a href="{{ route('admin.transaksi.export') }}" class="btn-gold inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm">
+        <i class="fa-solid fa-file-csv"></i> Export CSV
+    </a>
+</div>
+
 <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
     <div class="card p-5">
         <div class="stat-icon bg-[#faf7f2] text-[#c9a84c] mb-3"><i class="fa-solid fa-receipt"></i></div>

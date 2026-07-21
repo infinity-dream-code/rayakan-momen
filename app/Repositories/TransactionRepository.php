@@ -102,6 +102,21 @@ class TransactionRepository
     /**
      * @return array<int, array<string, mixed>>
      */
+    public function all(): array
+    {
+        $rows = DB::select(
+            'SELECT id, invitation_id, slug, template_key, template_nama, kategori, pelanggan,
+                    harga_asli, diskon_persen, harga_final, created_at
+             FROM sales_transactions
+             ORDER BY created_at DESC, id DESC'
+        );
+
+        return array_map(fn ($r) => (array) $r, $rows);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function recent(int $limit = 100): array
     {
         $rows = DB::select(

@@ -35,6 +35,7 @@ Route::prefix('panel')->name('admin.')->middleware('demo.admin')->group(function
     Route::get('/katalog', [CatalogController::class, 'index'])->name('katalog.index');
     Route::match(['put', 'post'], '/katalog', [CatalogController::class, 'update'])->name('katalog.update');
     Route::get('/transaksi', [TransactionController::class, 'index'])->name('transaksi.index');
+    Route::get('/transaksi/export', [TransactionController::class, 'export'])->name('transaksi.export');
     Route::delete('/transaksi/{id}', [TransactionController::class, 'destroy'])->name('transaksi.destroy');
     Route::get('/undangan', [InvitationController::class, 'index'])->name('undangan.index');
     Route::get('/undangan/buat', [InvitationController::class, 'create'])->name('undangan.create');
