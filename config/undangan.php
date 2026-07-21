@@ -45,6 +45,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | RSVP Dashboard (link share tanpa login)
+    |--------------------------------------------------------------------------
+    | Token URL = enkripsi slug. Key jangan diganti kalau link lama masih dipakai.
+    */
+    'rsvp_dashboard_key' => env('RSVP_DASHBOARD_KEY', 'Rama Sat119'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Landing images (Cloudinary CDN)
     |--------------------------------------------------------------------------
     */

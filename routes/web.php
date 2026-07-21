@@ -8,12 +8,18 @@ use App\Http\Controllers\Admin\InvitationController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\InvitationPublicController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\RsvpDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
+Route::get('/katalog', [LandingController::class, 'katalog'])->name('katalog');
 
 Route::get('/sitemap.xml', [InvitationPublicController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt', [InvitationPublicController::class, 'robots'])->name('robots');
+
+Route::get('/dashboard-rsvp/{token}', [RsvpDashboardController::class, 'show'])
+    ->where('token', '[A-Za-z0-9_-]+')
+    ->name('rsvp.dashboard');
 
 /*
 | Login rahasia: /SmartLoginAdmin
@@ -50,9 +56,9 @@ Route::prefix('panel')->name('admin.')->middleware('demo.admin')->group(function
 });
 
 Route::get('/{slug}', [InvitationPublicController::class, 'show'])
-    ->where('slug', '^(?!admin$|panel$|SmartLoginAdmin$).*$')
+    ->where('slug', '^(?!admin$|panel$|SmartLoginAdmin$|dashboard-rsvp$|katalog$).*$')
     ->name('undangan.show');
 
 Route::post('/{slug}/ucapan', [InvitationPublicController::class, 'storeUcapan'])
-    ->where('slug', '^(?!admin$|panel$|SmartLoginAdmin$).*$')
+    ->where('slug', '^(?!admin$|panel$|SmartLoginAdmin$|dashboard-rsvp$|katalog$).*$')
     ->name('undangan.ucapan');

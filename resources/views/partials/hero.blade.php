@@ -58,8 +58,8 @@
         </p>
 
         <div class="hero-actions hero-in hero-in-4">
-            <a href="#template" class="btn-gold px-8 py-3.5 rounded-full text-sm">
-                Lihat Pilihan Undangan
+            <a href="{{ route('katalog') }}" class="btn-gold px-8 py-3.5 rounded-full text-sm">
+                Lihat Katalog Undangan
             </a>
             <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20mau%20tanya%20soal%20undangan%20digital"
                target="_blank"

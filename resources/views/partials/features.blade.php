@@ -14,7 +14,7 @@
         </div>
 
         <div class="grid md:grid-cols-3 gap-5 md:gap-6 mb-16 md:mb-24">
-            <a href="#template" class="cat-spotlight reveal" data-jump-cat="wedding" style="--spot:#8b3a3a">
+            <a href="{{ route('katalog', ['kategori' => 'wedding']) }}" class="cat-spotlight reveal" style="--spot:#8b3a3a">
                 <div class="cat-spotlight-media">
                     <img
                         src="{{ cdn_image('cat_wedding', 'f_auto,q_auto:eco,w_480,c_fill,g_auto') }}"
@@ -33,7 +33,7 @@
                     <p>Akad, resepsi, cerita, amplop digital</p>
                 </div>
             </a>
-            <a href="#template" class="cat-spotlight reveal reveal-delay-1" data-jump-cat="ultah_anak" style="--spot:#e85d75">
+            <a href="{{ route('katalog', ['kategori' => 'ultah_anak']) }}" class="cat-spotlight reveal reveal-delay-1" style="--spot:#e85d75">
                 <div class="cat-spotlight-media">
                     <img
                         src="{{ cdn_image('cat_ultah', 'f_auto,q_auto:eco,w_480,c_fill,g_auto') }}"
@@ -52,7 +52,7 @@
                     <p>Balon, lilin, permainan, konfirmasi hadir</p>
                 </div>
             </a>
-            <a href="#template" class="cat-spotlight reveal reveal-delay-2" data-jump-cat="couple" style="--spot:#c45c7a">
+            <a href="{{ route('katalog', ['kategori' => 'couple']) }}" class="cat-spotlight reveal reveal-delay-2" style="--spot:#c45c7a">
                 <div class="cat-spotlight-media">
                     <img
                         src="{{ cdn_image('cat_couple', 'f_auto,q_auto:eco,w_480,c_fill,g_auto') }}"

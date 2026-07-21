@@ -80,6 +80,12 @@
                         <td class="px-5 py-3.5">{{ count($item['ucapan_tersimpan'] ?? []) }}</td>
                         <td class="px-5 py-3.5">
                             <div class="flex items-center justify-end gap-2">
+                                @php
+                                    $rsvpUrl = app(\App\Services\RsvpDashboardCipher::class)->urlForSlug((string) ($item['slug'] ?? ''));
+                                @endphp
+                                <a href="{{ $rsvpUrl }}" target="_blank" class="w-8 h-8 rounded-lg bg-[#faf7f2] flex items-center justify-center text-[#1a2234] hover:text-[#c9a84c]" title="Dashboard RSVP">
+                                    <i class="fa-solid fa-clipboard-list text-xs"></i>
+                                </a>
                                 <a href="{{ route('admin.undangan.laporan', $item['id']) }}" class="w-8 h-8 rounded-lg bg-[#faf7f2] flex items-center justify-center text-[#1a2234] hover:text-[#c9a84c]" title="Laporan">
                                     <i class="fa-solid fa-chart-simple text-xs"></i>
                                 </a>

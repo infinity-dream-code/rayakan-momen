@@ -1,9 +1,5 @@
 @php
     $categories = config('templates.categories', []);
-    $catalog = app(\App\Repositories\CatalogRepository::class);
-    $allTemplates = collect($catalog->templates())
-        ->filter(fn ($t) => ($t['aktif_katalog'] ?? true))
-        ->all();
     $waNumber = '6285777433886';
 @endphp
 
@@ -11,107 +7,72 @@
     <img src="{{ asset('images/floral-corner.svg') }}" alt="" class="ornament-corner bottom-left hidden md:block" aria-hidden="true">
 
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <div class="mb-12 reveal">
-            <p class="section-label">Pilihan Undangan</p>
-            <h2 class="section-heading text-left mb-0">Pilih sesuai harimu</h2>
+        <div class="mb-10 md:mb-14 reveal">
+            <p class="section-label">Katalog Undangan</p>
+            <h2 class="section-heading text-left mb-3">Pilih jenis undanganmu</h2>
+            <p class="text-muted text-sm max-w-xl leading-relaxed">
+                Setiap jenis punya desain &amp; harga sendiri. Buka katalog untuk lihat semua produk, demo, dan pesan langsung.
+            </p>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 mb-10 reveal" id="templateFilters">
-            <button type="button" class="market-chip is-active" data-filter="all">Semua</button>
+        <div class="grid sm:grid-cols-3 gap-5 md:gap-6 mb-10">
             @foreach ($categories as $kat)
-                <button type="button" class="market-chip" data-filter="{{ $kat['id'] }}">{{ $kat['nama'] }}</button>
-            @endforeach
-        </div>
-
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-7" id="templateGrid">
-            @foreach ($allTemplates as $key => $t)
                 @php
-                    $kat = $categories[$t['kategori']] ?? null;
-                    $harga = (int) ($t['harga'] ?? 0);
-                    $final = (int) ($t['harga_final'] ?? $harga);
-                    $diskon = (float) ($t['diskon_persen'] ?? 0);
-                    $punyaDiskon = ! empty($t['punya_diskon']);
-                    $hargaFinalLabel = $final > 0 ? $catalog->formatRupiah($final) : null;
-                    $hargaAwalLabel = $harga > 0 ? $catalog->formatRupiah($harga) : null;
-                    $waText = rawurlencode('Halo Rayakan Momen, saya mau pesan undangan '.$t['nama'].($hargaFinalLabel ? ' ('.$hargaFinalLabel.')' : ''));
-                    $previewFallback = match ($t['kategori'] ?? '') {
-                        'wedding' => cdn_image('cat_wedding', 'f_auto,q_auto:eco,w_720,c_fill,g_auto'),
-                        'ultah_anak' => cdn_image('cat_ultah', 'f_auto,q_auto:eco,w_720,c_fill,g_auto'),
-                        'couple' => cdn_image('cat_couple', 'f_auto,q_auto:eco,w_720,c_fill,g_auto'),
-                        default => '',
+                    $imgKey = match ($kat['id']) {
+                        'wedding' => 'cat_wedding',
+                        'ultah_anak' => 'cat_ultah',
+                        'couple' => 'cat_couple',
+                        default => 'cat_wedding',
                     };
-                    $previewSrc = ! empty($t['preview']) ? $t['preview'] : $previewFallback;
                 @endphp
-                <article class="portfolio-card market-card reveal"
-                         data-category="{{ $t['kategori'] }}">
-                    <div class="relative aspect-[4/5] overflow-hidden bg-navy-custom">
-                        @if ($previewSrc)
-                            <img
-                                src="{{ $previewSrc }}"
-                                alt="Preview {{ $t['nama'] }}"
-                                class="portfolio-img absolute inset-0 w-full h-full object-cover object-top"
-                                loading="lazy"
-                                decoding="async"
-                            >
-                        @else
-                            <div class="market-placeholder absolute inset-0">
-                                <i class="fa-solid {{ $kat['icon'] ?? 'fa-image' }}"></i>
-                                <span>Gambar segera</span>
-                            </div>
-                        @endif
-                        <div class="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-transparent to-transparent"></div>
-                        <span class="portfolio-tag" style="background: {{ $t['warna'] }};">{{ $t['nama'] }}</span>
-                        @if ($kat)
-                            <span class="market-cat-badge">{{ $kat['nama'] }}</span>
-                        @endif
-                        @if ($punyaDiskon)
-                            <span class="market-discount-badge">-{{ (int) $diskon }}%</span>
-                        @endif
-                        @if ($hargaFinalLabel)
-                            <span class="market-price-badge">{{ $hargaFinalLabel }}</span>
-                        @endif
+                <a href="{{ route('katalog', ['kategori' => $kat['id']]) }}" class="home-cat-card reveal">
+                    <div class="home-cat-card__media">
+                        <img
+                            src="{{ cdn_image($imgKey, 'f_auto,q_auto:eco,w_640,c_fill,g_auto') }}"
+                            alt="{{ $kat['nama'] }}"
+                            loading="lazy"
+                            decoding="async"
+                        >
                     </div>
-                    <div class="p-6 flex flex-col flex-1">
-                        <h3 class="font-display text-xl text-charcoal mb-1.5">{{ $t['nama'] }}</h3>
-                        <p class="text-sm text-muted mb-4 leading-relaxed flex-1">{{ $t['deskripsi'] }}</p>
-
-                        @if ($hargaFinalLabel)
-                            <div class="market-price-row mb-4">
-                                @if ($punyaDiskon && $hargaAwalLabel)
-                                    <span class="market-price-old">{{ $hargaAwalLabel }}</span>
-                                @endif
-                                <span class="market-price-amount">{{ $hargaFinalLabel }}</span>
-                                <span class="market-price-note">per undangan</span>
-                            </div>
-                        @endif
-
-                        <div class="flex flex-wrap items-center gap-3">
-                            <a href="https://wa.me/{{ $waNumber }}?text={{ $waText }}"
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               class="btn-gold px-4 py-2.5 rounded-full text-xs">
-                                <i class="fa-brands fa-whatsapp"></i>
-                                Pesan
-                            </a>
-                            @if (! empty($t['demo_url']))
-                                <a href="{{ $t['demo_url'] }}"
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   class="inline-flex items-center gap-2 text-sm font-semibold text-gold-dark-accent hover:text-gold-accent transition-colors">
-                                    Lihat Contoh
-                                    <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
-                                </a>
-                            @else
-                                <span class="text-xs text-muted">Contoh segera hadir</span>
-                            @endif
-                        </div>
+                    <div class="home-cat-card__body">
+                        <span class="home-cat-card__label">{{ $kat['tagline'] }}</span>
+                        <h3 class="font-display">{{ $kat['nama'] }}</h3>
+                        <span class="home-cat-card__cta">Lihat desain <i class="fa-solid fa-arrow-right"></i></span>
                     </div>
-                </article>
+                </a>
             @endforeach
         </div>
 
-        <p class="text-center text-xs text-muted mt-10 reveal">
-            Harga &amp; diskon diatur dari admin. Permintaan khusus bisa dibicarakan langsung dengan kami.
-        </p>
+        <div class="text-center reveal">
+            <a href="{{ route('katalog') }}" class="home-katalog-all">
+                Lihat Semua Katalog
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
     </div>
 </section>
+
+<style>
+.home-cat-card{
+    display:block;border-radius:1.1rem;overflow:hidden;background:#fff;
+    border:1px solid rgba(201,168,76,.22);text-decoration:none;color:inherit;
+    transition:transform .25s ease, box-shadow .25s ease;
+}
+.home-cat-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(26,34,52,.1)}
+.home-cat-card__media{aspect-ratio:4/5;overflow:hidden;background:#1a2234}
+.home-cat-card__media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease}
+.home-cat-card:hover .home-cat-card__media img{transform:scale(1.04)}
+.home-cat-card__body{padding:1.1rem 1.15rem 1.25rem}
+.home-cat-card__label{display:block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:#a8843a;margin-bottom:.35rem}
+.home-cat-card__body h3{margin:0 0 .65rem;font-size:1.2rem;color:#1a2234}
+.home-cat-card__cta{font-size:.8rem;font-weight:600;color:#1a2234}
+.home-cat-card__cta i{font-size:.7rem;margin-left:.25rem;color:#c9a84c}
+.home-katalog-all{
+    display:inline-flex;align-items:center;gap:.55rem;
+    padding:.85rem 1.5rem;border-radius:.85rem;
+    border:1.5px solid #1a2234;color:#1a2234;font-weight:600;font-size:.9rem;
+    text-decoration:none;background:#fff;transition:all .2s ease;
+}
+.home-katalog-all:hover{background:#1a2234;color:#e8d5a3}
+.home-katalog-all i{font-size:.75rem}
+</style>

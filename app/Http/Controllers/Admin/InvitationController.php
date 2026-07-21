@@ -155,8 +155,9 @@ class InvitationController extends Controller
         $ucapan = $undangan['ucapan_tersimpan'] ?? [];
         $hadir = count(array_filter($ucapan, fn ($u) => ($u['kehadiran'] ?? '') === 'hadir'));
         $tidakHadir = count(array_filter($ucapan, fn ($u) => ($u['kehadiran'] ?? '') === 'tidak_hadir'));
+        $rsvpDashboardUrl = app(\App\Services\RsvpDashboardCipher::class)->urlForSlug((string) ($undangan['slug'] ?? ''));
 
-        return view('admin.undangan.laporan', compact('undangan', 'ucapan', 'hadir', 'tidakHadir'));
+        return view('admin.undangan.laporan', compact('undangan', 'ucapan', 'hadir', 'tidakHadir', 'rsvpDashboardUrl'));
     }
 
     protected function validated(Request $request, ?string $ignoreId = null): array
@@ -168,7 +169,7 @@ class InvitationController extends Controller
             ]);
         }
 
-        $reserved = ['admin', 'panel', 'SmartLoginAdmin', 'login', 'logout', 'api', 'css', 'js', 'images', 'uploads', 'storage', 'sitemap.xml', 'robots.txt'];
+        $reserved = ['admin', 'panel', 'SmartLoginAdmin', 'login', 'logout', 'api', 'css', 'js', 'images', 'uploads', 'storage', 'sitemap.xml', 'robots.txt', 'dashboard-rsvp', 'katalog'];
         $tema = $request->input('tema');
         $meta = config('templates.templates.'.$tema, []);
         $kategori = $meta['kategori'] ?? 'wedding';

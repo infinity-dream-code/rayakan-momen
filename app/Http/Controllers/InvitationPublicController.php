@@ -105,7 +105,7 @@ class InvitationPublicController extends Controller
 
     public function robots()
     {
-        $body = "User-agent: *\nAllow: /\nDisallow: /panel\nDisallow: /admin\nDisallow: /SmartLoginAdmin\nSitemap: ".url('/sitemap.xml')."\n";
+        $body = "User-agent: *\nAllow: /\nDisallow: /panel\nDisallow: /admin\nDisallow: /SmartLoginAdmin\nDisallow: /dashboard-rsvp\nSitemap: ".url('/sitemap.xml')."\n";
 
         return response($body, 200)->header('Content-Type', 'text/plain; charset=UTF-8');
     }

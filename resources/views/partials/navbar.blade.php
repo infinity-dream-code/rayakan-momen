@@ -9,17 +9,17 @@
 <nav id="navbar" class="nav-blur fixed top-0 inset-x-0 z-50 transition-all duration-300">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="flex items-center justify-between h-16 md:h-[4.5rem]">
-            <a href="#beranda" class="font-display text-xl md:text-2xl text-gold-light-accent tracking-wide">
+            <a href="{{ route('landing') }}#beranda" class="font-display text-xl md:text-2xl text-gold-light-accent tracking-wide">
                 Rayakan Momen
             </a>
 
             <ul class="hidden lg:flex items-center gap-8">
-                <li><a href="#beranda" class="nav-link">Beranda</a></li>
-                <li><a href="#layanan" class="nav-link">Layanan</a></li>
-                <li><a href="#template" class="nav-link">Pilihan</a></li>
-                <li><a href="#testimoni" class="nav-link">Cerita</a></li>
-                <li><a href="#faq" class="nav-link">Pertanyaan</a></li>
-                <li><a href="#kontak" class="nav-link">Kontak</a></li>
+                <li><a href="{{ route('landing') }}#beranda" class="nav-link">Beranda</a></li>
+                <li><a href="{{ route('landing') }}#layanan" class="nav-link">Layanan</a></li>
+                <li><a href="{{ route('katalog') }}" class="nav-link">Katalog</a></li>
+                <li><a href="{{ route('landing') }}#testimoni" class="nav-link">Cerita</a></li>
+                <li><a href="{{ route('landing') }}#faq" class="nav-link">Pertanyaan</a></li>
+                <li><a href="{{ route('landing') }}#kontak" class="nav-link">Kontak</a></li>
             </ul>
 
             <div class="flex items-center gap-2 sm:gap-3">
@@ -48,12 +48,12 @@
         </button>
     </div>
     <ul class="flex flex-col px-5 py-6 gap-1">
-        <li><a href="#beranda" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Beranda</a></li>
-        <li><a href="#layanan" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Layanan</a></li>
-        <li><a href="#template" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Pilihan Undangan</a></li>
-        <li><a href="#testimoni" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Cerita Klien</a></li>
-        <li><a href="#faq" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Pertanyaan</a></li>
-        <li><a href="#kontak" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Kontak</a></li>
+        <li><a href="{{ route('landing') }}#beranda" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Beranda</a></li>
+        <li><a href="{{ route('landing') }}#layanan" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Layanan</a></li>
+        <li><a href="{{ route('katalog') }}" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Katalog</a></li>
+        <li><a href="{{ route('landing') }}#testimoni" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Cerita Klien</a></li>
+        <li><a href="{{ route('landing') }}#faq" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Pertanyaan</a></li>
+        <li><a href="{{ route('landing') }}#kontak" class="mobile-nav-link block py-3 border-b border-white/5 text-on-dark hover:text-gold-light-accent transition-colors">Kontak</a></li>
     </ul>
     <div class="px-5 mt-4">
         <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20undangan%20digital"

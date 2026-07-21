@@ -92,7 +92,7 @@
             <i class="fa-solid fa-floppy-disk mr-2"></i>
             Simpan Semua Harga
         </button>
-        <a href="{{ route('landing') }}#template" target="_blank" class="px-6 py-3 rounded-full text-sm border border-gray-300 text-gray-600 hover:bg-white bg-white/90">
+        <a href="{{ route('katalog') }}" target="_blank" class="px-6 py-3 rounded-full text-sm border border-gray-300 text-gray-600 hover:bg-white bg-white/90">
             Lihat di beranda
         </a>
     </div>

@@ -2,7 +2,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
             <div class="lg:col-span-1">
-                <a href="#beranda" class="font-display text-2xl text-gold-light-accent tracking-wide inline-block mb-4">
+                <a href="{{ route('landing') }}#beranda" class="font-display text-2xl text-gold-light-accent tracking-wide inline-block mb-4">
                     Rayakan Momen
                 </a>
                 <p class="text-sm leading-relaxed text-on-dark-soft">
@@ -13,10 +13,10 @@
             <div>
                 <h4 class="text-on-dark font-medium text-sm mb-4 tracking-wide">Menu Cepat</h4>
                 <ul class="space-y-2.5">
-                    <li><a href="#beranda" class="footer-link">Beranda</a></li>
-                    <li><a href="#layanan" class="footer-link">Layanan</a></li>
-                    <li><a href="#template" class="footer-link">Pilihan &amp; Harga</a></li>
-                    <li><a href="#faq" class="footer-link">Pertanyaan</a></li>
+                    <li><a href="{{ route('landing') }}#beranda" class="footer-link">Beranda</a></li>
+                    <li><a href="{{ route('landing') }}#layanan" class="footer-link">Layanan</a></li>
+                    <li><a href="{{ route('katalog') }}" class="footer-link">Katalog &amp; Harga</a></li>
+                    <li><a href="{{ route('landing') }}#faq" class="footer-link">Pertanyaan</a></li>
                 </ul>
             </div>
 
