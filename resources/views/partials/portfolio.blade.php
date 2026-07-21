@@ -1,19 +1,11 @@
 @php
-    $categories = $categories ?? app(\App\Repositories\CategoryRepository::class)->allActive();
-    $templates = config('templates.templates', []);
-    $waNumber = '6285777433886';
+    use App\Repositories\CatalogRepository;
+    use App\Repositories\CategoryRepository;
 
-    // Demo pertama per kategori (untuk tombol "Lihat desain")
-    $demoByKat = [];
-    foreach ($templates as $t) {
-        $kid = $t['kategori'] ?? '';
-        if ($kid === '' || ! empty($demoByKat[$kid])) {
-            continue;
-        }
-        if (! empty($t['demo_url'])) {
-            $demoByKat[$kid] = $t['demo_url'];
-        }
-    }
+    $categories = $categories ?? app(CategoryRepository::class)->allActive();
+    $homeTemplates = $homeTemplates ?? [];
+    $catalog = app(CatalogRepository::class);
+    $waNumber = '6285777433886';
 @endphp
 
 <section id="template" class="relative section-light py-16 md:py-24 pb-20 md:pb-28 overflow-hidden">
@@ -22,52 +14,55 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="mb-8 md:mb-10 reveal">
             <p class="section-label">Katalog Undangan</p>
-            <h2 class="section-heading text-left mb-2">Pilih jenis undanganmu</h2>
+            <h2 class="section-heading text-left mb-2">Pilih desain favoritmu</h2>
             <p class="text-muted text-sm max-w-xl leading-relaxed">
-                Lihat contoh demo, atau pesan langsung via WhatsApp.
+                Lihat demo, atau pesan langsung via WhatsApp.
             </p>
         </div>
 
-        <div class="home-cat-grid mb-8">
-            @foreach ($categories as $kat)
-                @php
-                    $imgKey = match ($kat['id']) {
-                        'wedding' => 'cat_wedding',
-                        'ultah_anak' => 'cat_ultah',
-                        'couple' => 'cat_couple',
-                        default => 'cat_wedding',
-                    };
-                    $coverImg = ! empty($kat['image']) ? $kat['image'] : cdn_image($imgKey, 'f_auto,q_auto:eco,w_480,c_fill,g_auto');
-                    $demoUrl = $demoByKat[$kat['id']] ?? route('katalog', ['kategori' => $kat['id']]);
-                    $waText = rawurlencode('Halo Rayakan Momen, saya mau pesan undangan '.$kat['nama']);
-                @endphp
-                <article class="home-cat-card reveal">
-                    <a href="{{ $demoUrl }}" target="_blank" rel="noopener noreferrer" class="home-cat-card__media">
-                        <img
-                            src="{{ $coverImg }}"
-                            alt="{{ $kat['nama'] }}"
-                            loading="lazy"
-                            decoding="async"
-                        >
-                    </a>
-                    <div class="home-cat-card__body">
-                        <span class="home-cat-card__label">{{ $kat['nama'] }}</span>
-                        <h3 class="font-display">{{ $kat['tagline'] }}</h3>
-                        <div class="home-cat-card__actions">
-                            <a href="{{ $demoUrl }}" target="_blank" rel="noopener noreferrer" class="home-cat-btn home-cat-btn--demo">
-                                Lihat desain
-                            </a>
-                            <a href="https://wa.me/{{ $waNumber }}?text={{ $waText }}"
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               class="home-cat-btn home-cat-btn--wa">
-                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                            </a>
+        @if (count($homeTemplates) > 0)
+            <div class="home-tpl-grid mb-8">
+                @foreach ($homeTemplates as $key => $t)
+                    @php
+                        $kat = $categories[$t['kategori'] ?? ''] ?? null;
+                        $final = (int) ($t['harga_final'] ?? 0);
+                        $hargaLabel = $final > 0 ? $catalog->formatRupiah($final) : null;
+                        $waText = rawurlencode('Halo Rayakan Momen, saya mau pesan undangan '.$t['nama'].($hargaLabel ? ' ('.$hargaLabel.')' : ''));
+                        $previewFallback = match ($t['kategori'] ?? '') {
+                            'wedding' => cdn_image('cat_wedding', 'f_auto,q_auto:eco,w_480,c_fill,g_auto'),
+                            'ultah_anak' => cdn_image('cat_ultah', 'f_auto,q_auto:eco,w_480,c_fill,g_auto'),
+                            'couple' => cdn_image('cat_couple', 'f_auto,q_auto:eco,w_480,c_fill,g_auto'),
+                            default => '',
+                        };
+                        $cover = ! empty($t['preview']) ? $t['preview'] : $previewFallback;
+                    @endphp
+                    <article class="home-cat-card reveal">
+                        <a href="{{ $t['demo_url'] ?? route('katalog') }}" target="_blank" rel="noopener noreferrer" class="home-cat-card__media">
+                            @if ($cover)<img src="{{ $cover }}" alt="{{ $t['nama'] }}" loading="lazy" decoding="async">@endif
+                        </a>
+                        <div class="home-cat-card__body">
+                            <span class="home-cat-card__label">{{ $kat['nama'] ?? 'Undangan' }}</span>
+                            <h3 class="font-display">{{ $t['nama'] }}</h3>
+                            @if ($hargaLabel)
+                                <p class="text-sm text-[#a8843a] font-semibold mb-1">{{ $hargaLabel }}</p>
+                            @endif
+                            <div class="home-cat-card__actions">
+                                @if (! empty($t['demo_url']))
+                                    <a href="{{ $t['demo_url'] }}" target="_blank" rel="noopener noreferrer" class="home-cat-btn home-cat-btn--demo">Demo</a>
+                                @else
+                                    <span class="home-cat-btn home-cat-btn--demo" style="opacity:.45">Demo</span>
+                                @endif
+                                <a href="https://wa.me/{{ $waNumber }}?text={{ $waText }}" target="_blank" rel="noopener noreferrer" class="home-cat-btn home-cat-btn--wa">
+                                    <i class="fa-brands fa-whatsapp"></i> Pakai
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                </article>
-            @endforeach
-        </div>
+                    </article>
+                @endforeach
+            </div>
+        @else
+            <p class="text-sm text-gray-500 mb-6">Belum ada template di beranda. Centang <strong>Home</strong> di admin Setting.</p>
+        @endif
 
         <div class="home-katalog-cta reveal">
             <a href="{{ route('katalog') }}" class="home-katalog-all">
@@ -79,127 +74,28 @@
 </section>
 
 <style>
-#template.section-light{
-    padding-bottom:5rem !important;
+#template.section-light{padding-bottom:5rem !important}
+@media(min-width:768px){#template.section-light{padding-bottom:6.5rem !important}}
+.home-tpl-grid,.home-cat-grid{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;
 }
-@media(min-width:768px){
-    #template.section-light{padding-bottom:6.5rem !important}
-}
-.home-cat-grid{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:1rem;
-}
-@media(min-width:640px){
-    .home-cat-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:1.15rem}
-}
+@media(min-width:768px){.home-tpl-grid,.home-cat-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:1.15rem}}
 .home-cat-card{
-    display:flex;
-    flex-direction:column;
-    border-radius:.9rem;
-    overflow:hidden;
-    background:#fff;
-    border:1px solid rgba(201,168,76,.22);
-    color:inherit;
-    transition:transform .2s ease, box-shadow .2s ease;
-    max-width:100%;
+    display:flex;flex-direction:column;border-radius:.9rem;overflow:hidden;
+    background:#fff;border:1px solid rgba(201,168,76,.22);color:inherit;
+    transition:transform .2s ease,box-shadow .2s ease;
 }
-.home-cat-card:hover{
-    transform:translateY(-3px);
-    box-shadow:0 12px 28px rgba(26,34,52,.08);
-}
-.home-cat-card__media{
-    display:block;
-    aspect-ratio:16/10;
-    overflow:hidden;
-    background:#1a2234;
-}
-@media(min-width:640px){
-    .home-cat-card__media{aspect-ratio:4/3}
-}
-.home-cat-card__media img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-    transition:transform .4s ease;
-}
-.home-cat-card:hover .home-cat-card__media img{transform:scale(1.03)}
-.home-cat-card__body{
-    padding:.85rem 1rem 1rem;
-    display:flex;
-    flex-direction:column;
-    gap:.2rem;
-    flex:1;
-}
-.home-cat-card__label{
-    font-size:.65rem;
-    letter-spacing:.1em;
-    text-transform:uppercase;
-    color:#a8843a;
-    font-weight:600;
-}
-.home-cat-card__body h3{
-    margin:0 0 .55rem;
-    font-size:.95rem;
-    line-height:1.35;
-    color:#1a2234;
-    font-weight:600;
-}
-@media(min-width:768px){
-    .home-cat-card__body h3{font-size:1.05rem}
-}
-.home-cat-card__actions{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:.4rem;
-    margin-top:auto;
-}
-.home-cat-btn{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:.3rem;
-    padding:.55rem .4rem;
-    border-radius:.55rem;
-    font-size:.72rem;
-    font-weight:600;
-    text-decoration:none;
-    font-family:inherit;
-    border:1px solid transparent;
-}
-.home-cat-btn--demo{
-    background:#fff;
-    color:#1a2234;
-    border-color:#d8d2c8;
-}
-.home-cat-btn--demo:hover{border-color:#c9a84c;color:#a8843a}
-.home-cat-btn--wa{
-    background:#1a2234;
-    color:#e8d5a3;
-}
-.home-cat-btn--wa:hover{filter:brightness(1.08)}
-.home-katalog-cta{
-    text-align:center;
-    padding-bottom:2.5rem;
-}
-@media(min-width:768px){
-    .home-katalog-cta{padding-bottom:3.5rem}
-}
-.home-katalog-all{
-    display:inline-flex;
-    align-items:center;
-    gap:.5rem;
-    padding:.7rem 1.25rem;
-    border-radius:.75rem;
-    border:1.5px solid #1a2234;
-    color:#1a2234;
-    font-weight:600;
-    font-size:.85rem;
-    text-decoration:none;
-    background:#fff;
-    transition:all .2s ease;
-}
+.home-cat-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(26,34,52,.08)}
+.home-cat-card__media{display:block;aspect-ratio:3/4;overflow:hidden;background:#1a2234}
+.home-cat-card__media img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.home-cat-card__body{padding:.85rem 1rem 1rem;display:flex;flex-direction:column;gap:.2rem;flex:1}
+.home-cat-card__label{font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:#a8843a;font-weight:600}
+.home-cat-card__body h3{margin:0 0 .35rem;font-size:.95rem;line-height:1.35;color:#1a2234;font-weight:600}
+.home-cat-card__actions{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:auto}
+.home-cat-btn{display:inline-flex;align-items:center;justify-content:center;gap:.3rem;padding:.55rem .4rem;border-radius:.55rem;font-size:.72rem;font-weight:600;text-decoration:none;border:1px solid transparent}
+.home-cat-btn--demo{background:#fff;color:#1a2234;border-color:#d8d2c8}
+.home-cat-btn--wa{background:#1a2234;color:#e8d5a3}
+.home-katalog-cta{text-align:center;padding-bottom:2.5rem}
+.home-katalog-all{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.25rem;border-radius:.75rem;border:1.5px solid #1a2234;color:#1a2234;font-weight:600;font-size:.85rem;text-decoration:none;background:#fff}
 .home-katalog-all:hover{background:#1a2234;color:#e8d5a3}
-.home-katalog-all i{font-size:.7rem}
 </style>

@@ -20,16 +20,16 @@ class LandingController extends Controller
     {
         $campaign = $this->campaigns->getActiveForLanding();
         $categories = $this->categories->allActive();
+        $homeTemplates = $this->catalog->forHome();
 
-        return view('landing', compact('campaign', 'categories'));
+        return view('landing', compact('campaign', 'categories', 'homeTemplates'));
     }
 
     public function katalog(Request $request)
     {
         $categories = $this->categories->allActive();
-        $allTemplates = collect($this->catalog->templates())
-            ->filter(fn ($t) => ($t['aktif_katalog'] ?? true))
-            ->filter(fn ($t) => ($categories[$t['kategori'] ?? '']['aktif'] ?? true))
+        $allTemplates = collect($this->catalog->forKatalog())
+            ->filter(fn ($t) => isset($categories[$t['kategori'] ?? '']))
             ->all();
 
         $activeKat = (string) $request->query('kategori', 'all');
