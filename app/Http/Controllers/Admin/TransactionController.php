@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Repositories\CatalogRepository;
 use App\Repositories\TransactionRepository;
-use Carbon\Carbon;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TransactionController extends Controller
@@ -141,7 +140,7 @@ class TransactionController extends Controller
 
                     echo '<tr>';
                     echo '<td class="td-center'.$cls.'">'.$e($no++).'</td>';
-                    echo '<td class="td-center'.$cls.'">'.$e(Carbon::parse($item['created_at'])->timezone('Asia/Jakarta')->format('d/m/Y H:i')).'</td>';
+                    echo '<td class="td-center'.$cls.'">'.$e(\App\Repositories\TransactionRepository::formatWib($item['created_at'] ?? null)).'</td>';
                     echo '<td class="td'.$cls.'">'.$e($item['pelanggan'] ?? '').'</td>';
                     echo '<td class="td'.$cls.'">'.$e($item['slug'] ?? '').'</td>';
                     echo '<td class="td'.$cls.'">'.$e($item['template_nama'] ?: ($item['template_key'] ?? '')).'</td>';

@@ -39,9 +39,25 @@ class TransactionRepository
                 max(0, (int) ($data['harga_asli'] ?? 0)),
                 max(0, min(100, (float) ($data['diskon_persen'] ?? 0))),
                 max(0, (int) ($data['harga_final'] ?? 0)),
-                now()->toDateTimeString(),
+                // Simpan UTC di DB, tampilkan sebagai Asia/Jakarta
+                now('UTC')->toDateTimeString(),
             ]
         );
+    }
+
+    /**
+     * Format waktu transaksi ke Asia/Jakarta (WIB).
+     * created_at di DB disimpan UTC.
+     */
+    public static function formatWib(?string $datetime, string $format = 'd/m/Y H:i'): string
+    {
+        if (! $datetime) {
+            return '—';
+        }
+
+        return \Carbon\Carbon::parse($datetime, 'UTC')
+            ->timezone('Asia/Jakarta')
+            ->format($format);
     }
 
     /**
@@ -59,11 +75,13 @@ class TransactionRepository
              FROM sales_transactions'
         );
 
+        $monthStartUtc = now('Asia/Jakarta')->startOfMonth()->utc()->toDateTimeString();
+
         $month = DB::selectOne(
             'SELECT COUNT(*) AS total_transaksi, COALESCE(SUM(harga_final), 0) AS total_penghasilan
              FROM sales_transactions
              WHERE created_at >= ?',
-            [now()->startOfMonth()->toDateTimeString()]
+            [$monthStartUtc]
         );
 
         return [

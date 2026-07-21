@@ -96,7 +96,7 @@
                     @endphp
                     <tr class="border-t border-[#f0ebe3]">
                         <td class="px-5 py-3.5 whitespace-nowrap text-gray-600">
-                            {{ \Carbon\Carbon::parse($item['created_at'])->timezone('Asia/Jakarta')->format('d/m/Y H:i') }}
+                            {{ \App\Repositories\TransactionRepository::formatWib($item['created_at'] ?? null) }}
                         </td>
                         <td class="px-5 py-3.5">
                             <div class="font-medium">{{ $item['pelanggan'] ?: '—' }}</div>
