@@ -2,7 +2,7 @@
     $categories = config('templates.categories', []);
 @endphp
 
-<section id="template" class="relative section-light py-16 md:py-24 overflow-hidden">
+<section id="template" class="relative section-light py-16 md:py-24 pb-20 md:pb-28 overflow-hidden">
     <img src="{{ asset('images/floral-corner.svg') }}" alt="" class="ornament-corner bottom-left hidden md:block" aria-hidden="true">
 
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
@@ -42,7 +42,7 @@
             @endforeach
         </div>
 
-        <div class="text-center reveal">
+        <div class="home-katalog-cta reveal">
             <a href="{{ route('katalog') }}" class="home-katalog-all">
                 Lihat Semua Katalog
                 <i class="fa-solid fa-arrow-right"></i>
@@ -52,6 +52,12 @@
 </section>
 
 <style>
+#template.section-light{
+    padding-bottom:5rem !important;
+}
+@media(min-width:768px){
+    #template.section-light{padding-bottom:6.5rem !important}
+}
 /* Grid pakai CSS sendiri (jangan andalkan Tailwind purge) */
 .home-cat-grid{
     display:grid;
@@ -126,6 +132,13 @@
     font-size:.65rem;
     margin-left:.2rem;
     color:#c9a84c;
+}
+.home-katalog-cta{
+    text-align:center;
+    padding-bottom:2.5rem;
+}
+@media(min-width:768px){
+    .home-katalog-cta{padding-bottom:3.5rem}
 }
 .home-katalog-all{
     display:inline-flex;
