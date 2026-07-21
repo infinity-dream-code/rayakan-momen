@@ -9,7 +9,7 @@ class CatalogRepository
     public function allOverrides(): array
     {
         $rows = DB::select(
-            'SELECT template_key, harga, diskon_persen, aktif_katalog FROM catalog_templates'
+            'SELECT template_key, harga, diskon_persen, aktif_katalog, preview_image_url, preview_cloudinary_id FROM catalog_templates'
         );
 
         $out = [];
@@ -18,6 +18,8 @@ class CatalogRepository
                 'harga' => (int) $row->harga,
                 'diskon_persen' => (float) $row->diskon_persen,
                 'aktif_katalog' => (bool) $row->aktif_katalog,
+                'preview_image_url' => $row->preview_image_url ?: null,
+                'preview_cloudinary_id' => $row->preview_cloudinary_id ?: null,
             ];
         }
 
@@ -44,6 +46,7 @@ class CatalogRepository
                 'aktif_katalog' => array_key_exists('aktif_katalog', $ov)
                     ? (bool) $ov['aktif_katalog']
                     : true,
+                'preview' => $ov['preview_image_url'] ?? $t['preview'] ?? null,
             ]);
         }
 
@@ -113,5 +116,45 @@ class CatalogRepository
     public function formatRupiah(int $amount): string
     {
         return 'Rp '.number_format($amount, 0, ',', '.');
+    }
+
+    /**
+     * @return array{preview_image_url: ?string, preview_cloudinary_id: ?string}
+     */
+    public function getPreview(string $templateKey): array
+    {
+        $row = DB::selectOne(
+            'SELECT preview_image_url, preview_cloudinary_id FROM catalog_templates WHERE template_key = ? LIMIT 1',
+            [$templateKey]
+        );
+
+        if (! $row) {
+            return [
+                'preview_image_url' => null,
+                'preview_cloudinary_id' => null,
+            ];
+        }
+
+        return [
+            'preview_image_url' => $row->preview_image_url ?: null,
+            'preview_cloudinary_id' => $row->preview_cloudinary_id ?: null,
+        ];
+    }
+
+    public function updatePreview(string $templateKey, ?string $imageUrl, ?string $publicId): void
+    {
+        $now = now()->toDateTimeString();
+        $known = config('templates.templates.'.$templateKey, []);
+        $harga = (int) ($known['harga'] ?? 0);
+
+        DB::insert(
+            'INSERT INTO catalog_templates (template_key, harga, diskon_persen, aktif_katalog, preview_image_url, preview_cloudinary_id, created_at, updated_at)
+             VALUES (?, ?, 0, 1, ?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE
+                preview_image_url = VALUES(preview_image_url),
+                preview_cloudinary_id = VALUES(preview_cloudinary_id),
+                updated_at = VALUES(updated_at)',
+            [$templateKey, $harga, $imageUrl, $publicId, $now, $now]
+        );
     }
 }

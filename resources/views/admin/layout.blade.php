@@ -52,6 +52,9 @@
                 <a href="{{ route('admin.katalog.index') }}" class="nav-item {{ request()->routeIs('admin.katalog.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm">
                     <i class="fa-solid fa-tags w-5 text-center"></i> Harga Katalog
                 </a>
+                <a href="{{ route('admin.template-gambar.index') }}" class="nav-item {{ request()->routeIs('admin.template-gambar.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm">
+                    <i class="fa-solid fa-images w-5 text-center"></i> Gambar Template
+                </a>
                 <a href="{{ route('admin.transaksi.index') }}" class="nav-item {{ request()->routeIs('admin.transaksi.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm">
                     <i class="fa-solid fa-receipt w-5 text-center"></i> Transaksi
                 </a>

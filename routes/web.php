@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InvitationController;
+use App\Http\Controllers\Admin\TemplateImageController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\InvitationPublicController;
 use App\Http\Controllers\LandingController;
@@ -40,6 +41,8 @@ Route::prefix('panel')->name('admin.')->middleware('demo.admin')->group(function
     Route::match(['put', 'post'], '/campaign', [CampaignController::class, 'update'])->name('campaign.update');
     Route::get('/katalog', [CatalogController::class, 'index'])->name('katalog.index');
     Route::match(['put', 'post'], '/katalog', [CatalogController::class, 'update'])->name('katalog.update');
+    Route::get('/gambar-template', [TemplateImageController::class, 'index'])->name('template-gambar.index');
+    Route::post('/gambar-template/{key}', [TemplateImageController::class, 'update'])->name('template-gambar.update');
     Route::get('/transaksi', [TransactionController::class, 'index'])->name('transaksi.index');
     Route::get('/transaksi/export', [TransactionController::class, 'export'])->name('transaksi.export');
     Route::delete('/transaksi/{id}', [TransactionController::class, 'destroy'])->name('transaksi.destroy');
