@@ -1,5 +1,19 @@
 @php
     $categories = config('templates.categories', []);
+    $templates = config('templates.templates', []);
+    $waNumber = '6285777433886';
+
+    // Demo pertama per kategori (untuk tombol "Lihat desain")
+    $demoByKat = [];
+    foreach ($templates as $t) {
+        $kid = $t['kategori'] ?? '';
+        if ($kid === '' || ! empty($demoByKat[$kid])) {
+            continue;
+        }
+        if (! empty($t['demo_url'])) {
+            $demoByKat[$kid] = $t['demo_url'];
+        }
+    }
 @endphp
 
 <section id="template" class="relative section-light py-16 md:py-24 pb-20 md:pb-28 overflow-hidden">
@@ -10,7 +24,7 @@
             <p class="section-label">Katalog Undangan</p>
             <h2 class="section-heading text-left mb-2">Pilih jenis undanganmu</h2>
             <p class="text-muted text-sm max-w-xl leading-relaxed">
-                Buka katalog untuk lihat desain, harga, demo, dan pesan langsung.
+                Lihat contoh demo, atau pesan langsung via WhatsApp.
             </p>
         </div>
 
@@ -23,28 +37,40 @@
                         'couple' => 'cat_couple',
                         default => 'cat_wedding',
                     };
+                    $demoUrl = $demoByKat[$kat['id']] ?? route('katalog', ['kategori' => $kat['id']]);
+                    $waText = rawurlencode('Halo Rayakan Momen, saya mau pesan undangan '.$kat['nama']);
                 @endphp
-                <a href="{{ route('katalog', ['kategori' => $kat['id']]) }}" class="home-cat-card reveal">
-                    <div class="home-cat-card__media">
+                <article class="home-cat-card reveal">
+                    <a href="{{ $demoUrl }}" target="_blank" rel="noopener noreferrer" class="home-cat-card__media">
                         <img
                             src="{{ cdn_image($imgKey, 'f_auto,q_auto:eco,w_480,c_fill,g_auto') }}"
                             alt="{{ $kat['nama'] }}"
                             loading="lazy"
                             decoding="async"
                         >
-                    </div>
+                    </a>
                     <div class="home-cat-card__body">
                         <span class="home-cat-card__label">{{ $kat['nama'] }}</span>
                         <h3 class="font-display">{{ $kat['tagline'] }}</h3>
-                        <span class="home-cat-card__cta">Lihat desain <i class="fa-solid fa-arrow-right"></i></span>
+                        <div class="home-cat-card__actions">
+                            <a href="{{ $demoUrl }}" target="_blank" rel="noopener noreferrer" class="home-cat-btn home-cat-btn--demo">
+                                Lihat desain
+                            </a>
+                            <a href="https://wa.me/{{ $waNumber }}?text={{ $waText }}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="home-cat-btn home-cat-btn--wa">
+                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                            </a>
+                        </div>
                     </div>
-                </a>
+                </article>
             @endforeach
         </div>
 
         <div class="home-katalog-cta reveal">
             <a href="{{ route('katalog') }}" class="home-katalog-all">
-                Lihat Semua Katalog
+                Lihat Semua
                 <i class="fa-solid fa-arrow-right"></i>
             </a>
         </div>
@@ -58,7 +84,6 @@
 @media(min-width:768px){
     #template.section-light{padding-bottom:6.5rem !important}
 }
-/* Grid pakai CSS sendiri (jangan andalkan Tailwind purge) */
 .home-cat-grid{
     display:grid;
     grid-template-columns:1fr;
@@ -74,7 +99,6 @@
     overflow:hidden;
     background:#fff;
     border:1px solid rgba(201,168,76,.22);
-    text-decoration:none;
     color:inherit;
     transition:transform .2s ease, box-shadow .2s ease;
     max-width:100%;
@@ -84,6 +108,7 @@
     box-shadow:0 12px 28px rgba(26,34,52,.08);
 }
 .home-cat-card__media{
+    display:block;
     aspect-ratio:16/10;
     overflow:hidden;
     background:#1a2234;
@@ -104,6 +129,7 @@
     display:flex;
     flex-direction:column;
     gap:.2rem;
+    flex:1;
 }
 .home-cat-card__label{
     font-size:.65rem;
@@ -113,7 +139,7 @@
     font-weight:600;
 }
 .home-cat-card__body h3{
-    margin:0;
+    margin:0 0 .55rem;
     font-size:.95rem;
     line-height:1.35;
     color:#1a2234;
@@ -122,17 +148,36 @@
 @media(min-width:768px){
     .home-cat-card__body h3{font-size:1.05rem}
 }
-.home-cat-card__cta{
-    margin-top:.45rem;
-    font-size:.78rem;
+.home-cat-card__actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:.4rem;
+    margin-top:auto;
+}
+.home-cat-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:.3rem;
+    padding:.55rem .4rem;
+    border-radius:.55rem;
+    font-size:.72rem;
     font-weight:600;
+    text-decoration:none;
+    font-family:inherit;
+    border:1px solid transparent;
+}
+.home-cat-btn--demo{
+    background:#fff;
     color:#1a2234;
+    border-color:#d8d2c8;
 }
-.home-cat-card__cta i{
-    font-size:.65rem;
-    margin-left:.2rem;
-    color:#c9a84c;
+.home-cat-btn--demo:hover{border-color:#c9a84c;color:#a8843a}
+.home-cat-btn--wa{
+    background:#1a2234;
+    color:#e8d5a3;
 }
+.home-cat-btn--wa:hover{filter:brightness(1.08)}
 .home-katalog-cta{
     text-align:center;
     padding-bottom:2.5rem;
