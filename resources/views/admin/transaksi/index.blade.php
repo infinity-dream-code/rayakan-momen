@@ -11,7 +11,7 @@
 
 <div class="flex flex-wrap items-center justify-end gap-3 mb-6">
     <a href="{{ route('admin.transaksi.export') }}" class="btn-gold inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm">
-        <i class="fa-solid fa-file-csv"></i> Export CSV
+        <i class="fa-solid fa-file-excel"></i> Export Excel
     </a>
 </div>
 
