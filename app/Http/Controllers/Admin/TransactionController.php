@@ -37,31 +37,53 @@ class TransactionController extends Controller
         $stats = $this->transactions->stats();
         $filename = 'transaksi-rayakanmomen-'.now()->format('Ymd-His').'.csv';
 
-        return response()->streamDownload(function () use ($items, $byTemplate, $stats) {
+        $kategoriLabel = [
+            'wedding' => 'Pernikahan',
+            'ultah_anak' => 'Ulang Tahun Anak',
+            'couple' => 'Untuk Pasangan',
+        ];
+
+        $rupiah = static fn (int $n): string => 'Rp '.number_format($n, 0, ',', '.');
+
+        return response()->streamDownload(function () use ($items, $byTemplate, $stats, $kategoriLabel, $rupiah) {
             $out = fopen('php://output', 'w');
-            // BOM supaya Excel baca UTF-8 benar
+            // BOM UTF-8 + sep=; supaya Excel Indonesia pecah kolom dengan benar
             fwrite($out, "\xEF\xBB\xBF");
+            fwrite($out, "sep=;\r\n");
 
-            fputcsv($out, ['RINGKASAN']);
-            fputcsv($out, ['Total Terjual', $stats['total_transaksi']]);
-            fputcsv($out, ['Total Penghasilan', $stats['total_penghasilan']]);
-            fputcsv($out, ['Terjual Bulan Ini', $stats['bulan_ini_transaksi']]);
-            fputcsv($out, ['Penghasilan Bulan Ini', $stats['bulan_ini_penghasilan']]);
-            fputcsv($out, []);
+            $row = static function ($out, array $cols): void {
+                fputcsv($out, $cols, ';');
+            };
 
-            fputcsv($out, ['PER TEMPLATE']);
-            fputcsv($out, ['Template', 'Terjual', 'Penghasilan']);
-            foreach ($byTemplate as $row) {
-                fputcsv($out, [
-                    $row['template_nama'],
-                    $row['terjual'],
-                    $row['penghasilan'],
+            $row($out, ['LAPORAN TRANSAKSI RAYAKAN MOMEN']);
+            $row($out, ['Diekspor', now()->format('d/m/Y H:i')]);
+            $row($out, []);
+
+            $row($out, ['RINGKASAN']);
+            $row($out, ['Keterangan', 'Nilai']);
+            $row($out, ['Total Terjual', $stats['total_transaksi']]);
+            $row($out, ['Total Penghasilan', $rupiah($stats['total_penghasilan'])]);
+            $row($out, ['Terjual Bulan Ini', $stats['bulan_ini_transaksi']]);
+            $row($out, ['Penghasilan Bulan Ini', $rupiah($stats['bulan_ini_penghasilan'])]);
+            $row($out, []);
+
+            $row($out, ['PER TEMPLATE']);
+            $row($out, ['Template', 'Terjual', 'Penghasilan']);
+            foreach ($byTemplate as $tpl) {
+                $row($out, [
+                    $tpl['template_nama'],
+                    $tpl['terjual'],
+                    $rupiah($tpl['penghasilan']),
                 ]);
             }
-            fputcsv($out, []);
+            if ($byTemplate === []) {
+                $row($out, ['—', 0, $rupiah(0)]);
+            }
+            $row($out, []);
 
-            fputcsv($out, ['RIWAYAT TRANSAKSI']);
-            fputcsv($out, [
+            $row($out, ['RIWAYAT TRANSAKSI']);
+            $row($out, [
+                'No',
                 'Tanggal',
                 'Pelanggan',
                 'Slug',
@@ -69,19 +91,22 @@ class TransactionController extends Controller
                 'Kategori',
                 'Harga Asli',
                 'Diskon (%)',
-                'Diterima (Harga Final)',
+                'Diterima',
             ]);
 
+            $no = 1;
             foreach ($items as $item) {
-                fputcsv($out, [
-                    Carbon::parse($item['created_at'])->format('Y-m-d H:i:s'),
+                $kat = (string) ($item['kategori'] ?? '');
+                $row($out, [
+                    $no++,
+                    Carbon::parse($item['created_at'])->format('d/m/Y H:i'),
                     $item['pelanggan'] ?? '',
                     $item['slug'] ?? '',
                     $item['template_nama'] ?: ($item['template_key'] ?? ''),
-                    $item['kategori'] ?? '',
-                    (int) ($item['harga_asli'] ?? 0),
-                    (float) ($item['diskon_persen'] ?? 0),
-                    (int) ($item['harga_final'] ?? 0),
+                    $kategoriLabel[$kat] ?? $kat,
+                    $rupiah((int) ($item['harga_asli'] ?? 0)),
+                    rtrim(rtrim(number_format((float) ($item['diskon_persen'] ?? 0), 2, ',', '.'), '0'), ','),
+                    $rupiah((int) ($item['harga_final'] ?? 0)),
                 ]);
             }
 
