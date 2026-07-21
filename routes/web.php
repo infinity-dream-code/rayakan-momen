@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InvitationController;
+use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\InvitationPublicController;
 use App\Http\Controllers\LandingController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,8 @@ Route::prefix('panel')->name('admin.')->middleware('demo.admin')->group(function
     Route::match(['put', 'post'], '/campaign', [CampaignController::class, 'update'])->name('campaign.update');
     Route::get('/katalog', [CatalogController::class, 'index'])->name('katalog.index');
     Route::match(['put', 'post'], '/katalog', [CatalogController::class, 'update'])->name('katalog.update');
+    Route::get('/transaksi', [TransactionController::class, 'index'])->name('transaksi.index');
+    Route::delete('/transaksi/{id}', [TransactionController::class, 'destroy'])->name('transaksi.destroy');
     Route::get('/undangan', [InvitationController::class, 'index'])->name('undangan.index');
     Route::get('/undangan/buat', [InvitationController::class, 'create'])->name('undangan.create');
     Route::post('/undangan/pilih-template', [InvitationController::class, 'pilihTemplate'])->name('undangan.pilih-template');

@@ -11,16 +11,9 @@
     <img src="{{ asset('images/floral-corner.svg') }}" alt="" class="ornament-corner bottom-left hidden md:block" aria-hidden="true">
 
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <div class="grid lg:grid-cols-12 gap-8 lg:gap-12 items-end mb-12">
-            <div class="lg:col-span-6 reveal">
-                <p class="section-label">Pilihan Undangan</p>
-                <h2 class="section-heading text-left mb-0">Pilih sesuai harimu</h2>
-            </div>
-            <div class="lg:col-span-5 lg:col-start-8 reveal reveal-delay-1">
-                <p class="text-muted text-sm leading-relaxed">
-                    Setiap desain punya harga sendiri (bisa ada diskon). Lihat contohnya, lalu pesan langsung lewat WhatsApp.
-                </p>
-            </div>
+        <div class="mb-12 reveal">
+            <p class="section-label">Pilihan Undangan</p>
+            <h2 class="section-heading text-left mb-0">Pilih sesuai harimu</h2>
         </div>
 
         <div class="flex flex-wrap items-center gap-2 mb-10 reveal" id="templateFilters">

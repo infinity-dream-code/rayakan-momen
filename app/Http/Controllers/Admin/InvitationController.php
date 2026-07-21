@@ -3,15 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\CatalogRepository;
 use App\Repositories\InvitationRepository;
+use App\Repositories\TransactionRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class InvitationController extends Controller
 {
-    public function __construct(protected InvitationRepository $storage)
-    {
+    public function __construct(
+        protected InvitationRepository $storage,
+        protected CatalogRepository $catalog,
+        protected TransactionRepository $transactions
+    ) {
     }
 
     public function index()
@@ -83,7 +88,8 @@ class InvitationController extends Controller
 
         $data = $this->validated($request);
         $data = $this->mapFormData($request, $data);
-        $this->storage->create($data);
+        $created = $this->storage->create($data);
+        $this->recordSale($created);
 
         $request->session()->forget('undangan_template');
 
@@ -630,5 +636,43 @@ class InvitationController extends Controller
         }
 
         return null;
+    }
+
+    /**
+     * Catat penjualan ke menu Transaksi memakai harga final katalog saat undangan dibuat.
+     * Contoh: harga 100rb, diskon 50% → tercatat 50rb.
+     */
+    protected function recordSale(array $undangan): void
+    {
+        $tema = (string) ($undangan['tema'] ?? '');
+        if ($tema === '') {
+            return;
+        }
+
+        $templates = $this->catalog->templates();
+        $tpl = $templates[$tema] ?? null;
+        $hargaAsli = (int) ($tpl['harga'] ?? 0);
+        $diskon = (float) ($tpl['diskon_persen'] ?? 0);
+        $hargaFinal = (int) ($tpl['harga_final'] ?? $this->catalog->hargaFinal($hargaAsli, $diskon));
+
+        $namaWanita = trim((string) ($undangan['nama_wanita'] ?? $undangan['nama_anak'] ?? ''));
+        $namaPria = trim((string) ($undangan['nama_pria'] ?? ''));
+        if ($namaWanita !== '' && $namaPria !== '' && ($undangan['kategori'] ?? '') !== 'ultah_anak') {
+            $pelanggan = $namaWanita.' & '.$namaPria;
+        } else {
+            $pelanggan = $namaWanita !== '' ? $namaWanita : ($namaPria !== '' ? $namaPria : ($undangan['slug'] ?? '—'));
+        }
+
+        $this->transactions->record([
+            'invitation_id' => $undangan['id'] ?? null,
+            'slug' => $undangan['slug'] ?? null,
+            'template_key' => $tema,
+            'template_nama' => $tpl['nama'] ?? $tema,
+            'kategori' => $undangan['kategori'] ?? ($tpl['kategori'] ?? null),
+            'pelanggan' => $pelanggan,
+            'harga_asli' => $hargaAsli,
+            'diskon_persen' => $diskon,
+            'harga_final' => $hargaFinal,
+        ]);
     }
 }
