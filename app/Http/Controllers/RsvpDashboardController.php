@@ -35,7 +35,6 @@ class RsvpDashboardController extends Controller
             'tidakHadir' => $tidakHadir,
             'total' => $total,
             'title' => $title,
-            'shareUrl' => $this->cipher->urlForSlug($slug),
         ]);
     }
 

@@ -90,16 +90,6 @@
             flex-wrap: wrap;
             align-items: center;
         }
-        .share-input {
-            flex: 1;
-            min-width: 180px;
-            border: 1px solid #e5e0d8;
-            border-radius: .65rem;
-            padding: .55rem .75rem;
-            font-size: .75rem;
-            background: var(--ivory);
-            color: #555;
-        }
         .btn {
             border: 0;
             border-radius: 999px;
@@ -113,7 +103,6 @@
             gap: .4rem;
             text-decoration: none;
         }
-        .btn-gold { background: linear-gradient(135deg, #dfc06a, #c9a84c); color: #12161f; }
         .btn-ghost { background: var(--ivory); color: var(--navy); border: 1px solid #e5e0d8; }
         .list { padding: .5rem 0; }
         .item {
@@ -156,20 +145,6 @@
             color: #999;
         }
         .foot a { color: var(--gold); text-decoration: none; }
-        .toast {
-            position: fixed;
-            bottom: 1.25rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(120%);
-            background: var(--navy);
-            color: #fff;
-            padding: .65rem 1.1rem;
-            border-radius: 999px;
-            font-size: .8rem;
-            transition: transform .25s ease;
-            z-index: 50;
-        }
-        .toast.show { transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
@@ -198,11 +173,7 @@
         <div class="panel">
             <div class="panel-head">
                 <h2>Ucapan Tamu</h2>
-                <div class="share-row" style="flex:1; justify-content:flex-end; max-width:100%;">
-                    <input class="share-input" id="shareUrl" type="text" readonly value="{{ $shareUrl }}">
-                    <button type="button" class="btn btn-gold" id="btnCopy"><i class="fa-solid fa-link"></i> Salin Link</button>
-                    <a class="btn btn-ghost" href="{{ url('/'.$undangan['slug']) }}" target="_blank" rel="noopener">Lihat Undangan</a>
-                </div>
+                <a class="btn btn-ghost" href="{{ url('/'.$undangan['slug']) }}" target="_blank" rel="noopener">Lihat Undangan</a>
             </div>
 
             <div class="list">
@@ -210,7 +181,7 @@
                     @php
                         $isHadir = ($item['kehadiran'] ?? '') === 'hadir';
                         $waktu = !empty($item['created_at'])
-                            ? \Illuminate\Support\Carbon::parse($item['created_at'])->timezone('Asia/Jakarta')->format('d M Y · H:i')
+                            ? \Illuminate\Support\Carbon::parse($item['created_at'])->timezone('Asia/Jakarta')->format('d M Y')
                             : '';
                     @endphp
                     <div class="item">
@@ -240,33 +211,5 @@
             Powered by <a href="{{ url('/') }}">Rayakan Momen</a>
         </div>
     </div>
-
-    <div class="toast" id="toast">Link disalin</div>
-    <script>
-        (function () {
-            var btn = document.getElementById('btnCopy');
-            var input = document.getElementById('shareUrl');
-            var toast = document.getElementById('toast');
-            if (!btn || !input) return;
-            btn.addEventListener('click', function () {
-                input.select();
-                input.setSelectionRange(0, 99999);
-                var ok = false;
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(input.value).then(function () { show(); }).catch(fallback);
-                } else {
-                    fallback();
-                }
-                function fallback() {
-                    try { ok = document.execCommand('copy'); } catch (e) {}
-                    if (ok) show();
-                }
-                function show() {
-                    toast.classList.add('show');
-                    setTimeout(function () { toast.classList.remove('show'); }, 1800);
-                }
-            });
-        })();
-    </script>
 </body>
 </html>
