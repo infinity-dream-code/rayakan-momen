@@ -52,6 +52,7 @@ class SettingController extends Controller
             }
             $cleaned[$key] = [
                 'kategori' => $kategori ?: ($known[$key]['kategori'] ?? 'wedding'),
+                'nama' => $row['nama'] ?? '',
                 'harga' => $row['harga'] ?? 0,
                 'diskon_persen' => $row['diskon_persen'] ?? 0,
                 'aktif_katalog' => ! empty($row['aktif_katalog']),

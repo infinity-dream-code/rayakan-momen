@@ -5,6 +5,9 @@
 @section('subheading', 'Kelola semua undangan digital')
 
 @section('content')
+@php
+    $catalogTemplates = app(\App\Repositories\CatalogRepository::class)->templates();
+@endphp
 <div class="card overflow-hidden">
     <div class="px-5 py-4 border-b border-[#eee8df] flex items-center justify-between gap-3 flex-wrap">
         <p class="text-sm text-gray-500">Total: <strong class="text-[#1a2234]">{{ count($undangan) }}</strong> undangan</p>
@@ -45,7 +48,7 @@
                         <td class="px-5 py-3.5">
                             @php
                                 $kat = $item['kategori'] ?? (config('templates.templates.'.($item['tema'] ?? '').'.kategori') ?? 'wedding');
-                                $temaNama = config('templates.templates.'.($item['tema'] ?? '').'.nama') ?? ($item['tema'] ?? '-');
+                                $temaNama = $catalogTemplates[$item['tema'] ?? '']['nama'] ?? ($item['tema'] ?? '-');
                             @endphp
                             @if ($kat === 'ultah_anak')
                                 <p class="font-medium">{{ $item['nama_anak'] ?? $item['nama_wanita'] ?? '-' }}</p>

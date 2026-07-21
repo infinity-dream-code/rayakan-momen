@@ -35,7 +35,7 @@ class InvitationController extends Controller
     public function create(Request $request)
     {
         $categories = $this->categories->all();
-        $templates = collect(config('templates.templates', []))
+        $templates = collect($this->catalog->templates())
             ->filter(fn ($t) => ($t['aktif'] ?? false))
             ->all();
 
@@ -73,9 +73,9 @@ class InvitationController extends Controller
             'undangan' => null,
             'mode' => 'create',
             'tema' => $tema,
-            'templateInfo' => $info,
+            'templateInfo' => $this->catalog->templates()[$tema] ?? $info,
             'categories' => $this->categories->all(),
-            'allTemplates' => config('templates.templates', []),
+            'allTemplates' => $this->catalog->templates(),
         ]);
     }
 
@@ -109,9 +109,9 @@ class InvitationController extends Controller
             'undangan' => $undangan,
             'mode' => 'edit',
             'tema' => $undangan['tema'] ?? 'elegan',
-            'templateInfo' => config('templates.templates.'.($undangan['tema'] ?? 'elegan')),
+            'templateInfo' => $this->catalog->templates()[$undangan['tema'] ?? 'elegan'] ?? config('templates.templates.'.($undangan['tema'] ?? 'elegan')),
             'categories' => $this->categories->all(),
-            'allTemplates' => config('templates.templates', []),
+            'allTemplates' => $this->catalog->templates(),
         ]);
     }
 

@@ -17,11 +17,12 @@
 <form method="POST" action="{{ route('admin.setting.update') }}" id="tplForm">
     @csrf
     <div class="card overflow-x-auto">
-        <table class="w-full text-sm min-w-[960px]">
+        <table class="w-full text-sm min-w-[1000px]">
             <thead class="bg-[#faf7f2] text-left text-xs uppercase tracking-wider text-gray-500">
                 <tr>
                     <th class="px-4 py-3 w-16">Cover</th>
-                    <th class="px-4 py-3">Template</th>
+                    <th class="px-4 py-3 w-44">Nama tampilan</th>
+                    <th class="px-4 py-3 w-28">Kode</th>
                     <th class="px-4 py-3 w-36">Jenis</th>
                     <th class="px-4 py-3 w-32">Harga</th>
                     <th class="px-4 py-3 w-24">Diskon</th>
@@ -43,8 +44,13 @@
                             </div>
                         </td>
                         <td class="px-4 py-3">
-                            <p class="font-medium">{{ $t['nama'] }}</p>
+                            <input type="text" name="items[{{ $key }}][nama]" value="{{ old('items.'.$key.'.nama', $t['nama']) }}" class="form-input py-2" required maxlength="100" placeholder="Nama di katalog">
+                        </td>
+                        <td class="px-4 py-3">
                             <p class="text-xs text-gray-400 font-mono">{{ $key }}</p>
+                            @if (($t['nama_asli'] ?? '') !== ($t['nama'] ?? ''))
+                                <p class="text-[10px] text-gray-300 mt-0.5">default: {{ $t['nama_asli'] }}</p>
+                            @endif
                         </td>
                         <td class="px-4 py-3">
                             <select name="items[{{ $key }}][kategori]" class="form-input text-xs">

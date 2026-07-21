@@ -9,13 +9,14 @@ class CatalogRepository
     public function allOverrides(): array
     {
         $rows = DB::select(
-            'SELECT template_key, kategori, harga, diskon_persen, aktif_katalog, tampil_home, preview_image_url, preview_cloudinary_id FROM catalog_templates'
+            'SELECT template_key, kategori, nama_tampilan, harga, diskon_persen, aktif_katalog, tampil_home, preview_image_url, preview_cloudinary_id FROM catalog_templates'
         );
 
         $out = [];
         foreach ($rows as $row) {
             $out[$row->template_key] = [
                 'kategori' => $row->kategori ?: null,
+                'nama_tampilan' => $row->nama_tampilan ?: null,
                 'harga' => (int) $row->harga,
                 'diskon_persen' => (float) $row->diskon_persen,
                 'aktif_katalog' => (bool) $row->aktif_katalog,
@@ -40,9 +41,13 @@ class CatalogRepository
             $diskon = max(0, min(100, $diskon));
             $final = $this->hargaFinal($harga, $diskon);
             $kategori = $ov['kategori'] ?? $t['kategori'] ?? 'wedding';
+            $namaAsli = $t['nama'] ?? $key;
+            $namaTampilan = trim((string) ($ov['nama_tampilan'] ?? '')) ?: null;
 
             $merged[$key] = array_merge($t, [
                 'kategori' => $kategori,
+                'nama' => $namaTampilan ?: $namaAsli,
+                'nama_asli' => $namaAsli,
                 'harga' => $harga,
                 'diskon_persen' => $diskon,
                 'harga_final' => $final,
@@ -118,18 +123,22 @@ class CatalogRepository
             $aktif = ! empty($row['aktif_katalog']) ? 1 : 0;
             $home = ! empty($row['tampil_home']) ? 1 : 0;
             $kategori = isset($row['kategori']) ? (string) $row['kategori'] : null;
+            $namaRaw = trim((string) ($row['nama'] ?? ''));
+            $configNama = (string) (config('templates.templates.'.$key.'.nama') ?? '');
+            $namaTampilan = $namaRaw !== '' && $namaRaw !== $configNama ? $namaRaw : null;
 
             DB::insert(
-                'INSERT INTO catalog_templates (template_key, kategori, harga, diskon_persen, aktif_katalog, tampil_home, created_at, updated_at)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                'INSERT INTO catalog_templates (template_key, kategori, nama_tampilan, harga, diskon_persen, aktif_katalog, tampil_home, created_at, updated_at)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                  ON DUPLICATE KEY UPDATE
                     kategori = VALUES(kategori),
+                    nama_tampilan = VALUES(nama_tampilan),
                     harga = VALUES(harga),
                     diskon_persen = VALUES(diskon_persen),
                     aktif_katalog = VALUES(aktif_katalog),
                     tampil_home = VALUES(tampil_home),
                     updated_at = VALUES(updated_at)',
-                [$key, $kategori, $harga, $diskon, $aktif, $home, $now, $now]
+                [$key, $kategori, $namaTampilan, $harga, $diskon, $aktif, $home, $now, $now]
             );
         }
     }
