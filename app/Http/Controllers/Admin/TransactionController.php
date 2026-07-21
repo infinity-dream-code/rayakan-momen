@@ -70,7 +70,7 @@ class TransactionController extends Controller
             // Judul
             echo '<table>';
             echo '<tr><td class="title" colspan="9">LAPORAN TRANSAKSI RAYAKAN MOMEN</td></tr>';
-            echo '<tr><td class="sub" colspan="9">Diekspor: '.$e(now()->format('d/m/Y H:i')).'</td></tr>';
+            echo '<tr><td class="sub" colspan="9">Diekspor: '.$e(now('Asia/Jakarta')->format('d/m/Y H:i')).'</td></tr>';
             echo '<tr><td colspan="9">&nbsp;</td></tr>';
             echo '</table>';
 
@@ -141,7 +141,7 @@ class TransactionController extends Controller
 
                     echo '<tr>';
                     echo '<td class="td-center'.$cls.'">'.$e($no++).'</td>';
-                    echo '<td class="td-center'.$cls.'">'.$e(Carbon::parse($item['created_at'])->format('d/m/Y H:i')).'</td>';
+                    echo '<td class="td-center'.$cls.'">'.$e(Carbon::parse($item['created_at'])->timezone('Asia/Jakarta')->format('d/m/Y H:i')).'</td>';
                     echo '<td class="td'.$cls.'">'.$e($item['pelanggan'] ?? '').'</td>';
                     echo '<td class="td'.$cls.'">'.$e($item['slug'] ?? '').'</td>';
                     echo '<td class="td'.$cls.'">'.$e($item['template_nama'] ?: ($item['template_key'] ?? '')).'</td>';
