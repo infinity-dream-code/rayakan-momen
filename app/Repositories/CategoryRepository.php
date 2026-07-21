@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 class CategoryRepository
 {
@@ -13,7 +15,7 @@ class CategoryRepository
         $rows = DB::select(
             'SELECT slug, nama, tagline, deskripsi, icon, warna, aktif, sort_order, image_url, cloudinary_id
              FROM catalog_categories
-             ORDER BY sort_order ASC, slug ASC'
+             ORDER BY sort_order ASC, nama ASC'
         );
 
         $out = [];
@@ -31,68 +33,83 @@ class CategoryRepository
 
     public function get(string $slug): ?array
     {
-        return $this->all()[$slug] ?? null;
-    }
-
-    /**
-     * @return array{image_url: ?string, cloudinary_id: ?string}
-     */
-    public function getImage(string $slug): array
-    {
         $row = DB::selectOne(
-            'SELECT image_url, cloudinary_id FROM catalog_categories WHERE slug = ? LIMIT 1',
+            'SELECT slug, nama, tagline, deskripsi, icon, warna, aktif, sort_order, image_url, cloudinary_id
+             FROM catalog_categories WHERE slug = ? LIMIT 1',
             [$slug]
         );
 
-        if (! $row) {
-            return ['image_url' => null, 'cloudinary_id' => null];
-        }
-
-        return [
-            'image_url' => $row->image_url ?: null,
-            'cloudinary_id' => $row->cloudinary_id ?: null,
-        ];
+        return $row ? $this->rowToArray($row) : null;
     }
 
-    public function updateMany(array $rows): void
+    public function create(string $nama): string
     {
+        $nama = trim($nama);
+        if ($nama === '') {
+            throw new InvalidArgumentException('Nama jenis wajib diisi.');
+        }
+
+        $slug = $this->uniqueSlug(Str::slug($nama) ?: 'jenis');
         $now = now()->toDateTimeString();
+        $sort = (int) (DB::selectOne('SELECT COALESCE(MAX(sort_order), -1) + 1 AS n FROM catalog_categories')->n ?? 0);
 
-        foreach ($rows as $slug => $row) {
-            if (! is_string($slug) || ! is_array($row)) {
-                continue;
-            }
-            if (! $this->slugExists($slug)) {
-                continue;
-            }
+        DB::insert(
+            'INSERT INTO catalog_categories (slug, nama, aktif, sort_order, icon, warna, created_at, updated_at)
+             VALUES (?, ?, 1, ?, ?, ?, ?, ?)',
+            [$slug, $nama, $sort, 'fa-layer-group', '#c9a84c', $now, $now]
+        );
 
-            DB::update(
-                'UPDATE catalog_categories
-                 SET nama = ?, tagline = ?, aktif = ?, updated_at = ?
-                 WHERE slug = ?',
-                [
-                    trim((string) ($row['nama'] ?? '')),
-                    trim((string) ($row['tagline'] ?? '')) ?: null,
-                    ! empty($row['aktif']) ? 1 : 0,
-                    $now,
-                    $slug,
-                ]
-            );
-        }
+        return $slug;
     }
 
-    public function updateImage(string $slug, ?string $imageUrl, ?string $publicId): void
+    public function update(string $slug, string $nama, bool $aktif = true): void
     {
-        if (! $this->slugExists($slug)) {
-            return;
+        if ($this->get($slug) === null) {
+            throw new InvalidArgumentException('Jenis tidak ditemukan.');
+        }
+
+        $nama = trim($nama);
+        if ($nama === '') {
+            throw new InvalidArgumentException('Nama jenis wajib diisi.');
         }
 
         DB::update(
-            'UPDATE catalog_categories
-             SET image_url = ?, cloudinary_id = ?, updated_at = ?
-             WHERE slug = ?',
-            [$imageUrl, $publicId, now()->toDateTimeString(), $slug]
+            'UPDATE catalog_categories SET nama = ?, aktif = ?, updated_at = ? WHERE slug = ?',
+            [$nama, $aktif ? 1 : 0, now()->toDateTimeString(), $slug]
         );
+    }
+
+    public function delete(string $slug): void
+    {
+        if ($this->get($slug) === null) {
+            throw new InvalidArgumentException('Jenis tidak ditemukan.');
+        }
+
+        $used = (int) (DB::selectOne(
+            'SELECT COUNT(*) AS c FROM catalog_templates WHERE kategori = ?',
+            [$slug]
+        )->c ?? 0);
+
+        if ($used > 0) {
+            throw new InvalidArgumentException('Jenis masih dipakai '.$used.' template. Pindahkan dulu di Setting.');
+        }
+
+        DB::delete('DELETE FROM catalog_categories WHERE slug = ?', [$slug]);
+    }
+
+    protected function uniqueSlug(string $base): string
+    {
+        $slug = Str::limit($base, 50, '');
+        $slug = $slug !== '' ? $slug : 'jenis';
+        $candidate = $slug;
+        $i = 2;
+
+        while ($this->get($candidate) !== null) {
+            $candidate = Str::limit($slug, 47, '').'-'.$i;
+            $i++;
+        }
+
+        return $candidate;
     }
 
     protected function syncFromConfig(): void
@@ -123,13 +140,6 @@ class CategoryRepository
                 ]
             );
         }
-    }
-
-    protected function slugExists(string $slug): bool
-    {
-        $row = DB::selectOne('SELECT slug FROM catalog_categories WHERE slug = ? LIMIT 1', [$slug]);
-
-        return $row !== null;
     }
 
     protected function rowToArray(object $row): array

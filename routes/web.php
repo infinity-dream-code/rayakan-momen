@@ -40,8 +40,9 @@ Route::prefix('panel')->name('admin.')->middleware('demo.admin')->group(function
     Route::get('/campaign', [CampaignController::class, 'index'])->name('campaign.index');
     Route::match(['put', 'post'], '/campaign', [CampaignController::class, 'update'])->name('campaign.update');
     Route::get('/jenis', [JenisController::class, 'index'])->name('jenis.index');
-    Route::post('/jenis', [JenisController::class, 'update'])->name('jenis.update');
-    Route::post('/jenis/{slug}/gambar', [JenisController::class, 'updateImage'])->name('jenis.image');
+    Route::post('/jenis', [JenisController::class, 'store'])->name('jenis.store');
+    Route::put('/jenis/{slug}', [JenisController::class, 'update'])->name('jenis.update');
+    Route::delete('/jenis/{slug}', [JenisController::class, 'destroy'])->name('jenis.destroy');
     Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
     Route::post('/setting', [SettingController::class, 'update'])->name('setting.update');
     Route::post('/setting/{key}/gambar', [SettingController::class, 'updateImage'])->name('setting.image');
