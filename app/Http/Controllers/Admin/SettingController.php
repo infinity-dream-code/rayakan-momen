@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\CatalogRepository;
+use App\Repositories\CategoryRepository;
 use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -14,17 +15,117 @@ class SettingController extends Controller
 {
     public function __construct(
         protected CatalogRepository $catalog,
+        protected CategoryRepository $categories,
         protected CloudinaryService $cloudinary
     ) {
     }
 
     public function index()
     {
-        $categories = config('templates.categories', []);
+        $jenisList = $this->categories->all();
         $templates = $this->catalog->templates();
         $grouped = collect($templates)->groupBy('kategori', preserveKeys: true);
 
-        return view('admin.setting.index', compact('categories', 'templates', 'grouped'));
+        return view('admin.setting.index', compact('jenisList', 'templates', 'grouped'));
+    }
+
+    public function updateCategories(Request $request)
+    {
+        $items = $request->input('jenis', []);
+        if (! is_array($items)) {
+            $items = [];
+        }
+
+        $known = $this->categories->all();
+        $cleaned = [];
+
+        foreach ($items as $slug => $row) {
+            if (! is_string($slug) || ! is_array($row)) {
+                continue;
+            }
+            if (! array_key_exists($slug, $known)) {
+                continue;
+            }
+            $nama = trim((string) ($row['nama'] ?? ''));
+            if ($nama === '') {
+                continue;
+            }
+            $cleaned[$slug] = [
+                'nama' => $nama,
+                'tagline' => $row['tagline'] ?? '',
+                'aktif' => ! empty($row['aktif']),
+            ];
+        }
+
+        if ($cleaned === []) {
+            return redirect()
+                ->route('admin.setting.index')
+                ->with('error', 'Tidak ada data jenis yang valid untuk disimpan.');
+        }
+
+        try {
+            $this->categories->updateMany($cleaned);
+        } catch (Throwable $e) {
+            Log::error('Gagal simpan jenis katalog: '.$e->getMessage());
+
+            return redirect()
+                ->route('admin.setting.index')
+                ->with('error', 'Gagal menyimpan jenis katalog. ('.$e->getMessage().')');
+        }
+
+        return redirect()
+            ->route('admin.setting.index')
+            ->with('success', 'Jenis katalog berhasil disimpan ('.count($cleaned).' jenis).');
+    }
+
+    public function updateCategoryImage(Request $request, string $slug)
+    {
+        abort_if($this->categories->get($slug) === null, 404);
+
+        $request->validate([
+            'image' => 'nullable|file|max:5120',
+            'remove_image' => 'nullable|boolean',
+        ]);
+
+        $current = $this->categories->getImage($slug);
+        $imageUrl = $current['image_url'];
+        $publicId = $current['cloudinary_id'];
+
+        try {
+            if ($request->boolean('remove_image')) {
+                $this->cloudinary->deleteImage($publicId);
+                $imageUrl = null;
+                $publicId = null;
+            } elseif ($request->hasFile('image')) {
+                if (! $this->cloudinary->isConfigured()) {
+                    return back()->with('error', 'Cloudinary belum dikonfigurasi. Isi CLOUDINARY_* di file .env');
+                }
+
+                $folder = 'rayakanmomen/jenis/'.$slug;
+                $uploaded = $this->cloudinary->uploadImage($request->file('image'), $folder);
+                if ($current['cloudinary_id']) {
+                    $this->cloudinary->deleteImage($current['cloudinary_id']);
+                }
+                $imageUrl = $uploaded['url'];
+                $publicId = $uploaded['public_id'];
+            } else {
+                return back()->with('error', 'Pilih gambar atau centang hapus.');
+            }
+
+            $this->categories->updateImage($slug, $imageUrl, $publicId);
+        } catch (InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
+        } catch (Throwable $e) {
+            Log::error('Gagal simpan gambar jenis '.$slug.': '.$e->getMessage());
+
+            return back()->with('error', 'Gagal menyimpan gambar jenis. Coba lagi.');
+        }
+
+        $nama = $this->categories->get($slug)['nama'] ?? $slug;
+
+        return redirect()
+            ->route('admin.setting.index')
+            ->with('success', 'Gambar jenis "'.$nama.'" berhasil disimpan.');
     }
 
     public function update(Request $request)
@@ -54,13 +155,13 @@ class SettingController extends Controller
         if ($cleaned === []) {
             return redirect()
                 ->route('admin.setting.index')
-                ->with('error', 'Tidak ada data yang valid untuk disimpan. Coba refresh halaman lalu simpan lagi.');
+                ->with('error', 'Tidak ada data template yang valid untuk disimpan.');
         }
 
         try {
             $this->catalog->updateMany($cleaned);
         } catch (Throwable $e) {
-            Log::error('Gagal simpan setting katalog: '.$e->getMessage());
+            Log::error('Gagal simpan setting template: '.$e->getMessage());
 
             return redirect()
                 ->route('admin.setting.index')
@@ -69,7 +170,7 @@ class SettingController extends Controller
 
         return redirect()
             ->route('admin.setting.index')
-            ->with('success', 'Katalog berhasil disimpan ('.count($cleaned).' produk).');
+            ->with('success', 'Template berhasil disimpan ('.count($cleaned).' produk).');
     }
 
     public function updateImage(Request $request, string $key)
@@ -120,6 +221,6 @@ class SettingController extends Controller
 
         return redirect()
             ->route('admin.setting.index')
-            ->with('success', 'Gambar "'.$nama.'" berhasil disimpan.');
+            ->with('success', 'Gambar template "'.$nama.'" berhasil disimpan.');
     }
 }

@@ -39,6 +39,8 @@ Route::prefix('panel')->name('admin.')->middleware('demo.admin')->group(function
     Route::get('/campaign', [CampaignController::class, 'index'])->name('campaign.index');
     Route::match(['put', 'post'], '/campaign', [CampaignController::class, 'update'])->name('campaign.update');
     Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
+    Route::post('/setting/jenis', [SettingController::class, 'updateCategories'])->name('setting.categories');
+    Route::post('/setting/jenis/{slug}/gambar', [SettingController::class, 'updateCategoryImage'])->name('setting.category-image');
     Route::post('/setting', [SettingController::class, 'update'])->name('setting.update');
     Route::post('/setting/{key}/gambar', [SettingController::class, 'updateImage'])->name('setting.image');
     Route::redirect('/katalog', '/panel/setting', 301);

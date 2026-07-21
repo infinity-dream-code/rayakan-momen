@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\CatalogRepository;
+use App\Repositories\CategoryRepository;
 use App\Repositories\InvitationRepository;
 use App\Repositories\TransactionRepository;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ class InvitationController extends Controller
     public function __construct(
         protected InvitationRepository $storage,
         protected CatalogRepository $catalog,
+        protected CategoryRepository $categories,
         protected TransactionRepository $transactions
     ) {
     }
@@ -32,7 +34,7 @@ class InvitationController extends Controller
 
     public function create(Request $request)
     {
-        $categories = config('templates.categories', []);
+        $categories = $this->categories->all();
         $templates = collect(config('templates.templates', []))
             ->filter(fn ($t) => ($t['aktif'] ?? false))
             ->all();
@@ -72,7 +74,7 @@ class InvitationController extends Controller
             'mode' => 'create',
             'tema' => $tema,
             'templateInfo' => $info,
-            'categories' => config('templates.categories', []),
+            'categories' => $this->categories->all(),
             'allTemplates' => config('templates.templates', []),
         ]);
     }
@@ -108,7 +110,7 @@ class InvitationController extends Controller
             'mode' => 'edit',
             'tema' => $undangan['tema'] ?? 'elegan',
             'templateInfo' => config('templates.templates.'.($undangan['tema'] ?? 'elegan')),
-            'categories' => config('templates.categories', []),
+            'categories' => $this->categories->all(),
             'allTemplates' => config('templates.templates', []),
         ]);
     }

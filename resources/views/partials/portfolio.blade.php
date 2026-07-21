@@ -1,5 +1,5 @@
 @php
-    $categories = config('templates.categories', []);
+    $categories = $categories ?? app(\App\Repositories\CategoryRepository::class)->allActive();
     $templates = config('templates.templates', []);
     $waNumber = '6285777433886';
 
@@ -37,13 +37,14 @@
                         'couple' => 'cat_couple',
                         default => 'cat_wedding',
                     };
+                    $coverImg = ! empty($kat['image']) ? $kat['image'] : cdn_image($imgKey, 'f_auto,q_auto:eco,w_480,c_fill,g_auto');
                     $demoUrl = $demoByKat[$kat['id']] ?? route('katalog', ['kategori' => $kat['id']]);
                     $waText = rawurlencode('Halo Rayakan Momen, saya mau pesan undangan '.$kat['nama']);
                 @endphp
                 <article class="home-cat-card reveal">
                     <a href="{{ $demoUrl }}" target="_blank" rel="noopener noreferrer" class="home-cat-card__media">
                         <img
-                            src="{{ cdn_image($imgKey, 'f_auto,q_auto:eco,w_480,c_fill,g_auto') }}"
+                            src="{{ $coverImg }}"
                             alt="{{ $kat['nama'] }}"
                             loading="lazy"
                             decoding="async"
