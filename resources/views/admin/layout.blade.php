@@ -49,11 +49,8 @@
                 <a href="{{ route('admin.undangan.index') }}" class="nav-item {{ request()->routeIs('admin.undangan.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm">
                     <i class="fa-solid fa-envelope-open-text w-5 text-center"></i> Undangan
                 </a>
-                <a href="{{ route('admin.katalog.index') }}" class="nav-item {{ request()->routeIs('admin.katalog.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm">
-                    <i class="fa-solid fa-tags w-5 text-center"></i> Harga Katalog
-                </a>
-                <a href="{{ route('admin.template-gambar.index') }}" class="nav-item {{ request()->routeIs('admin.template-gambar.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm">
-                    <i class="fa-solid fa-images w-5 text-center"></i> Gambar Template
+                <a href="{{ route('admin.setting.index') }}" class="nav-item {{ request()->routeIs('admin.setting.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm">
+                    <i class="fa-solid fa-gear w-5 text-center"></i> Setting
                 </a>
                 <a href="{{ route('admin.transaksi.index') }}" class="nav-item {{ request()->routeIs('admin.transaksi.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm">
                     <i class="fa-solid fa-receipt w-5 text-center"></i> Transaksi
@@ -121,8 +118,8 @@
         <a href="{{ route('admin.undangan.index') }}" class="flex-1 py-3 text-center text-xs {{ request()->routeIs('admin.undangan.*') ? 'text-[#e8d5a3]' : 'text-white/50' }}">
             <i class="fa-solid fa-envelope-open-text block mb-1"></i> Undangan
         </a>
-        <a href="{{ route('admin.katalog.index') }}" class="flex-1 py-3 text-center text-xs {{ request()->routeIs('admin.katalog.*') ? 'text-[#e8d5a3]' : 'text-white/50' }}">
-            <i class="fa-solid fa-tags block mb-1"></i> Harga
+        <a href="{{ route('admin.setting.index') }}" class="flex-1 py-3 text-center text-xs {{ request()->routeIs('admin.setting.*') ? 'text-[#e8d5a3]' : 'text-white/50' }}">
+            <i class="fa-solid fa-gear block mb-1"></i> Setting
         </a>
         <a href="{{ route('admin.campaign.index') }}" class="flex-1 py-3 text-center text-xs {{ request()->routeIs('admin.campaign.*') ? 'text-[#e8d5a3]' : 'text-white/50' }}">
             <i class="fa-solid fa-bullhorn block mb-1"></i> Campaign

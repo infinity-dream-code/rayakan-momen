@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Throwable;
 
-class TemplateImageController extends Controller
+class SettingController extends Controller
 {
     public function __construct(
         protected CatalogRepository $catalog,
@@ -24,10 +24,55 @@ class TemplateImageController extends Controller
         $templates = $this->catalog->templates();
         $grouped = collect($templates)->groupBy('kategori', preserveKeys: true);
 
-        return view('admin.template-gambar.index', compact('categories', 'templates', 'grouped'));
+        return view('admin.setting.index', compact('categories', 'templates', 'grouped'));
     }
 
-    public function update(Request $request, string $key)
+    public function update(Request $request)
+    {
+        $items = $request->input('items', []);
+        if (! is_array($items)) {
+            $items = [];
+        }
+
+        $known = config('templates.templates', []);
+        $cleaned = [];
+
+        foreach ($items as $key => $row) {
+            if (! is_string($key) || ! is_array($row)) {
+                continue;
+            }
+            if (! array_key_exists($key, $known)) {
+                continue;
+            }
+            $cleaned[$key] = [
+                'harga' => $row['harga'] ?? 0,
+                'diskon_persen' => $row['diskon_persen'] ?? 0,
+                'aktif_katalog' => ! empty($row['aktif_katalog']),
+            ];
+        }
+
+        if ($cleaned === []) {
+            return redirect()
+                ->route('admin.setting.index')
+                ->with('error', 'Tidak ada data yang valid untuk disimpan. Coba refresh halaman lalu simpan lagi.');
+        }
+
+        try {
+            $this->catalog->updateMany($cleaned);
+        } catch (Throwable $e) {
+            Log::error('Gagal simpan setting katalog: '.$e->getMessage());
+
+            return redirect()
+                ->route('admin.setting.index')
+                ->with('error', 'Gagal menyimpan ke database. ('.$e->getMessage().')');
+        }
+
+        return redirect()
+            ->route('admin.setting.index')
+            ->with('success', 'Katalog berhasil disimpan ('.count($cleaned).' produk).');
+    }
+
+    public function updateImage(Request $request, string $key)
     {
         $known = config('templates.templates', []);
         abort_if(! array_key_exists($key, $known), 404);
@@ -74,7 +119,7 @@ class TemplateImageController extends Controller
         $nama = $known[$key]['nama'] ?? $key;
 
         return redirect()
-            ->route('admin.template-gambar.index')
-            ->with('success', 'Gambar template "'.$nama.'" berhasil disimpan.');
+            ->route('admin.setting.index')
+            ->with('success', 'Gambar "'.$nama.'" berhasil disimpan.');
     }
 }

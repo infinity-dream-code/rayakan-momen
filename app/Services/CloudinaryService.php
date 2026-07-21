@@ -130,13 +130,12 @@ class CloudinaryService
         }
 
         $base = basename(str_replace(['\\', '/'], '', $original));
-        $lower = strtolower($base);
-        $parts = explode('.', $lower);
-        if (count($parts) !== 2) {
-            throw new InvalidArgumentException('Hanya file gambar tunggal yang diperbolehkan.');
+        $ext = strtolower(pathinfo($base, PATHINFO_EXTENSION));
+
+        if ($ext === '') {
+            throw new InvalidArgumentException('File harus punya ekstensi gambar (JPG, PNG, atau WEBP).');
         }
 
-        $ext = $parts[1];
         if (! in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
             throw new InvalidArgumentException('Format gambar: JPG, PNG, atau WEBP.');
         }
