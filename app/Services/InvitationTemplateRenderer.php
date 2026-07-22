@@ -137,18 +137,45 @@ class InvitationTemplateRenderer
             $desc = 'Undangan pernikahan digital '.$name.'. Dibuat dengan Rayakan Momen.';
         }
 
-        $image = null;
-        foreach (['foto_wanita', 'foto_pria', 'foto_anak', 'cover_image'] as $key) {
-            if (! empty($u[$key])) {
-                $image = $this->mediaUrl($u[$key]);
-                break;
-            }
-        }
-        if (! $image && ! empty($u['galeri'][0])) {
-            $image = $this->mediaUrl($u['galeri'][0]);
-        }
+        $tema = (string) ($meta['id'] ?? ($u['tema'] ?? 'elegan'));
+        $image = $this->resolveOgImage($u, $tema);
 
         return compact('title', 'desc', 'url', 'image', 'name');
+    }
+
+    /**
+     * Foto preview WhatsApp/OG = "foto utama" per template.
+     * - elegan / langit_malam / classic: foto pertama di galeri
+     * - adat_jawa: foto mempelai di awal (bukan galeri)
+     * - ultah_*: foto anak
+     * - couple: foto couple di awal
+     */
+    protected function resolveOgImage(array $u, string $tema): ?string
+    {
+        $fromKeys = function (array $keys) use ($u): ?string {
+            foreach ($keys as $key) {
+                if (! empty($u[$key])) {
+                    return $this->mediaUrl($u[$key]);
+                }
+            }
+
+            return null;
+        };
+
+        $galeriUtama = ! empty($u['galeri'][0]) ? $this->mediaUrl($u['galeri'][0]) : null;
+        $fotoMempelai = $fromKeys(['foto_wanita', 'foto_pria', 'cover_image']);
+        $fotoAnak = $fromKeys(['foto_anak', 'foto_wanita', 'foto_pria', 'cover_image']);
+        $fotoCouple = $fromKeys(['foto_pria', 'foto_wanita', 'cover_image']);
+
+        return match (true) {
+            // Template 1, 2, 3: foto utama = foto pertama di galeri
+            in_array($tema, ['elegan', 'classic', 'langit_malam'], true) => $galeriUtama ?? $fotoMempelai,
+            // Template 4: foto utama = foto di awal undangan (mempelai), bukan galeri
+            $tema === 'adat_jawa' => $fotoMempelai ?? $galeriUtama,
+            str_starts_with($tema, 'ultah_') => $fotoAnak ?? $galeriUtama,
+            $tema === 'couple_surat' => $fotoCouple ?? $galeriUtama,
+            default => $galeriUtama ?? $fotoMempelai,
+        };
     }
 
     protected function injectSeoMeta(string $html, array $u, array $meta): string
