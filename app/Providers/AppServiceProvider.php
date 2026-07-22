@@ -39,7 +39,14 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Pastikan URL absolut pakai APP_URL (tanpa /index.php)
+        // Di local (php artisan serve / Laragon), jangan paksa APP_URL —
+        // biar asset() ikut host+port request (mis. localhost:8000).
+        // Kalau di-force ke http://localhost, CSS/JS mengarah ke port 80 → “CSS tidak ke-load”.
+        if ($this->app->environment('local')) {
+            return;
+        }
+
+        // Production/hosting: pastikan URL absolut pakai APP_URL (tanpa /index.php)
         $root = rtrim((string) config('app.url'), '/');
         if ($root === '') {
             return;

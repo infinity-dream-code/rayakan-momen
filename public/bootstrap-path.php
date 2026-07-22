@@ -90,8 +90,8 @@ function rayakan_handle(string $uri, ?string $fromDir = null): void
         array_merge($_SERVER, [
             'SCRIPT_FILENAME' => $publicPath.'/index.php',
             'SCRIPT_NAME' => '/index.php',
-            'PHP_SELF' => '/index.php'.$path,
-            'REQUEST_URI' => '/index.php'.$path.($query !== '' ? '?'.$query : ''),
+            'PHP_SELF' => '/index.php',
+            'REQUEST_URI' => $fullUri,
         ]),
         in_array($method, ['POST', 'PUT', 'PATCH'], true) ? file_get_contents('php://input') : null
     );

@@ -32,6 +32,18 @@ require $laravelPath.'/vendor/autoload.php';
 
 $app = require_once $laravelPath.'/bootstrap/app.php';
 
+/*
+| PHP built-in server + folder public/panel/: SCRIPT_NAME jadi /panel/index.php
+| untuk URI /panel/xxx, sehingga path Laravel salah (jadi "undangan" saja → 404).
+| Paksa entry utama agar local (artisan serve) dan cPanel konsisten.
+*/
+$scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+if (str_ends_with($scriptName, '/panel/index.php')) {
+    $_SERVER['SCRIPT_NAME'] = '/index.php';
+    $_SERVER['PHP_SELF'] = '/index.php';
+    $_SERVER['SCRIPT_FILENAME'] = __DIR__.DIRECTORY_SEPARATOR.'index.php';
+}
+
 $kernel = $app->make(Kernel::class);
 
 $response = $kernel->handle(
