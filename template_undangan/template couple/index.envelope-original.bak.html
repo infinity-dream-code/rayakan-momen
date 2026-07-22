@@ -171,106 +171,79 @@ body.invitation-open #progress{
 body.invitation-open #music-toggle{ transform:translateY(0); }
 #music-toggle{ transform:translateY(12px); }
 
-/* ============ ENVELOPE (jalinsava-style maroon + floral) ============ */
-/* Backup asli: index.envelope-original.bak.html — bilang "balikin amplop couple" kalau mau restore */
+/* ============ ENVELOPE (pola dari index.html, tema index3) ============ */
 #envelope-overlay{
   position:fixed; inset:0; z-index:200;
   background:
-    radial-gradient(ellipse 80% 55% at 50% 35%, #fff9f4 0%, #f4ebe3 55%, #ebe0d6 100%);
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  padding: max(2.25rem, 5.5vh) 0 max(1rem, 3vh);
+    radial-gradient(ellipse at 50% 0%, rgba(201,160,106,.18) 0%, transparent 50%),
+    radial-gradient(ellipse at center, #2a1830 0%, #0f0910 100%);
+  display:flex; align-items:center; justify-content:center;
   transition: opacity .9s ease, visibility .9s ease;
-  overflow-x:hidden;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
+  overflow:hidden;
 }
 #envelope-overlay.hidden{ opacity:0; visibility:hidden; pointer-events:none; }
-#envelope-overlay .env-sparkle{ display:none !important; }
-.env-invited{
-  position:relative; left:auto; top:auto; transform:none;
-  flex-shrink:0;
-  font-family:'Tenor Sans',sans-serif;
-  font-size:clamp(1.55rem, 6.5vw, 2.35rem);
-  letter-spacing:.34em; font-weight:400;
-  color:#6b3540;
-  opacity:.72;
-  pointer-events:none; user-select:none; white-space:nowrap;
-  padding-left:.34em;
-  margin:0 0 .55rem;
-  line-height:1.2;
-  z-index:2;
-  text-shadow:0 1px 0 rgba(255,255,255,.35);
+#envelope-overlay .env-sparkle{
+  position:absolute; font-size:1rem; color:rgba(232,207,160,.45);
+  animation:env-twinkle 2.4s ease-in-out infinite; pointer-events:none;
 }
-.env-stage{
-  position:relative;
-  width:100%;
-  max-width:440px;
-  padding:0 1.25rem;
-  text-align:center;
-  z-index:2;
-}
+@keyframes env-twinkle{0%,100%{opacity:.3; transform:scale(.85);}50%{opacity:1; transform:scale(1.15);}}
 .env-badge{
-  display:inline-flex; align-items:center; gap:8px;
-  background:rgba(255,255,255,.72);
-  border:1px solid rgba(90,40,48,.10);
-  border-radius:999px; padding:9px 16px; margin-bottom:16px;
-  color:#5a2830; font-family:'Tenor Sans',sans-serif;
-  font-size:.72rem; letter-spacing:.1em; text-transform:uppercase;
-  box-shadow:0 10px 28px rgba(90,40,48,.06);
+  display:inline-flex; align-items:center; gap:10px;
+  background:rgba(243,234,217,.08); backdrop-filter:blur(8px);
+  border:1px solid rgba(201,160,106,.35);
+  border-radius:999px; padding:10px 18px; margin-bottom:28px;
+  color:var(--gold-light); font-family:'Tenor Sans',sans-serif;
+  font-size:.85rem; letter-spacing:.06em;
 }
 .envelope-wrap{
   position:relative;
-  width:min(360px, 100%);
-  margin: 0 auto;
-  padding: 0 0 4.5rem;
-  overflow:visible;
+  width:min(320px, 84vw);
+  margin: 1.5rem auto 0;
 }
 .envelope{
   position:relative;
   width:100%;
-  height:220px;
+  height:210px;
   cursor:pointer;
-  animation:env-bob 3.4s ease-in-out infinite;
-  filter:drop-shadow(0 26px 40px rgba(48,14,20,.32));
-  z-index:2;
+  animation:env-bob 3s ease-in-out infinite;
 }
 .envelope.open{ animation:none; }
-@keyframes env-bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+@keyframes env-bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
 .envelope .env-back{
-  position:absolute; inset:0; border-radius:4px;
-  background:linear-gradient(165deg, #6e2030 0%, #4a121c 48%, #320c14 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
+  position:absolute; inset:0; border-radius:14px;
+  background:linear-gradient(160deg, #f3ead9, #e8cfa0);
+  box-shadow:0 24px 40px rgba(0,0,0,.45);
   z-index:1;
 }
 .envelope .letter{
   position:absolute;
-  left:8%; right:8%;
+  left:10%; right:10%;
   top:0;
-  height:205px;
-  background:linear-gradient(180deg, #fffaf4, #f4e8dc);
-  border-radius:6px;
-  border:1px solid rgba(90,40,48,.12);
-  box-shadow:0 12px 28px rgba(0,0,0,.18);
+  height:200px;
+  background:linear-gradient(180deg, #fffaf0, #f3ead9);
+  border-radius:12px;
+  border:1px solid rgba(201,160,106,.25);
+  box-shadow:0 12px 28px rgba(0,0,0,.28);
   display:flex; align-items:center; justify-content:center; text-align:center;
   padding:1.25rem 1rem;
   z-index:2;
-  transform:translateY(42px);
+  transform:translateY(40px);
   opacity:0;
   pointer-events:none;
   transition:transform .95s cubic-bezier(.22,1,.36,1) .18s, opacity .4s ease .12s;
 }
 .envelope.open .letter{
-  transform:translateY(-150px);
+  transform:translateY(-155px);
   opacity:1;
 }
 .envelope .letter-inner{ width:100%; }
 .envelope .letter-icon{
   width:46px; height:46px; margin:0 auto 12px;
   border-radius:50%;
-  background:radial-gradient(circle at 30% 25%, #fff, #f0d8c8 55%, #c9a090);
+  background:linear-gradient(145deg, #f3ead9, #d98fa0);
   display:flex; align-items:center; justify-content:center;
-  color:#5a2830; font-size:1.15rem;
-  box-shadow:0 4px 0 rgba(90,40,48,.12);
+  color:#5c1f34; font-size:1.15rem;
+  box-shadow:0 4px 0 rgba(92,31,52,.18);
 }
 .envelope .letter-title{
   font-family:'Italiana',serif; font-size:1.2rem; color:#3a2140; margin:0;
@@ -280,29 +253,28 @@ body.invitation-open #music-toggle{ transform:translateY(0); }
   font-size:1.15rem; color:#8a3d52; margin:.45rem 0 0;
 }
 .envelope .env-front{
-  position:absolute; inset:0; border-radius:4px; z-index:3; pointer-events:none;
+  position:absolute; inset:0; border-radius:14px; z-index:3; pointer-events:none;
   background:
-    linear-gradient(155deg, transparent 49.2%, rgba(0,0,0,.22) 50%, transparent 50.8%),
-    linear-gradient(-155deg, transparent 49.2%, rgba(0,0,0,.16) 50%, transparent 50.8%),
-    linear-gradient(180deg, #5a1622 0%, #3a0e16 100%);
+    linear-gradient(155deg, transparent 49.2%, rgba(92,31,52,.12) 50%, transparent 50.8%),
+    linear-gradient(-155deg, transparent 49.2%, rgba(92,31,52,.12) 50%, transparent 50.8%),
+    linear-gradient(180deg, #e8cfa0 0%, #c9a06a 100%);
   transition:clip-path .55s ease, background .55s ease;
 }
 .envelope.open .env-front{
   clip-path:polygon(0 48%, 50% 100%, 100% 48%, 100% 100%, 0 100%);
-  background:linear-gradient(180deg, #4a121c 0%, #2a0a10 100%);
+  background:linear-gradient(180deg, #d9b88a 0%, #b8895a 100%);
 }
 .envelope .flap{
-  position:absolute; top:0; left:0; right:0; height:122px;
+  position:absolute; top:0; left:0; right:0; height:115px;
   z-index:4;
   transform-origin:top center;
   transition:transform .55s cubic-bezier(.22,1,.36,1), opacity .4s ease;
 }
 .envelope .flap-face{
   position:absolute; inset:0;
-  background:linear-gradient(180deg, #7a2836 0%, #4a121c 100%);
+  background:linear-gradient(180deg, #f3ead9 0%, #d98fa0 100%);
   clip-path:polygon(0 0, 100% 0, 50% 100%);
-  border-radius:4px 4px 0 0;
-  box-shadow:0 8px 16px rgba(0,0,0,.22);
+  border-radius:14px 14px 0 0;
 }
 .envelope.open .flap{
   transform:translateY(-12px) scaleY(0.2);
@@ -311,61 +283,34 @@ body.invitation-open #music-toggle{ transform:translateY(0); }
 }
 .seal{
   position:absolute; top:78%; left:50%; transform:translate(-50%,-50%);
-  width:64px; height:64px; border-radius:50%;
-  background:
-    radial-gradient(circle at 32% 28%, #ffffff 0%, #f7f2ea 45%, #e6ddd0 100%);
-  display:flex; align-items:center; justify-content:center; color:#5a2830;
+  width:56px; height:56px; border-radius:50%;
+  background:radial-gradient(circle at 32% 28%, #f3ead9, #c9a06a 55%, #8a5a2b 100%);
+  display:flex; align-items:center; justify-content:center; color:#5c1f34;
   box-shadow:
-    0 0 0 3px rgba(255,255,255,.9),
-    0 0 0 5px rgba(90,40,48,.10),
-    0 12px 20px rgba(0,0,0,.28),
-    inset 0 2px 4px rgba(255,255,255,.75);
+    0 0 0 4px rgba(201,160,106,.35),
+    0 0 0 7px rgba(201,160,106,.15),
+    0 8px 16px rgba(0,0,0,.35),
+    inset 0 2px 4px rgba(255,255,255,.4);
   z-index:5; transition:opacity .35s ease, transform .35s ease;
+  font-family:'Italiana',serif; font-size:1rem;
 }
-.seal svg{ width:34px; height:34px; display:block; }
 .seal::before{
   content:""; position:absolute; inset:5px; border-radius:50%;
-  border:1px solid rgba(90,40,48,.16); pointer-events:none;
+  border:1.5px dashed rgba(92,31,52,.28); pointer-events:none;
 }
 .envelope.open .seal{ opacity:0; transform:translate(-50%,-50%) scale(.4); pointer-events:none; }
-.envelope:not(.open):hover .seal{ transform:translate(-50%,-50%) scale(1.05); }
-.env-butterfly{ display:none !important; }
-.env-florals{
-  position:absolute; left:-10%; right:-10%; bottom:-.35rem;
-  height:150px;
-  pointer-events:none; z-index:6;
-  overflow:visible;
-}
-.env-florals .fl-side{
-  position:absolute; bottom:0; width:48%; max-width:165px;
-  height:150px;
-  overflow:visible;
-  filter:drop-shadow(0 8px 12px rgba(40,10,16,.10));
-}
-.env-florals .fl-side img{
-  width:100%; height:100%; display:block;
-  object-fit:contain; object-position:bottom center;
-}
-.env-florals .fl-left{
-  left:-10%;
-}
-.env-florals .fl-right{
-  right:-10%;
-  transform:scaleX(-1);
-}
+.envelope:not(.open):hover .seal{ transform:translate(-50%,-50%) scale(1.07); }
 #envelope-hint{
-  position:relative; z-index:7;
-  margin-top:.15rem; color:#6b3a42;
+  margin-top:2.2rem; color:var(--gold-light);
   font-family:'Cormorant Garamond',serif; font-style:italic;
-  font-size:1.12rem; animation:floaty 2.6s ease-in-out infinite;
+  font-size:1.2rem; animation:floaty 2.6s ease-in-out infinite;
 }
 .env-hint-icon{
   display:inline-flex; align-items:center; justify-content:center;
-  width:26px; height:26px; border-radius:50%;
-  background:rgba(90,40,48,.07); margin-right:.4rem; vertical-align:middle;
-  color:#5a2830;
+  width:28px; height:28px; border-radius:50%;
+  background:rgba(232,207,160,.15); margin-right:.45rem; vertical-align:middle;
 }
-@keyframes floaty{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+@keyframes floaty{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
 
 /* ============ HERO ============ */
 .hero-orbit{ position:absolute; border:1px solid rgba(201,160,106,.18); border-radius:50%; }
@@ -760,22 +705,16 @@ section{
     z-index:140;
   }
 
-  .env-badge{ font-size:.68rem; padding:8px 12px; margin-bottom:14px; max-width:88vw; }
-  .env-invited{ font-size:1.4rem; letter-spacing:.28em; margin-bottom:.4rem; opacity:.78; }
-  .envelope-wrap{ width:min(320px, 100%); padding: 0 0 4rem; }
-  .envelope{ height:190px; }
-  .envelope .letter{ height:178px; padding:.9rem .75rem; }
-  .envelope.open .letter{ transform:translateY(-112px); }
+  .env-badge{ font-size:.72rem; padding:8px 12px; margin-bottom:18px; max-width:88vw; }
+  .envelope-wrap{ width:min(290px, 86vw); margin-top:.25rem; }
+  .envelope{ height:180px; }
+  .envelope .letter{ height:170px; padding:.9rem .75rem; }
+  .envelope.open .letter{ transform:translateY(-108px); }
   .envelope .letter-title{ font-size:1rem; }
   .envelope .letter-sub{ font-size:.95rem; }
-  .envelope .flap{ height:105px; }
-  .seal{ width:54px; height:54px; }
-  .seal svg{ width:28px; height:28px; }
-  .env-florals{ height:130px; left:-8%; right:-8%; bottom:-.25rem; }
-  .env-florals .fl-side{ width:50%; max-width:145px; height:130px; }
-  .env-florals .fl-left{ left:-12%; }
-  .env-florals .fl-right{ right:-12%; }
-  #envelope-hint{ font-size:1rem; margin-top:.1rem; }
+  .envelope .flap{ height:96px; }
+  .seal{ width:46px; height:46px; font-size:.85rem; }
+  #envelope-hint{ font-size:1rem; margin-top:1.4rem; }
 
   #hero{
     min-height:100svh;
@@ -941,8 +880,13 @@ const CONFIG = {
 
 <!-- =================== ENVELOPE =================== -->
 <div id="envelope-overlay">
-  <div class="env-invited" aria-hidden="true">INVITED</div>
-  <div class="env-stage">
+  <span class="env-sparkle" style="top:12%;left:14%;animation-delay:.2s;">✦</span>
+  <span class="env-sparkle" style="top:18%;right:16%;animation-delay:.8s;">♡</span>
+  <span class="env-sparkle" style="bottom:22%;left:10%;animation-delay:1.2s;">✧</span>
+  <span class="env-sparkle" style="bottom:18%;right:12%;animation-delay:.5s;">✦</span>
+  <span class="env-sparkle" style="top:30%;left:8%;animation-delay:1.6s;">♡</span>
+  <span class="env-sparkle" style="top:34%;right:9%;animation-delay:1s;">✧</span>
+  <div class="text-center px-6 relative z-10">
     <div class="env-badge" id="envelopeBadge">
       <span aria-hidden="true">✉</span>
       <span>Kamu mendapat surat spesial</span>
@@ -960,24 +904,8 @@ const CONFIG = {
         <div class="env-front"></div>
         <div class="flap">
           <div class="flap-face"></div>
-          <div class="seal" aria-hidden="true">
-            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 38c2-8 8-14 14-14s12 6 14 14" stroke="#5a2830" stroke-width="1.6" fill="none"/>
-              <path d="M20 36c4-2 8-1 12 0 4-1 8-2 12 0" stroke="#5a2830" stroke-width="1.4" fill="none"/>
-              <ellipse cx="26" cy="30" rx="5.5" ry="4.2" fill="#5a2830"/>
-              <ellipse cx="38" cy="30" rx="5.5" ry="4.2" fill="#5a2830"/>
-              <circle cx="24.5" cy="29.5" r="1.1" fill="#f5f0ea"/>
-              <circle cx="36.5" cy="29.5" r="1.1" fill="#f5f0ea"/>
-              <path d="M30 33c1.2 2.4 2.8 2.4 4 0" stroke="#5a2830" stroke-width="1.2" stroke-linecap="round"/>
-              <path d="M18 40c6 5 22 5 28 0" stroke="#5a2830" stroke-width="1.3" fill="none"/>
-              <path d="M14 34c-3 1-5 4-4 7 3-1 5-3 4-7zm36 0c3 1 5 4 4 7-3-1-5-3-4-7z" fill="#5a2830" opacity=".85"/>
-            </svg>
-          </div>
+          <div class="seal">❤</div>
         </div>
-      </div>
-      <div class="env-florals" aria-hidden="true">
-        <div class="fl-side fl-left"><img src="assets/deco/floral-side.png" alt=""></div>
-        <div class="fl-side fl-right"><img src="assets/deco/floral-side.png" alt=""></div>
       </div>
     </div>
     <p id="envelope-hint">
