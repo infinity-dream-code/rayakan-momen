@@ -77,7 +77,7 @@
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Domain custom / subdomain khusus</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Aktif selamanya</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Revisi unlimited sampai puas</li>
-                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Prioritas pengerjaan (2 hari jadi)</li>
+                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Prioritas pengerjaan (1 hari jadi)</li>
                 </ul>
                 <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20Paket%20Platinum"
                    target="_blank"

@@ -23,6 +23,21 @@
                             'Buka amplop, pecah balon, atau buka surat — suasana awal menyesuaikan jenis undangannya.',
                     ],
                     [
+                        'icon' => 'fa-gauge-high',
+                        'title' => 'Dashboard RSVP',
+                        'desc' => 'Pantau siapa yang hadir dan baca ucapan tamu di satu halaman khusus untukmu.',
+                    ],
+                    [
+                        'icon' => 'fa-link',
+                        'title' => 'Link personal per tamu',
+                        'desc' => 'Buat link dengan nama tamu, salin, atau kirim langsung lewat WhatsApp dari dashboard.',
+                    ],
+                    [
+                        'icon' => 'fa-bolt',
+                        'title' => 'Pengerjaan 1 hari',
+                        'desc' => 'Data lengkap masuk — undangan biasanya siap dibagikan dalam 1 hari.',
+                    ],
+                    [
                         'icon' => 'fa-hourglass-half',
                         'title' => 'Hitung mundur',
                         'desc' => 'Menuju hari H: nikahan, pesta ulang tahun, atau tanggal spesial kalian.',
@@ -38,24 +53,9 @@
                         'desc' => 'Foto & video siap dilihat nyaman di HP tamu.',
                     ],
                     [
-                        'icon' => 'fa-clipboard-check',
-                        'title' => 'Konfirmasi hadir',
-                        'desc' => 'Tamu isi kehadiran online — hasilnya terkumpul rapi, tanpa chat bolak-balik.',
-                    ],
-                    [
                         'icon' => 'fa-gift',
                         'title' => 'Amplop digital',
                         'desc' => 'Opsional: transfer bank, QRIS, atau e-wallet.',
-                    ],
-                    [
-                        'icon' => 'fa-comments',
-                        'title' => 'Ucapan & doa',
-                        'desc' => 'Kolom ucapan untuk doa, harapan, atau pesan manis dari tamu.',
-                    ],
-                    [
-                        'icon' => 'fa-mobile-screen',
-                        'title' => 'Siap dikirim WA',
-                        'desc' => 'Satu link, dibuka nyaman di HP keluarga dan teman.',
                     ],
                 ];
             @endphp

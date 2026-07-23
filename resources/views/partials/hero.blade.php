@@ -30,8 +30,7 @@
         </h1>
 
         <p class="hero-lead hero-in hero-in-3">
-            Undangan pernikahan, ulang tahun anak, dan kejutan pasangan &mdash; pilih desain, lihat contohnya, lalu
-            bagikan lewat WhatsApp atau Media Sosial yang lain.
+            Nikahan, ultah anak, atau kejutan pasangan &mdash; siap 1 hari, dengan dashboard RSVP &amp; link personal.
         </p>
 
         <div class="hero-actions hero-in hero-in-4">

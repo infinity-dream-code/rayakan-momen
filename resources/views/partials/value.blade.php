@@ -9,8 +9,9 @@
                 <span class="text-gold-dark-accent">bukan sekedar desain biasa</span>
             </h2>
             <p class="text-muted text-sm sm:text-base leading-relaxed">
-                Satu tempat untuk undangan pernikahan, ulang tahun anak, dan kejutan pasangan. Pilih desain, lihat
-                contohnya, lalu kami bantu sampai link siap dibagikan.
+                Satu tempat untuk undangan pernikahan, ulang tahun anak, dan kejutan pasangan. Pengerjaan biasanya
+                <strong class="text-charcoal font-medium">1 hari</strong> setelah data lengkap — plus dashboard RSVP
+                dan link personal untuk tiap tamu.
             </p>
         </div>
 
@@ -25,18 +26,18 @@
 
             <article class="value-cell">
                 <span class="value-point-num">02</span>
-                <h3 class="font-display text-xl text-charcoal mb-2">Isi sesuai acaranya</h3>
+                <h3 class="font-display text-xl text-charcoal mb-2">Dashboard RSVP</h3>
                 <p class="text-sm text-muted leading-relaxed">
-                    Konfirmasi hadir, hitung mundur, galeri foto, amplop digital, atau surat kejutan — menyesuaikan
-                    jenis undangannya.
+                    Pantau ucapan &amp; konfirmasi hadir di satu halaman. Buat link undangan per nama tamu, lalu
+                    bagikan lewat WhatsApp.
                 </p>
             </article>
 
             <article class="value-cell">
                 <span class="value-point-num">03</span>
-                <h3 class="font-display text-xl text-charcoal mb-2">Proses cepat</h3>
+                <h3 class="font-display text-xl text-charcoal mb-2">Pengerjaan 1 hari</h3>
                 <p class="text-sm text-muted leading-relaxed">
-                    Biasanya siap dalam 2–4 hari. Cocok kalau tanggal sudah dekat atau ingin segera dibagikan.
+                    Setelah data lengkap, undangan biasanya siap dalam 1 hari. Cocok kalau tanggal sudah dekat.
                 </p>
             </article>
 

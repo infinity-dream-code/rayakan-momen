@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Rayakan Momen — Undangan Digital Pernikahan, Ulang Tahun &amp; Pasangan</title>
     <meta name="description"
-        content="Rayakan Momen — jasa undangan digital untuk pernikahan, ulang tahun anak, dan kejutan pasangan. Lihat contoh, pilih desain, lalu pesan lewat WhatsApp.">
+        content="Rayakan Momen — undangan digital siap 1 hari. Dashboard RSVP, link personal per tamu, untuk pernikahan, ulang tahun anak, dan kejutan pasangan.">
     <meta name="keywords"
         content="undangan digital, undangan pernikahan, undangan ulang tahun anak, undangan pasangan, Rayakan Momen">
     <meta name="author" content="Rayakan Momen">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Rayakan Momen — Undangan Digital Pernikahan, Ulang Tahun &amp; Pasangan">
     <meta property="og:description"
-        content="Pilih undangan digital untuk pernikahan, ulang tahun anak, atau kejutan pasangan. Contoh tersedia — siap dibagikan lewat WhatsApp.">
+        content="Pengerjaan biasanya 1 hari. Pantau RSVP di dashboard, buat &amp; bagikan link personal per tamu.">
     <meta property="og:image"
         content="https://res.cloudinary.com/zujq4fvj/image/upload/v1784771473/RAYAKAN_MOMEN_veeyix.png">
     <meta property="og:url" content="{{ url('/') }}">

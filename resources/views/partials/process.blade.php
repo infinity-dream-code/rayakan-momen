@@ -6,8 +6,8 @@
                 Empat langkah sampai undangan siap dibagikan
             </h2>
             <p class="text-muted text-sm sm:text-base leading-relaxed">
-                Pilih dulu jenisnya — pernikahan, ulang tahun anak, atau untuk pasangan — lalu kami bantu sampai link
-                siap dikirim.
+                Pilih dulu jenisnya — pernikahan, ulang tahun anak, atau untuk pasangan. Setelah data lengkap,
+                pengerjaan biasanya selesai dalam <strong class="text-charcoal font-medium">1 hari</strong>.
             </p>
         </div>
 
@@ -26,15 +26,15 @@
             </li>
             <li class="process-step">
                 <span class="process-step-index">03</span>
-                <h3 class="font-display text-lg text-charcoal mb-1.5">Desain &amp; Pratinjau</h3>
-                <p class="text-sm text-muted leading-relaxed">Tim kami kerjakan 1–3 hari. Kamu dapat pratinjau untuk
-                    dicek bersama.</p>
+                <h3 class="font-display text-lg text-charcoal mb-1.5">Desain 1 Hari</h3>
+                <p class="text-sm text-muted leading-relaxed">Tim kami kerjakan biasanya dalam 1 hari. Kamu dapat
+                    pratinjau untuk dicek bersama.</p>
             </li>
             <li class="process-step">
                 <span class="process-step-index">04</span>
-                <h3 class="font-display text-lg text-charcoal mb-1.5">Siap Dibagikan</h3>
-                <p class="text-sm text-muted leading-relaxed">Revisi selesai — undangan siap dikirim ke semua tamu lewat
-                    WhatsApp atau Media Sosial yang lain.</p>
+                <h3 class="font-display text-lg text-charcoal mb-1.5">Bagikan + Dashboard</h3>
+                <p class="text-sm text-muted leading-relaxed">Link siap dikirim. Pantau RSVP di dashboard, buat link
+                    personal per tamu, lalu bagikan lewat WhatsApp.</p>
             </li>
         </ol>
     </div>

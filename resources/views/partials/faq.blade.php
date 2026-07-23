@@ -42,8 +42,19 @@
                     <i class="fa-solid fa-chevron-down faq-chevron"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Umumnya 2–4 hari kerja setelah data lengkap diterima. Kalau request khusus atau tanggal sudah
-                        dekat, bisa diprioritaskan — chat kami dulu.</p>
+                    <p>Umumnya <strong>1 hari</strong> setelah data lengkap diterima. Kalau request khusus, kami
+                        sampaikan estimasi saat konsultasi.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button type="button" class="faq-trigger">
+                    <span>Apa itu Dashboard RSVP?</span>
+                    <i class="fa-solid fa-chevron-down faq-chevron"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Halaman khusus untukmu: lihat daftar ucapan &amp; konfirmasi kehadiran tamu secara real-time.
+                        Dari situ juga bisa buat link undangan personal per nama, lalu salin atau kirim lewat WhatsApp.</p>
                 </div>
             </div>
 
@@ -86,8 +97,8 @@
                     <i class="fa-solid fa-chevron-down faq-chevron"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Cukup salin tautan undangan, lalu kirim lewat WhatsApp, Instagram DM, atau SMS. Bisa juga
-                        dibagikan dengan nama tamu di tiap tautan (opsional).</p>
+                    <p>Dari <strong>Dashboard RSVP</strong>, kamu bisa buat link dengan nama tamu, lalu salin atau
+                        kirim langsung lewat WhatsApp. Bisa juga bagikan link umum undangan ke grup atau media sosial.</p>
                 </div>
             </div>
         </div>
