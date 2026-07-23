@@ -50,6 +50,7 @@ class InvitationRepository
 
     protected array $payloadKeys = [
         'galeri',
+        'foto_formal',
         'jadwal',
         'alasan_sayang',
         'dress_code',
@@ -75,6 +76,7 @@ class InvitationRepository
         'alamat_acara',
         'pesan_janji',
         'maps_url_resepsi',
+        'tamu_links',
     ];
 
     public function allForAdmin(): array
@@ -527,6 +529,96 @@ class InvitationRepository
         Cache::forget(config('undangan.cache_key_prefix', 'undangan:html:') . Str::lower($slug));
     }
 
+    /**
+     * Tambah nama tamu untuk link undangan personal (?to=Nama).
+     *
+     * @return array{ok:bool,error?:string,item?:array}
+     */
+    public function addTamuLink(string $id, string $nama): array
+    {
+        $nama = trim(preg_replace('/\s+/u', ' ', $nama) ?? '');
+        $nama = strip_tags($nama);
+        if ($nama === '' || mb_strlen($nama) > 80) {
+            return ['ok' => false, 'error' => 'Nama tidak valid.'];
+        }
+
+        $existing = $this->find($id);
+        if (! $existing) {
+            return ['ok' => false, 'error' => 'Undangan tidak ditemukan.'];
+        }
+
+        $list = array_values(array_filter(
+            is_array($existing['tamu_links'] ?? null) ? $existing['tamu_links'] : [],
+            fn ($g) => is_array($g) && filled($g['nama'] ?? null)
+        ));
+
+        if (count($list) >= 300) {
+            return ['ok' => false, 'error' => 'Batas maksimal 300 nama tercapai.'];
+        }
+
+        foreach ($list as $g) {
+            if (mb_strtolower(trim((string) ($g['nama'] ?? ''))) === mb_strtolower($nama)) {
+                return ['ok' => false, 'error' => 'Nama sudah ada di daftar.', 'item' => $g];
+            }
+        }
+
+        $item = [
+            'id' => (string) Str::ulid(),
+            'nama' => $nama,
+            'created_at' => now('Asia/Jakarta')->toDateTimeString(),
+        ];
+        $list[] = $item;
+
+        $this->writePayloadKey($id, 'tamu_links', $list);
+        $this->forgetClientCache((string) ($existing['slug'] ?? ''));
+
+        return ['ok' => true, 'item' => $item];
+    }
+
+    /**
+     * Hapus nama tamu dari daftar link.
+     */
+    public function removeTamuLink(string $id, string $tamuId): bool
+    {
+        $existing = $this->find($id);
+        if (! $existing) {
+            return false;
+        }
+
+        $list = array_values(array_filter(
+            is_array($existing['tamu_links'] ?? null) ? $existing['tamu_links'] : [],
+            fn ($g) => is_array($g) && (string) ($g['id'] ?? '') !== $tamuId
+        ));
+
+        $this->writePayloadKey($id, 'tamu_links', $list);
+        $this->forgetClientCache((string) ($existing['slug'] ?? ''));
+
+        return true;
+    }
+
+    protected function writePayloadKey(string $id, string $key, mixed $value): void
+    {
+        $row = DB::selectOne('SELECT payload_json FROM invitations WHERE id = ? LIMIT 1', [$id]);
+        if (! $row) {
+            return;
+        }
+
+        $payload = [];
+        if (! empty($row->payload_json)) {
+            $decoded = is_string($row->payload_json)
+                ? json_decode($row->payload_json, true)
+                : (array) $row->payload_json;
+            $payload = is_array($decoded) ? $decoded : [];
+        }
+
+        $payload[$key] = $value;
+
+        DB::update(
+            'UPDATE invitations SET payload_json = ?, updated_at = ? WHERE id = ?',
+            [json_encode($payload, JSON_UNESCAPED_UNICODE), now(), $id]
+        );
+    }
+
     protected function hydrate(object $row): array
     {
         $arr = (array) $row;
@@ -629,7 +721,7 @@ class InvitationRepository
 
     protected function deleteMediaFiles(array $data): void
     {
-        foreach (['foto_wanita', 'foto_pria', 'foto_anak', 'cover_image', 'qris_image'] as $key) {
+        foreach (['foto_wanita', 'foto_pria', 'foto_anak', 'foto_formal', 'cover_image', 'qris_image'] as $key) {
             $this->uploads->deletePublicPath($data[$key] ?? null);
         }
         foreach ($data['galeri'] ?? [] as $g) {

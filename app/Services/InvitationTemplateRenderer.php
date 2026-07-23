@@ -73,6 +73,7 @@ class InvitationTemplateRenderer
             'classic' => 'template_undangan/template_wedding/template 2/index.html',
             'langit_malam' => 'template_undangan/template_wedding/template 3/index.html',
             'adat_jawa' => 'template_undangan/template_wedding/wedding_adat_jawa/template 4/index.html',
+            'wedding_islam' => 'template_undangan/template_wedding/wedding_islam/index.html',
             'couple_surat' => 'template_undangan/template couple/index.html',
             'ultah_candyland' => 'template_undangan/template_ultah/template ultah 1/index.html',
             'ultah_bintang' => 'template_undangan/template_ultah/template ultah 2/index.blade.php',
@@ -166,12 +167,13 @@ class InvitationTemplateRenderer
         $fotoMempelai = $fromKeys(['foto_wanita', 'foto_pria', 'cover_image']);
         $fotoAnak = $fromKeys(['foto_anak', 'foto_wanita', 'foto_pria', 'cover_image']);
         $fotoCouple = $fromKeys(['foto_pria', 'foto_wanita', 'cover_image']);
+        $fotoFormal = $fromKeys(['foto_formal', 'foto_wanita', 'foto_pria', 'cover_image']);
 
         return match (true) {
-            // Template 1, 2, 3: foto utama = foto pertama di galeri
-            in_array($tema, ['elegan', 'classic', 'langit_malam'], true) => $galeriUtama ?? $fotoMempelai,
-            // Template 4: foto utama = foto di awal undangan (mempelai), bukan galeri
-            $tema === 'adat_jawa' => $fotoMempelai ?? $galeriUtama,
+            // Template 1, 2, 3, Islam: foto utama = foto pertama di galeri
+            in_array($tema, ['elegan', 'classic', 'langit_malam', 'wedding_islam'], true) => $galeriUtama ?? $fotoMempelai,
+            // Template 4: foto formal intro, fallback mempelai
+            $tema === 'adat_jawa' => $fotoFormal ?? $galeriUtama,
             str_starts_with($tema, 'ultah_') => $fotoAnak ?? $galeriUtama,
             $tema === 'couple_surat' => $fotoCouple ?? $galeriUtama,
             default => $galeriUtama ?? $fotoMempelai,
@@ -255,6 +257,21 @@ class InvitationTemplateRenderer
                 ['LARAS', mb_strtoupper($wanita)],
                 ['KHRISNA', mb_strtoupper($pria)],
             ],
+            'wedding_islam' => [
+                ['Ahmad Zaki Ramadhan', $priaL],
+                ['Nur Aisyah Putri', $wanitaL],
+                ['AHMAD ZAKI RAMADHAN', mb_strtoupper($priaL)],
+                ['NUR AISYAH PUTRI', mb_strtoupper($wanitaL)],
+                ['Ahmad Zaki <span class="text-gold-400 italic">&amp;</span> Nur Aisyah', $pria.' <span class="text-gold-400 italic">&amp;</span> '.$wanita],
+                ['Ahmad Zaki <span class="amp">&amp;</span> Nur Aisyah', $pria.' <span class="amp">&amp;</span> '.$wanita],
+                ['Ahmad Zaki &amp; Nur Aisyah', $pria.' &amp; '.$wanita],
+                ['Ahmad Zaki & Nur Aisyah', $pria.' & '.$wanita],
+                ['Zaki &amp; Aisyah', $pria.' &amp; '.$wanita],
+                ['Zaki & Aisyah', $pria.' & '.$wanita],
+                ['#ZakiAisyahBersanding', '#'.preg_replace('/\s+/', '', $pria.$wanita)],
+                ['Zaki', $pria],
+                ['Aisyah', $wanita],
+            ],
             default => [
                 ['NICO WARDHANA', mb_strtoupper($priaL)],
                 ['Nico Wardhana', $priaL],
@@ -299,6 +316,24 @@ class InvitationTemplateRenderer
             $html = preg_replace(
                 '/(<p class="parents">\s*Putra dari\s*<br\s*\/?\s*>)([\s\S]*?)(<\/p>)/i',
                 '$1'.e($ortuP).'$3',
+                $html,
+                1
+            ) ?? $html;
+        }
+
+        // Wedding Islam: baris ortu di bawah label PUTRA/PUTRI … DARI
+        if ($ortuP !== '') {
+            $html = preg_replace(
+                '/(PUTRA[^<]*DARI<\/p>\s*<p class="text-ivory\/70[^"]*"[^>]*>)([\s\S]*?)(<\/p>)/i',
+                '$1'.e($ortuP).'$3',
+                $html,
+                1
+            ) ?? $html;
+        }
+        if ($ortuW !== '') {
+            $html = preg_replace(
+                '/(PUTRI[^<]*DARI<\/p>\s*<p class="text-ivory\/70[^"]*"[^>]*>)([\s\S]*?)(<\/p>)/i',
+                '$1'.e($ortuW).'$3',
                 $html,
                 1
             ) ?? $html;
@@ -438,6 +473,10 @@ class InvitationTemplateRenderer
                 'wanita' => ['Ruliff-Refina-CPW'],
                 'pria' => ['Ruliff-Refina-CPP'],
             ],
+            'wedding_islam' => [
+                'wanita' => ['bride.jpg'],
+                'pria' => ['groom.jpg'],
+            ],
         ];
 
         $map = $markers[$tema] ?? $markers['elegan'];
@@ -478,6 +517,26 @@ class InvitationTemplateRenderer
                 '$1'.e($pria).'$2',
                 $html
             ) ?? $html;
+        }
+
+        // Adat Jawa: foto formal intro (berdua) — bukan galeri
+        if ($tema === 'adat_jawa') {
+            $formal = (! empty($u['foto_formal']) && $this->mediaFileExists($u['foto_formal']))
+                ? $this->mediaUrl($u['foto_formal'])
+                : null;
+            if ($formal) {
+                $html = preg_replace(
+                    '/(<div class="intro-photo[^"]*"[^>]*>\s*<img\b[^>]*\bsrc=")[^"]*(")/i',
+                    '$1'.e($formal).'$2',
+                    $html,
+                    1
+                ) ?? $html;
+                $html = preg_replace(
+                    '/(<img\b[^>]*\bsrc=")[^"]*Ruliff-Refina-14[^"]*(")/i',
+                    '$1'.e($formal).'$2',
+                    $html
+                ) ?? $html;
+            }
         }
 
         return $html;
@@ -526,6 +585,20 @@ class InvitationTemplateRenderer
             $safe = htmlspecialchars($akad, ENT_QUOTES, 'UTF-8');
             $html = str_replace('href="https://maps.google.com"', 'href="'.$safe.'"', $html);
             $html = str_replace('href="https://maps.google.com/"', 'href="'.$safe.'"', $html);
+        }
+
+        // Wedding Islam / tautan google.com/maps (bukan class map-btn)
+        if ($i === 0 && ($akad !== '' || $resepsi !== '')) {
+            $html = preg_replace_callback(
+                '/(<a\b[^>]*\bhref=")https?:\/\/(?:www\.)?google\.com\/maps[^"]*(")/i',
+                function (array $m) use (&$i, $akad, $resepsi) {
+                    $url = $i === 0 ? ($akad ?: $resepsi) : ($resepsi ?: $akad);
+                    $i++;
+
+                    return $m[1].htmlspecialchars($url, ENT_QUOTES, 'UTF-8').$m[2];
+                },
+                $html
+            ) ?? $html;
         }
 
         return $html;
@@ -579,6 +652,22 @@ class InvitationTemplateRenderer
                 1
             ) ?? $html;
 
+            // Wedding Islam cover: SABTU, 21 NOVEMBER 2026
+            try {
+                $coverUpper = mb_strtoupper(
+                    \Illuminate\Support\Carbon::parse($mainDate)->locale('id')->translatedFormat('l, d F Y'),
+                    'UTF-8'
+                );
+                $html = preg_replace(
+                    '/(<p class="text-ivory\/60 text-sm mt-4 tracking-widest font-kufi">)([\s\S]*?)(<\/p>)/i',
+                    '$1'.e($coverUpper).'$3',
+                    $html,
+                    1
+                ) ?? $html;
+            } catch (\Throwable $e) {
+                // ignore
+            }
+
             // Adat Jawa cover date: 22 · 11 · 2026
             $coverDot = $this->formatDateCoverDots($mainDate);
             if ($coverDot !== '') {
@@ -618,6 +707,36 @@ class InvitationTemplateRenderer
         string $alamat
     ): string {
         $h3 = '<h3[^>]*>\s*'.$titlePattern.'\s*<\/h3>';
+
+        // Wedding Islam: dua <p class="text-emerald-900/70 …"> (waktu + tempat)
+        if (preg_match('/'.$h3.'\s*<p class="text-emerald-900\/70/i', $html)) {
+            if ($tanggal || $waktu) {
+                $timeHtml = e((string) ($tanggal ?: ''));
+                if ($waktu) {
+                    $timeHtml .= ($timeHtml !== '' ? '<br>' : '').e($waktu);
+                }
+                $html = preg_replace(
+                    '/('.$h3.'\s*<p class="text-emerald-900\/70[^"]*"[^>]*>)([\s\S]*?)(<\/p>)/i',
+                    '$1'.$timeHtml.'$3',
+                    $html,
+                    1
+                ) ?? $html;
+            }
+            if ($tempat !== '' || $alamat !== '') {
+                $venue = e($tempat !== '' ? $tempat : $alamat);
+                if ($tempat !== '' && $alamat !== '') {
+                    $venue = e($tempat).'<br>'.e($alamat);
+                }
+                $html = preg_replace(
+                    '/('.$h3.'\s*<p class="text-emerald-900\/70[^"]*"[^>]*>[\s\S]*?<\/p>\s*<p class="text-emerald-900\/70[^"]*"[^>]*>)([\s\S]*?)(<\/p>)/i',
+                    '$1'.$venue.'$3',
+                    $html,
+                    1
+                ) ?? $html;
+            }
+
+            return $html;
+        }
 
         if ($tanggal || $waktu) {
             $timeLine = trim(($tanggal ? $tanggal.' · ' : '').($waktu ?: ''));
@@ -897,6 +1016,29 @@ HTML;
             ) ?? $html;
         }
 
+        // Wedding Islam: .story-list
+        if (str_contains($html, 'class="story-list"')) {
+            $items = '';
+            foreach ($cerita as $c) {
+                $tahun = e(trim((string) ($c['tahun'] ?? '')));
+                $judul = e(trim((string) ($c['judul'] ?? '')));
+                $desc = e(trim((string) ($c['deskripsi'] ?? '')));
+                $items .= '<article class="story-item" data-reveal>'
+                    .'<span class="story-dot" aria-hidden="true"></span>'
+                    .'<p class="story-year">'.$tahun.'</p>'
+                    .'<h3 class="story-title">'.$judul.'</h3>'
+                    .'<p class="story-body">'.$desc.'</p>'
+                    .'</article>';
+            }
+
+            $html = preg_replace(
+                '/(<div class="story-list"[^>]*>)([\s\S]*?)(<\/div>\s*<\/section>)/i',
+                '$1'.$items.'$3',
+                $html,
+                1
+            ) ?? $html;
+        }
+
         return $html;
     }
 
@@ -1018,6 +1160,22 @@ HTML;
             ) ?? $html;
         }
 
+        // Wedding Islam: const GALLERY=[...] → #galleryGrid
+        if (preg_match('/const\s+GALLERY\s*=\s*\[/', $html)) {
+            $jsItems = [];
+            foreach ($urls as $i => $url) {
+                $cap = 'Foto '.($i + 1);
+                $extra = ($i === 4 && count($urls) > 5) ? ',wide:1' : '';
+                $jsItems[] = '{src:'.json_encode($url, JSON_UNESCAPED_SLASHES).',cap:'.json_encode($cap).$extra.'}';
+            }
+            $html = preg_replace(
+                '/const\s+GALLERY\s*=\s*\[[\s\S]*?\];/',
+                'const GALLERY=['.implode(',', $jsItems).'];',
+                $html,
+                1
+            ) ?? $html;
+        }
+
         return $html;
     }
 
@@ -1027,6 +1185,15 @@ HTML;
             $u['rekening'] ?? [],
             fn ($r) => filled($r['bank'] ?? null) || filled($r['nomor'] ?? null)
         ));
+        $ewallet = array_values(array_filter(
+            $u['ewallet'] ?? [],
+            fn ($e) => filled($e['tipe'] ?? null) || filled($e['nomor'] ?? null)
+        ));
+
+        // Wedding Islam: kartu di #kado (bukan #bankList)
+        if (str_contains($html, 'id="kado"') && ! preg_match('/\bid=["\']bankList["\']/', $html)) {
+            return $this->replaceIslamGiftCards($html, $rekening, $ewallet);
+        }
 
         $cards = '';
         foreach ($rekening as $i => $r) {
@@ -1065,6 +1232,73 @@ HTML;
         }
 
         return $replaced;
+    }
+
+    /**
+     * Kartu amplop digital Wedding Islam (#kado).
+     */
+    protected function replaceIslamGiftCards(string $html, array $rekening, array $ewallet): string
+    {
+        if (count($rekening) === 0 && count($ewallet) === 0) {
+            return $html;
+        }
+
+        $cards = '';
+        $sides = ['left', 'right'];
+        $n = 0;
+
+        foreach ($rekening as $r) {
+            $name = trim((string) ($r['bank'] ?? ''));
+            if ($name === '') {
+                $name = 'Rekening';
+            } elseif (! preg_match('/^bank\b/i', $name)) {
+                $name = 'Bank '.$name;
+            }
+            $atas = trim((string) ($r['atas_nama'] ?? ''));
+            $nomor = trim((string) ($r['nomor'] ?? ''));
+            $digits = preg_replace('/\D+/', '', $nomor) ?: $nomor;
+            $side = $sides[$n % 2];
+            $n++;
+
+            $cards .= '<div class="event-card rounded-2xl p-6" data-reveal data-from="'.$side.'">'
+                .'<p class="font-kufi text-xs tracking-widest text-emerald-800 mb-2">'.e(mb_strtoupper($name)).'</p>'
+                .'<p class="font-display text-2xl text-emerald-900 mb-1">'.e($nomor).'</p>'
+                .($atas !== ''
+                    ? '<p class="text-sm text-emerald-900/70 mb-4">a.n '.e($atas).'</p>'
+                    : '<p class="mb-4"></p>')
+                .'<button type="button" class="copy-btn btn-line text-xs font-kufi tracking-widest px-4 py-2 rounded" data-c="'.e($digits).'">SALIN NOMOR REKENING</button>'
+                .'</div>';
+        }
+
+        foreach ($ewallet as $e) {
+            $tipe = trim((string) ($e['tipe'] ?? ''));
+            if ($tipe === '') {
+                $tipe = 'E-Wallet';
+            }
+            $atas = trim((string) ($e['atas_nama'] ?? ''));
+            $nomor = trim((string) ($e['nomor'] ?? ''));
+            $digits = preg_replace('/\D+/', '', $nomor) ?: $nomor;
+            $side = $sides[$n % 2];
+            $n++;
+
+            $cards .= '<div class="event-card rounded-2xl p-6" data-reveal data-from="'.$side.'">'
+                .'<p class="font-kufi text-xs tracking-widest text-emerald-800 mb-2">'.e(mb_strtoupper($tipe)).'</p>'
+                .'<p class="font-display text-2xl text-emerald-900 mb-1">'.e($nomor).'</p>'
+                .($atas !== ''
+                    ? '<p class="text-sm text-emerald-900/70 mb-4">a.n '.e($atas).'</p>'
+                    : '<p class="mb-4"></p>')
+                .'<button type="button" class="copy-btn btn-line text-xs font-kufi tracking-widest px-4 py-2 rounded" data-c="'.e($digits).'">SALIN NOMOR E-WALLET</button>'
+                .'</div>';
+        }
+
+        $replaced = preg_replace(
+            '/(<div class="relative z-10 max-w-3xl mx-auto grid[^"]*"[^>]*>)([\s\S]*?)(<\/div>\s*<\/section>\s*<section\b[^>]*\bid=["\']rsvp["\'])/i',
+            '$1'.$cards.'$3',
+            $html,
+            1
+        );
+
+        return $replaced ?? $html;
     }
 
     /**

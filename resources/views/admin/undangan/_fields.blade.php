@@ -54,6 +54,7 @@
 @if ($has('foto_mempelai'))
 <div class="card p-5 sm:p-6 field-group" data-group="foto_mempelai">
     <h3 class="font-display text-lg mb-4">Foto Mempelai</h3>
+    <p class="text-xs text-gray-500 mb-3">Foto terpisah untuk bagian profil mempelai wanita &amp; pria.</p>
     <div class="grid sm:grid-cols-2 gap-4">
         <div>
             <label class="form-label">Foto Mempelai Wanita</label>
@@ -72,6 +73,18 @@
             @endif
         </div>
     </div>
+</div>
+@endif
+
+@if ($has('foto_formal'))
+<div class="card p-5 sm:p-6 field-group" data-group="foto_formal">
+    <h3 class="font-display text-lg mb-2">Foto Formal</h3>
+    <p class="text-xs text-gray-500 mb-4">Foto berdua (formal) untuk bagian intro undangan Adat Jawa — terpisah dari galeri.</p>
+    <input type="file" name="foto_formal" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="form-input">
+    @if (!empty($u['foto_formal']))
+        <img src="{{ asset($u['foto_formal']) }}?v={{ is_file(public_path($u['foto_formal'])) ? filemtime(public_path($u['foto_formal'])) : time() }}" alt="Foto formal" class="mt-3 w-28 h-36 object-cover rounded-lg border">
+        <p class="text-xs text-gray-400 mt-1 break-all">{{ $u['foto_formal'] }}</p>
+    @endif
 </div>
 @endif
 
@@ -353,7 +366,15 @@
 
 @if ($has('galeri'))
 <div class="card p-5 sm:p-6 field-group" data-group="galeri">
-    <h3 class="font-display text-lg mb-4">Galeri Foto</h3>
+    <h3 class="font-display text-lg mb-2">Galeri Foto</h3>
+    @php $temaForm = $tema ?? ($u['tema'] ?? request('tema', '')); @endphp
+    @if (in_array($temaForm, ['elegan', 'langit_malam', 'classic'], true))
+        <p class="text-xs text-gray-500 mb-3 galeri-hint" data-for="elegan,classic,langit_malam">Urutan penting: <strong>foto pertama</strong> dipakai sebagai foto utama / featured di template (dan preview WhatsApp).</p>
+    @elseif ($temaForm === 'adat_jawa')
+        <p class="text-xs text-gray-500 mb-3 galeri-hint" data-for="adat_jawa">Galeri kenangan (terpisah dari Foto Formal intro).</p>
+    @else
+        <p class="text-xs text-gray-500 mb-3 galeri-hint" data-for="other">Bisa pilih beberapa foto sekaligus.</p>
+    @endif
     <input type="file" name="galeri[]" accept=".jpg,.jpeg,.png,image/jpeg,image/png" multiple class="form-input">
     @if (!empty($u['galeri']))
         <div class="flex flex-wrap gap-2 mt-3">

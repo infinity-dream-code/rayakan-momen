@@ -21,6 +21,15 @@ Route::get('/robots.txt', [InvitationPublicController::class, 'robots'])->name('
 Route::get('/dashboard-rsvp/{token}', [RsvpDashboardController::class, 'show'])
     ->where('token', '[A-Za-z0-9_-]+')
     ->name('rsvp.dashboard');
+Route::post('/dashboard-rsvp/{token}/tamu', [RsvpDashboardController::class, 'storeTamu'])
+    ->where('token', '[A-Za-z0-9_-]+')
+    ->middleware('throttle:30,1')
+    ->name('rsvp.tamu.store');
+Route::delete('/dashboard-rsvp/{token}/tamu/{tamuId}', [RsvpDashboardController::class, 'destroyTamu'])
+    ->where('token', '[A-Za-z0-9_-]+')
+    ->where('tamuId', '[A-Za-z0-9]+')
+    ->middleware('throttle:60,1')
+    ->name('rsvp.tamu.destroy');
 
 /*
 | Login rahasia: /SmartLoginAdmin

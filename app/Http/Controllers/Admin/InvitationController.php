@@ -213,6 +213,7 @@ class InvitationController extends Controller
             'foto_wanita' => 'nullable|file|mimes:jpg,jpeg,png|max:10240',
             'foto_pria' => 'nullable|file|mimes:jpg,jpeg,png|max:10240',
             'foto_anak' => 'nullable|file|mimes:jpg,jpeg,png|max:10240',
+            'foto_formal' => 'nullable|file|mimes:jpg,jpeg,png|max:10240',
             'pesan_janji' => 'nullable|string|max:800',
             'usia' => 'nullable|string|max:30',
             'ayah_host' => 'nullable|string|max:100',
@@ -445,6 +446,16 @@ class InvitationController extends Controller
             }
             if ($has('foto_anak') && $validated['foto_anak'] && ! $validated['foto_wanita']) {
                 $validated['foto_wanita'] = $validated['foto_anak'];
+            }
+
+            $fotoFormal = $request->hasFile('foto_formal')
+                ? $this->storage->storeUpload($request->file('foto_formal'), $dirFoto, 'foto-formal')
+                : null;
+            if ($fotoFormal) {
+                $this->storage->deletePublicPath($existing['foto_formal'] ?? null);
+                $validated['foto_formal'] = $fotoFormal;
+            } else {
+                $validated['foto_formal'] = $existing['foto_formal'] ?? null;
             }
 
             $qris = $request->hasFile('qris_image')

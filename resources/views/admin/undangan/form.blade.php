@@ -112,6 +112,7 @@
         @include('admin.undangan._fields', [
             'u' => $u,
             'fields' => $fields,
+            'tema' => $selectedTema,
             'waktuAkadMulai' => $waktuAkadMulai,
             'waktuAkadSelesai' => $waktuAkadSelesai,
             'waktuResepsiMulai' => $waktuResepsiMulai,

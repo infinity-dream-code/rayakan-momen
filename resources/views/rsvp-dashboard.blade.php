@@ -135,6 +135,7 @@
             border: 1px solid rgba(201, 168, 76, .22);
             border-radius: 1.25rem;
             overflow: hidden;
+            margin-bottom: 1.25rem;
         }
 
         .panel-head {
@@ -153,11 +154,75 @@
             font-size: 1.15rem;
         }
 
-        .share-row {
+        .panel-sub {
+            margin: .2rem 0 0;
+            font-size: .75rem;
+            color: #888;
+        }
+
+        .panel-body {
+            padding: 1rem 1.25rem 1.25rem;
+        }
+
+        .alert {
+            border-radius: .85rem;
+            padding: .75rem 1rem;
+            font-size: .85rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-ok {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-err {
+            background: #fff1f2;
+            color: #be123c;
+            border: 1px solid #fecdd3;
+        }
+
+        .alert-link {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            align-items: center;
+            margin-top: .65rem;
+        }
+
+        .alert-link code {
+            flex: 1;
+            min-width: 0;
+            font-size: .72rem;
+            background: rgba(255, 255, 255, .7);
+            border-radius: .5rem;
+            padding: .45rem .6rem;
+            word-break: break-all;
+            color: var(--navy);
+        }
+
+        .tamu-form {
             display: flex;
             gap: .5rem;
             flex-wrap: wrap;
-            align-items: center;
+        }
+
+        .tamu-form input {
+            flex: 1;
+            min-width: 180px;
+            border: 1px solid #e5e0d8;
+            border-radius: .85rem;
+            padding: .7rem .9rem;
+            font-family: inherit;
+            font-size: .9rem;
+            background: var(--ivory);
+            color: var(--navy);
+        }
+
+        .tamu-form input:focus {
+            outline: 2px solid rgba(201, 168, 76, .45);
+            border-color: var(--gold);
         }
 
         .btn {
@@ -172,12 +237,33 @@
             align-items: center;
             gap: .4rem;
             text-decoration: none;
+            white-space: nowrap;
         }
 
         .btn-ghost {
             background: var(--ivory);
             color: var(--navy);
             border: 1px solid #e5e0d8;
+        }
+
+        .btn-primary {
+            background: var(--navy);
+            color: #fff;
+        }
+
+        .btn-wa {
+            background: #25d366;
+            color: #fff;
+        }
+
+        .btn-icon {
+            padding: .5rem .7rem;
+        }
+
+        .btn-danger {
+            background: #fff1f2;
+            color: #be123c;
+            border: 1px solid #fecdd3;
         }
 
         .list {
@@ -220,6 +306,20 @@
             word-break: break-word;
         }
 
+        .link-url {
+            font-size: .72rem;
+            color: #777;
+            word-break: break-all;
+            line-height: 1.4;
+        }
+
+        .item-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .4rem;
+            margin-top: .35rem;
+        }
+
         .badge {
             display: inline-flex;
             align-items: center;
@@ -240,15 +340,36 @@
         }
 
         .empty {
-            padding: 3rem 1.5rem;
+            padding: 2.5rem 1.5rem;
             text-align: center;
             color: #999;
             font-size: .9rem;
         }
 
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 1.25rem;
+            transform: translateX(-50%) translateY(120%);
+            background: var(--navy);
+            color: #fff;
+            padding: .65rem 1.1rem;
+            border-radius: 999px;
+            font-size: .8rem;
+            z-index: 50;
+            opacity: 0;
+            transition: .25s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
         .foot {
             text-align: center;
-            margin-top: 1.5rem;
+            margin-top: .5rem;
             font-size: .75rem;
             color: #999;
         }
@@ -261,6 +382,10 @@
 </head>
 
 <body>
+    @php
+        $inviteTitle = $title;
+        $waTextTpl = 'Assalamualaikum Wr. Wb.\n\nDengan hormat, kami mengundang *{nama}* untuk membuka undangan digital *{title}*.\n\n{link}\n\nTerima kasih.';
+    @endphp
     <div class="wrap">
         <div class="hero">
             <div class="hero-label">Dashboard RSVP</div>
@@ -285,9 +410,97 @@
 
         <div class="panel">
             <div class="panel-head">
+                <div>
+                    <h2>Bagikan Undangan</h2>
+                    <p class="panel-sub">Tambah nama tamu, lalu salin link atau kirim lewat WhatsApp</p>
+                </div>
+                <a class="btn btn-ghost" href="{{ $baseInviteUrl }}" target="_blank" rel="noopener">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat Undangan
+                </a>
+            </div>
+            <div class="panel-body">
+                @if (session('tamu_error'))
+                    <div class="alert alert-err">{{ session('tamu_error') }}</div>
+                @endif
+                @if (session('tamu_success'))
+                    <div class="alert alert-ok">
+                        {{ session('tamu_success') }}
+                        @if (session('tamu_last_link'))
+                            <div class="alert-link">
+                                <code id="lastLink">{{ session('tamu_last_link') }}</code>
+                                <button type="button" class="btn btn-ghost btn-icon" data-copy="{{ session('tamu_last_link') }}">
+                                    <i class="fa-regular fa-copy"></i> Salin
+                                </button>
+                                <a class="btn btn-wa btn-icon"
+                                    href="https://wa.me/?text={{ rawurlencode(str_replace(['{nama}', '{title}', '{link}'], [session('tamu_last_nama'), $inviteTitle, session('tamu_last_link')], $waTextTpl)) }}"
+                                    target="_blank" rel="noopener">
+                                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                @endif
+
+                <form class="tamu-form" method="post" action="{{ route('rsvp.tamu.store', $token) }}">
+                    @csrf
+                    <input type="text" name="nama" value="{{ old('nama') }}" maxlength="80"
+                        placeholder="Contoh: Budi & Keluarga" required autocomplete="name">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-plus"></i> Buat Link
+                    </button>
+                </form>
+            </div>
+
+            <div class="list">
+                @forelse ($tamuLinks as $tamu)
+                    @php
+                        $namaTamu = (string) ($tamu['nama'] ?? '');
+                        $linkTamu = $baseInviteUrl . '?to=' . rawurlencode($namaTamu);
+                        $waText = str_replace(
+                            ['{nama}', '{title}', '{link}'],
+                            [$namaTamu, $inviteTitle, $linkTamu],
+                            $waTextTpl
+                        );
+                    @endphp
+                    <div class="item">
+                        <div class="item-top">
+                            <div>
+                                <div class="name">{{ $namaTamu }}</div>
+                                <div class="link-url">{{ $linkTamu }}</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button type="button" class="btn btn-ghost btn-icon" data-copy="{{ $linkTamu }}">
+                                <i class="fa-regular fa-copy"></i> Salin
+                            </button>
+                            <a class="btn btn-wa btn-icon"
+                                href="https://wa.me/?text={{ rawurlencode($waText) }}"
+                                target="_blank" rel="noopener">
+                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                            </a>
+                            <form method="post" action="{{ route('rsvp.tamu.destroy', [$token, $tamu['id']]) }}"
+                                onsubmit="return confirm('Hapus {{ addslashes($namaTamu) }} dari daftar?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-icon" title="Hapus">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @empty
+                    <div class="empty">
+                        <i class="fa-solid fa-user-plus"
+                            style="font-size:1.5rem;display:block;margin-bottom:.75rem;opacity:.45;"></i>
+                        Belum ada nama. Tambahkan tamu di atas untuk membuat link personal.
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head">
                 <h2>Ucapan Tamu</h2>
-                <a class="btn btn-ghost" href="{{ url('/' . $undangan['slug']) }}" target="_blank" rel="noopener">Lihat
-                    Undangan</a>
             </div>
 
             <div class="list">
@@ -328,6 +541,42 @@
             Powered by <a href="{{ url('/') }}">Rayakan Momen</a>
         </div>
     </div>
+
+    <div class="toast" id="toast" role="status"></div>
+
+    <script>
+        (function() {
+            var toast = document.getElementById('toast');
+            var timer;
+
+            function showToast(msg) {
+                toast.textContent = msg;
+                toast.classList.add('show');
+                clearTimeout(timer);
+                timer = setTimeout(function() {
+                    toast.classList.remove('show');
+                }, 1800);
+            }
+
+            document.querySelectorAll('[data-copy]').forEach(function(btn) {
+                btn.addEventListener('click', async function() {
+                    var text = btn.getAttribute('data-copy') || '';
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        showToast('Link disalin');
+                    } catch (e) {
+                        var ta = document.createElement('textarea');
+                        ta.value = text;
+                        document.body.appendChild(ta);
+                        ta.select();
+                        document.execCommand('copy');
+                        ta.remove();
+                        showToast('Link disalin');
+                    }
+                });
+            });
+        })();
+    </script>
 </body>
 
 </html>

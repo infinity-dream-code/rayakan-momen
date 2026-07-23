@@ -19,6 +19,10 @@ $fieldGroups = [
         'label' => 'Foto Mempelai',
         'kategori' => 'wedding',
     ],
+    'foto_formal' => [
+        'label' => 'Foto Formal',
+        'kategori' => 'wedding',
+    ],
     'akad' => [
         'label' => 'Akad Nikah',
         'kategori' => 'wedding',
@@ -203,6 +207,25 @@ return [
             'harga' => 350000,
             'preview' => null,
             'file' => 'template_undangan/template_wedding/wedding_adat_jawa/template 4/index.html',
+            'blade' => 'undangan.preview.wedding',
+            'demo_url' => null,
+            'aktif' => true,
+            'fields' => [
+                'mempelai', 'ortu_mempelai', 'foto_mempelai', 'foto_formal',
+                'akad', 'resepsi', 'maps',
+                'kutipan', 'youtube', 'galeri', 'cerita', 'gift',
+            ],
+        ],
+
+        'wedding_islam' => [
+            'id' => 'wedding_islam',
+            'kategori' => 'wedding',
+            'nama' => 'Wedding Islam',
+            'deskripsi' => 'Nuansa islami elegan — hijau zamrud, emas, gerbang undangan, dan ayat suci.',
+            'warna' => '#0e4a38',
+            'harga' => 300000,
+            'preview' => null,
+            'file' => 'template_undangan/template_wedding/wedding_islam/index.html',
             'blade' => 'undangan.preview.wedding',
             'demo_url' => null,
             'aktif' => true,
