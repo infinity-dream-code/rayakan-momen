@@ -95,12 +95,12 @@
     @foreach ($templates as $key => $t)
         <div class="card px-4 py-3 flex flex-wrap items-center gap-3">
             <span class="text-sm font-medium w-28 shrink-0">{{ $t['nama'] }}</span>
-            <form method="POST" action="{{ route('admin.setting.image', $key) }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-3 flex-1">
+            <form method="POST" action="{{ route('admin.setting.image', $key) }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-3 flex-1 cover-upload-form">
                 @csrf
-                <input type="file" name="image" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="form-input text-xs py-1.5 flex-1 min-w-[140px]">
+                <input type="file" name="image" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="form-input text-xs py-1.5 flex-1 min-w-[140px] cover-file">
                 @if ($t['preview'] ?? null)
                     <label class="inline-flex items-center gap-1 text-xs text-gray-600 cursor-pointer">
-                        <input type="checkbox" name="remove_image" value="1" class="rounded border-gray-300"> Hapus
+                        <input type="checkbox" name="remove_image" value="1" class="rounded border-gray-300 cover-remove"> Hapus
                     </label>
                 @endif
                 <button type="submit" class="btn-gold px-4 py-2 rounded-lg text-xs">Unggah cover</button>
@@ -117,6 +117,15 @@ document.querySelectorAll('.tpl-row').forEach(function (row) {
         row.querySelector('.harga-final-label').textContent = 'Rp ' + Math.round(h * (1 - d / 100)).toLocaleString('id-ID');
     }
     row.querySelectorAll('.harga-awal, .diskon-persen').forEach(function (el) { el.addEventListener('input', recalc); });
+});
+document.querySelectorAll('.cover-upload-form').forEach(function (form) {
+    const file = form.querySelector('.cover-file');
+    const remove = form.querySelector('.cover-remove');
+    if (file && remove) {
+        file.addEventListener('change', function () {
+            if (file.files && file.files.length) remove.checked = false;
+        });
+    }
 });
 </script>
 @endsection

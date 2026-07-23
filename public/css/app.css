@@ -160,12 +160,16 @@ a:focus {
     font-size: 0.7rem;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--color-gold-dark);
+    color: var(--color-gold-light);
     margin-bottom: 0.75rem;
 }
 
 .section-dark .section-label {
     color: var(--color-gold);
+}
+
+.section-dark .section-label-feature {
+    color: var(--color-gold-light);
 }
 
 .section-heading {

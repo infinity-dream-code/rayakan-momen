@@ -88,18 +88,19 @@ class SettingController extends Controller
         $current = $this->catalog->getPreview($key);
 
         try {
-            if ($request->boolean('remove_image')) {
-                $this->cloudinary->deleteImage($current['preview_cloudinary_id']);
-                $this->catalog->updatePreview($key, null, null);
-            } elseif ($request->hasFile('image')) {
+            // Ada file baru → selalu upload (abaikan centang Hapus supaya tidak bentrok)
+            if ($request->hasFile('image')) {
                 if (! $this->cloudinary->isConfigured()) {
-                    return back()->with('error', 'Cloudinary belum dikonfigurasi.');
+                    return back()->with('error', 'Cloudinary belum dikonfigurasi. Isi CLOUDINARY_* di .env');
                 }
                 $uploaded = $this->cloudinary->uploadImage($request->file('image'), 'rayakanmomen/templates/'.$key);
                 if ($current['preview_cloudinary_id']) {
                     $this->cloudinary->deleteImage($current['preview_cloudinary_id']);
                 }
                 $this->catalog->updatePreview($key, $uploaded['url'], $uploaded['public_id']);
+            } elseif ($request->boolean('remove_image')) {
+                $this->cloudinary->deleteImage($current['preview_cloudinary_id']);
+                $this->catalog->updatePreview($key, null, null);
             } else {
                 return back()->with('error', 'Pilih gambar atau centang hapus.');
             }
