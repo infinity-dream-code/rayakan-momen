@@ -3,7 +3,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!cfg) return;
 
     var form = document.getElementById('rsvpForm');
-    var list = document.getElementById('wishList');
+    var list = document.getElementById('wishList')
+        || document.getElementById('guestWall')
+        || document.getElementById('guestbookWall')
+        || document.getElementById('rsvpList');
 
     function escapeHtml(str) {
         return String(str || '')
@@ -20,21 +23,84 @@ document.addEventListener('DOMContentLoaded', function () {
         return 'Hadir';
     }
 
-    /** Struktur HTML mengikuti CSS template (.wish-item / .who / .msg) */
+    function fieldByIds(ids) {
+        for (var i = 0; i < ids.length; i++) {
+            var el = document.getElementById(ids[i]);
+            if (el) return el;
+        }
+        return null;
+    }
+
+    function isIslamWishList() {
+        return !!(list && (list.classList.contains('space-y-4') || document.getElementById('kado')));
+    }
+
+    function isUltahWall() {
+        return !!(list && (list.id === 'guestWall' || list.id === 'guestbookWall' || list.id === 'rsvpList'));
+    }
+
+    /** Struktur HTML mengikuti CSS tiap template */
     function renderWishes(items) {
         if (!list || !items) return;
         list.innerHTML = '';
-        items.forEach(function (w) {
-            var nama = (w.nama || w.name || '').trim();
-            var msg = (w.ucapan || w.msg || '').trim();
-            var hadir = formatHadir(w.kehadiran || w.confirm || '');
-            var who = nama + (hadir ? ' \u00B7 ' + hadir : '');
+        var islamStyle = isIslamWishList();
+        var ultahStyle = isUltahWall();
+        var wallColors = ['#FFE8F0', '#E8F4FF', '#FFF3D6', '#E8FFE8', '#F3E8FF', '#FFE8E8'];
 
+        items.forEach(function (w, idx) {
+            var nama = (w.nama || w.name || '').trim();
+            var msg = (w.ucapan || w.pesan || w.msg || '').trim();
+            var hadir = formatHadir(w.kehadiran || w.hadir || w.confirm || '');
             var item = document.createElement('div');
-            item.className = 'wish-item';
-            item.innerHTML = '<div class="who"></div><div class="msg"></div>';
-            item.querySelector('.who').textContent = who;
-            item.querySelector('.msg').textContent = msg;
+
+            if (islamStyle) {
+                item.className = 'event-card rounded-xl p-4 text-left';
+                var top = document.createElement('div');
+                top.className = 'flex justify-between mb-1';
+                var nameEl = document.createElement('p');
+                nameEl.className = 'font-display text-emerald-900';
+                nameEl.textContent = nama;
+                var badge = document.createElement('span');
+                badge.className = 'font-kufi text-[0.6rem] tracking-widest text-gold-600';
+                badge.textContent = (hadir || '').toUpperCase();
+                top.appendChild(nameEl);
+                top.appendChild(badge);
+                var msgEl = document.createElement('p');
+                msgEl.className = 'text-sm text-ink/70';
+                msgEl.textContent = msg;
+                item.appendChild(top);
+                item.appendChild(msgEl);
+            } else if (ultahStyle && list.id === 'guestWall') {
+                item.className = 'sticky-note rounded-2xl p-5';
+                item.style.background = wallColors[idx % wallColors.length];
+                var quote = document.createElement('p');
+                quote.className = 'font-hand text-xl leading-snug';
+                quote.textContent = '"' + msg + '"';
+                var by = document.createElement('p');
+                by.className = 'font-display font-bold text-sm mt-3';
+                by.textContent = '— ' + nama + (hadir ? ' · ' + hadir : '');
+                item.appendChild(quote);
+                item.appendChild(by);
+            } else if (ultahStyle) {
+                item.className = 'bg-white rounded-2xl p-4';
+                item.style.boxShadow = '0 6px 16px rgba(92,59,77,.08)';
+                var title = document.createElement('p');
+                title.className = 'font-display font-600';
+                title.textContent = nama + (hadir ? ' — ' + hadir : '');
+                item.appendChild(title);
+                if (msg) {
+                    var body = document.createElement('p');
+                    body.className = 'text-sm text-[var(--ink-soft)] mt-1';
+                    body.textContent = msg;
+                    item.appendChild(body);
+                }
+            } else {
+                var who = nama + (hadir ? ' \u00B7 ' + hadir : '');
+                item.className = 'wish-item';
+                item.innerHTML = '<div class="who"></div><div class="msg"></div>';
+                item.querySelector('.who').textContent = who;
+                item.querySelector('.msg').textContent = msg;
+            }
             list.appendChild(item);
         });
     }
@@ -42,16 +108,30 @@ document.addEventListener('DOMContentLoaded', function () {
     // Timpa render localStorage bawaan template dengan data DB
     if (cfg.wishes && cfg.wishes.length) {
         renderWishes(cfg.wishes);
-    } else if (list) {
+    } else if (list && list.id === 'wishList') {
         list.innerHTML = '';
     }
 
     var FORBIDDEN_CHARS = /[<>'"]/;
     var UCAPAN_MAX = 60;
 
-    var fmsgEl = document.getElementById('fmsg');
+    var fmsgEl = fieldByIds(['fmsg', 'fPesan', 'rsvpMsg']);
     if (fmsgEl) {
         fmsgEl.setAttribute('maxlength', String(UCAPAN_MAX));
+    }
+
+    function readKehadiran() {
+        var confirmEl = fieldByIds(['fconfirm', 'fHadir']);
+        if (confirmEl && confirmEl.value) return confirmEl.value;
+
+        if (form) {
+            var radio = form.querySelector('input[name="hadir"]:checked');
+            if (radio && radio.value) return radio.value;
+
+            var chip = form.querySelector('.chip-btn.selected, .chip.selected');
+            if (chip) return chip.getAttribute('data-val') || chip.textContent.trim() || 'Hadir';
+        }
+        return 'Hadir';
     }
 
     if (form) {
@@ -59,9 +139,20 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             e.stopImmediatePropagation();
 
-            var nama = ((document.getElementById('fname') || {}).value || '').trim();
-            var kehadiranRaw = (document.getElementById('fconfirm') || {}).value || 'Hadir';
-            var ucapan = ((document.getElementById('fmsg') || {}).value || '').trim();
+            var namaEl = fieldByIds(['fname', 'fNama', 'rsvpName'])
+                || form.querySelector('input[type="text"], input:not([type]), input[type="search"]');
+            var msgEl = fieldByIds(['fmsg', 'fPesan', 'rsvpMsg'])
+                || form.querySelector('textarea');
+
+            var nama = ((namaEl || {}).value || '').trim();
+            var kehadiranRaw = readKehadiran();
+            var ucapan = ((msgEl || {}).value || '').trim();
+
+            // Ultah: ucapan boleh kosong → isi default singkat agar lolos validasi API
+            if (!ucapan && (fieldByIds(['rsvpName', 'rsvpMsg']) || document.getElementById('guestWall') || document.getElementById('rsvpList'))) {
+                ucapan = 'Semoga harinya menyenangkan!';
+            }
+
             if (!nama || !ucapan) {
                 alert('Nama dan ucapan wajib diisi.');
                 return;
@@ -83,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
             body.append('ucapan', ucapan);
             body.append('kehadiran', kehadiran);
 
-            var btn = form.querySelector('button[type="submit"], .submit-btn, button');
+            var btn = form.querySelector('button[type="submit"], .submit-btn, button.open-btn');
             if (btn) btn.disabled = true;
 
             var headers = {
@@ -128,8 +219,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                     renderWishes(cfg.wishes);
                     form.reset();
+                    var jumlah = document.getElementById('fJumlah') || document.getElementById('rsvpCount');
+                    if (jumlah) jumlah.value = '1';
+                    form.querySelectorAll('.chip-btn.selected, .chip.selected').forEach(function (c) {
+                        c.classList.remove('selected');
+                    });
                     if (typeof window.showAppToast === 'function') {
                         window.showAppToast('Ucapan terkirim');
+                    } else if (typeof window.toast === 'function') {
+                        window.toast('Terima kasih atas doanya');
                     } else {
                         alert('Terima kasih! Ucapanmu sudah tersimpan.');
                     }

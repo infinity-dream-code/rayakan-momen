@@ -378,6 +378,83 @@
             color: var(--gold);
             text-decoration: none;
         }
+
+        .list-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: .75rem;
+            flex-wrap: wrap;
+            padding: .65rem 1.25rem;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            background: #fcfbf8;
+            font-size: .75rem;
+            color: #777;
+        }
+
+        .list-meta strong {
+            color: var(--navy);
+        }
+
+        .list-meta.full {
+            background: #fff1f2;
+            color: #be123c;
+        }
+
+        .pager {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: .4rem;
+            flex-wrap: wrap;
+            padding: 1rem 1.25rem 1.15rem;
+            border-top: 1px solid var(--line);
+        }
+
+        .pager a,
+        .pager span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2rem;
+            height: 2rem;
+            padding: 0 .55rem;
+            border-radius: 999px;
+            font-size: .78rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .pager a {
+            background: var(--ivory);
+            color: var(--navy);
+            border: 1px solid #e5e0d8;
+        }
+
+        .pager a:hover {
+            border-color: var(--gold);
+        }
+
+        .pager .is-active {
+            background: var(--navy);
+            color: #fff;
+            border: 1px solid var(--navy);
+        }
+
+        .pager .is-disabled {
+            opacity: .35;
+            pointer-events: none;
+            background: var(--ivory);
+            color: #999;
+            border: 1px solid #e5e0d8;
+        }
+
+        .tamu-form input:disabled,
+        .tamu-form button:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -444,11 +521,24 @@
                 <form class="tamu-form" method="post" action="{{ route('rsvp.tamu.store', $token) }}">
                     @csrf
                     <input type="text" name="nama" value="{{ old('nama') }}" maxlength="80"
-                        placeholder="Contoh: Budi & Keluarga" required autocomplete="name">
-                    <button type="submit" class="btn btn-primary">
+                        placeholder="Contoh: Budi & Keluarga" required autocomplete="name"
+                        @if ($tamuFull) disabled @endif>
+                    <button type="submit" class="btn btn-primary" @if ($tamuFull) disabled @endif>
                         <i class="fa-solid fa-plus"></i> Buat Link
                     </button>
                 </form>
+                @if ($tamuFull)
+                    <p class="panel-sub" style="margin-top:.75rem;color:#be123c;">
+                        Kuota 50 nama penuh. Hapus nama di daftar sebelum menambah lagi.
+                    </p>
+                @endif
+            </div>
+
+            <div class="list-meta {{ $tamuFull ? 'full' : '' }}">
+                <span>Daftar link: <strong>{{ $tamuTotal }}</strong> / {{ $tamuMax }} nama</span>
+                @if ($tamuLinks->total() > 0)
+                    <span>Halaman {{ $tamuLinks->currentPage() }} dari {{ $tamuLinks->lastPage() }}</span>
+                @endif
             </div>
 
             <div class="list">
@@ -478,7 +568,8 @@
                                 target="_blank" rel="noopener">
                                 <i class="fa-brands fa-whatsapp"></i> WhatsApp
                             </a>
-                            <form method="post" action="{{ route('rsvp.tamu.destroy', [$token, $tamu['id']]) }}"
+                            <form method="post"
+                                action="{{ route('rsvp.tamu.destroy', [$token, $tamu['id']]) }}?page={{ $tamuLinks->currentPage() }}"
                                 onsubmit="return confirm('Hapus {{ addslashes($namaTamu) }} dari daftar?');">
                                 @csrf
                                 @method('DELETE')
@@ -496,6 +587,34 @@
                     </div>
                 @endforelse
             </div>
+
+            @if ($tamuLinks->lastPage() > 1)
+                <nav class="pager" aria-label="Navigasi daftar link">
+                    @if ($tamuLinks->onFirstPage())
+                        <span class="is-disabled"><i class="fa-solid fa-chevron-left"></i></span>
+                    @else
+                        <a href="{{ $tamuLinks->previousPageUrl() }}" aria-label="Sebelumnya">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </a>
+                    @endif
+
+                    @foreach ($tamuLinks->getUrlRange(1, $tamuLinks->lastPage()) as $page => $url)
+                        @if ($page == $tamuLinks->currentPage())
+                            <span class="is-active">{{ $page }}</span>
+                        @else
+                            <a href="{{ $url }}">{{ $page }}</a>
+                        @endif
+                    @endforeach
+
+                    @if ($tamuLinks->hasMorePages())
+                        <a href="{{ $tamuLinks->nextPageUrl() }}" aria-label="Berikutnya">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+                    @else
+                        <span class="is-disabled"><i class="fa-solid fa-chevron-right"></i></span>
+                    @endif
+                </nav>
+            @endif
         </div>
 
         <div class="panel">

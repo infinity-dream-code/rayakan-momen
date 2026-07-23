@@ -921,7 +921,7 @@
     <form id="rsvpForm" class="space-y-4 max-w-sm mx-auto">
       <div>
         <label class="text-sm font-semibold block mb-1">Nama</label>
-        <input type="text" required placeholder="Nama kamu" class="input-cute w-full rounded-xl px-4 py-3">
+        <input type="text" id="rsvpName" name="nama" required placeholder="Nama kamu" class="input-cute w-full rounded-xl px-4 py-3" autocomplete="name">
       </div>
       <div>
         <label class="text-sm font-semibold block mb-1">Apakah kamu bisa hadir?</label>
@@ -933,7 +933,7 @@
       </div>
       <div>
         <label class="text-sm font-semibold block mb-1">Ucapan untuk Keiko</label>
-        <textarea rows="3" placeholder="Tulis doa & ucapan manis..." class="input-cute w-full rounded-xl px-4 py-3 resize-none"></textarea>
+        <textarea id="rsvpMsg" name="pesan" rows="3" maxlength="60" placeholder="Tulis doa & ucapan manis..." class="input-cute w-full rounded-xl px-4 py-3 resize-none"></textarea>
       </div>
       <button type="submit" class="open-btn font-display text-white w-full py-3 rounded-full">Kirim Konfirmasi</button>
     </form>

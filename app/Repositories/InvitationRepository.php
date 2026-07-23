@@ -552,8 +552,8 @@ class InvitationRepository
             fn ($g) => is_array($g) && filled($g['nama'] ?? null)
         ));
 
-        if (count($list) >= 300) {
-            return ['ok' => false, 'error' => 'Batas maksimal 300 nama tercapai.'];
+        if (count($list) >= 50) {
+            return ['ok' => false, 'error' => 'Batas maksimal 50 nama tercapai. Hapus nama lama dulu sebelum menambah.'];
         }
 
         foreach ($list as $g) {

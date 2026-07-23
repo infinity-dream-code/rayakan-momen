@@ -5,16 +5,21 @@ namespace App\Http\Controllers;
 use App\Repositories\InvitationRepository;
 use App\Services\RsvpDashboardCipher;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class RsvpDashboardController extends Controller
 {
+    public const TAMU_MAX = 50;
+
+    public const TAMU_PER_PAGE = 10;
+
     public function __construct(
         protected InvitationRepository $invitations,
         protected RsvpDashboardCipher $cipher
     ) {
     }
 
-    public function show(string $token)
+    public function show(Request $request, string $token)
     {
         $undangan = $this->resolveUndangan($token);
         $ucapan = $undangan['ucapan_tersimpan'] ?? [];
@@ -23,10 +28,29 @@ class RsvpDashboardController extends Controller
         $total = count($ucapan);
 
         $title = $this->displayTitle($undangan);
-        $tamuLinks = array_values(array_reverse(array_filter(
+        $allTamu = array_values(array_reverse(array_filter(
             is_array($undangan['tamu_links'] ?? null) ? $undangan['tamu_links'] : [],
             fn ($g) => is_array($g) && filled($g['nama'] ?? null)
         )));
+
+        $tamuTotal = count($allTamu);
+        $page = max(1, (int) $request->query('page', 1));
+        $perPage = self::TAMU_PER_PAGE;
+        $lastPage = max(1, (int) ceil($tamuTotal / $perPage));
+        if ($page > $lastPage) {
+            $page = $lastPage;
+        }
+
+        $tamuLinks = new LengthAwarePaginator(
+            array_slice($allTamu, ($page - 1) * $perPage, $perPage),
+            $tamuTotal,
+            $perPage,
+            $page,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
 
         return view('rsvp-dashboard', [
             'token' => $token,
@@ -37,6 +61,9 @@ class RsvpDashboardController extends Controller
             'total' => $total,
             'title' => $title,
             'tamuLinks' => $tamuLinks,
+            'tamuTotal' => $tamuTotal,
+            'tamuMax' => self::TAMU_MAX,
+            'tamuFull' => $tamuTotal >= self::TAMU_MAX,
             'baseInviteUrl' => url('/'.$undangan['slug']),
         ]);
     }
@@ -55,7 +82,8 @@ class RsvpDashboardController extends Controller
         $result = $this->invitations->addTamuLink((string) $undangan['id'], $validated['nama']);
 
         if (! ($result['ok'] ?? false)) {
-            return back()
+            return redirect()
+                ->route('rsvp.dashboard', ['token' => $token])
                 ->withInput()
                 ->with('tamu_error', $result['error'] ?? 'Gagal menambah nama.');
         }
@@ -63,11 +91,13 @@ class RsvpDashboardController extends Controller
         $nama = (string) ($result['item']['nama'] ?? $validated['nama']);
         $link = $this->guestInviteUrl((string) $undangan['slug'], $nama);
 
-        return back()->with([
-            'tamu_success' => 'Link untuk '.$nama.' siap dibagikan.',
-            'tamu_last_link' => $link,
-            'tamu_last_nama' => $nama,
-        ]);
+        return redirect()
+            ->route('rsvp.dashboard', ['token' => $token])
+            ->with([
+                'tamu_success' => 'Link untuk '.$nama.' siap dibagikan.',
+                'tamu_last_link' => $link,
+                'tamu_last_nama' => $nama,
+            ]);
     }
 
     public function destroyTamu(Request $request, string $token, string $tamuId)
@@ -75,7 +105,14 @@ class RsvpDashboardController extends Controller
         $undangan = $this->resolveUndangan($token);
         $this->invitations->removeTamuLink((string) $undangan['id'], $tamuId);
 
-        return back()->with('tamu_success', 'Nama dihapus dari daftar.');
+        $page = max(1, (int) $request->query('page', 1));
+
+        return redirect()
+            ->route('rsvp.dashboard', array_filter([
+                'token' => $token,
+                'page' => $page > 1 ? $page : null,
+            ]))
+            ->with('tamu_success', 'Nama dihapus dari daftar.');
     }
 
     protected function resolveUndangan(string $token): array

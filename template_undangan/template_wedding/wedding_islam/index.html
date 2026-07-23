@@ -611,14 +611,14 @@ body.open #music{opacity:1;pointer-events:auto;transform:none}
     <h2 class="font-display text-4xl text-emerald-900">RSVP &amp; Ucapan Doa</h2>
   </div>
   <form id="rsvpForm" class="max-w-xl mx-auto grid gap-6" data-reveal>
-    <div><label class="font-kufi text-xs tracking-widest text-emerald-900/70">NAMA</label><input required id="fNama" class="field" placeholder="Nama lengkap Anda"></div>
+    <div><label class="font-kufi text-xs tracking-widest text-emerald-900/70">NAMA</label><input required id="fname" name="nama" class="field" placeholder="Nama lengkap Anda" autocomplete="name"></div>
     <div class="grid grid-cols-2 gap-6">
       <div><label class="font-kufi text-xs tracking-widest text-emerald-900/70">KEHADIRAN</label>
-        <select id="fHadir" class="field"><option>Hadir</option><option>Tidak Hadir</option><option>Ragu</option></select>
+        <select id="fconfirm" name="confirm" class="field"><option>Hadir</option><option>Tidak Hadir</option></select>
       </div>
       <div><label class="font-kufi text-xs tracking-widest text-emerald-900/70">JUMLAH TAMU</label><input id="fJumlah" type="number" min="1" max="6" value="1" class="field"></div>
     </div>
-    <div><label class="font-kufi text-xs tracking-widest text-emerald-900/70">UCAPAN &amp; DOA</label><textarea id="fPesan" rows="3" required class="field" placeholder="Doa terbaik untuk kedua mempelai..."></textarea></div>
+    <div><label class="font-kufi text-xs tracking-widest text-emerald-900/70">UCAPAN &amp; DOA</label><textarea id="fmsg" name="pesan" rows="3" required maxlength="60" class="field" placeholder="Doa terbaik untuk kedua mempelai..."></textarea></div>
     <button type="submit" class="btn-gold font-kufi text-xs tracking-widest py-3 rounded">KIRIM UCAPAN</button>
   </form>
   <div class="max-w-xl mx-auto mt-14">
@@ -831,21 +831,13 @@ $$('.copy-btn').forEach(btn=>btn.addEventListener('click',async()=>{
   try{await navigator.clipboard.writeText(btn.dataset.c);toast('Nomor disalin')}catch(e){toast(btn.dataset.c)}
 }));
 
-let wishes=[{nama:'Budi & Keluarga',hadir:'Hadir',pesan:'Barakallahu lakuma, semoga sakinah mawaddah warahmah.'},{nama:'Siti Rahma',hadir:'Hadir',pesan:'Selamat menempuh hidup baru, bahagia dunia akhirat.'}];
+let wishes=[];
 const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML};
 function renderWishes(){
-  $('#wishList').innerHTML=wishes.slice().reverse().map(w=>`<div class="event-card rounded-xl p-4 text-left"><div class="flex justify-between mb-1"><p class="font-display text-emerald-900">${esc(w.nama)}</p><span class="font-kufi text-[0.6rem] tracking-widest text-gold-600">${esc(w.hadir).toUpperCase()}</span></div><p class="text-sm text-ink/70">${esc(w.pesan)}</p></div>`).join('');
+  $('#wishList').innerHTML=wishes.slice().reverse().map(w=>`<div class="event-card rounded-xl p-4 text-left"><div class="flex justify-between mb-1"><p class="font-display text-emerald-900">${esc(w.nama)}</p><span class="font-kufi text-[0.6rem] tracking-widest text-gold-600">${esc(w.hadir||w.kehadiran||'').toUpperCase()}</span></div><p class="text-sm text-ink/70">${esc(w.pesan||w.ucapan||'')}</p></div>`).join('');
 }
 renderWishes();
-$('#rsvpForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  const nama=$('#fNama').value.trim(),hadir=$('#fHadir').value,pesan=$('#fPesan').value.trim();
-  if(!nama||!pesan) return;
-  wishes.push({nama,hadir,pesan}); renderWishes(); e.target.reset(); $('#fJumlah').value=1;
-  boom({particleCount:36,spread:60,origin:{y:.65},colors:['#e6cd8a','#c8a24d','#125c43']});
-  toast('Terima kasih atas doanya');
-});
-
+// Submit RSVP ditangani undangan-bridge.js (simpan ke server)
 let tick=false;
 addEventListener('scroll',()=>{
   if(tick) return; tick=true;
