@@ -22,11 +22,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     @php
-        $appCssVer = @filemtime(public_path('css/app.css')) ?: time();
-        $appJsVer = @filemtime(public_path('js/app.js')) ?: time();
+        $cssPath = public_path('css/app.css');
+        $jsPath = public_path('js/app.js');
+        $appCssVer = is_file($cssPath) ? filemtime($cssPath) : time();
+        $appJsVer = is_file($jsPath) ? filemtime($jsPath) : time();
     @endphp
     @include('partials.landing-tw-inline')
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ $appCssVer }}">
+    @include('partials.landing-dark-text')
     <link rel="shortcut icon" href="{{ asset('logo.png') }}" type="image/x-icon">
     <link rel="preload" as="style"
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600&display=swap"
