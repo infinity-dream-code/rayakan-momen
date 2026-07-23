@@ -23,7 +23,7 @@
         content="Undangan digital untuk pernikahan, ulang tahun anak, dan kejutan pasangan. Mulai dari Rp 150.000.">
     <meta name="twitter:image" content="{{ cdn_image('hero_wedding', 'f_auto,q_auto:eco,w_1200,c_fill,g_auto') }}">
     <link rel="canonical" href="{{ url('/') }}">
-    <link rel="shortcut icon" href="{{ asset('logo.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('images/logo.png') }}" type="image/x-icon">
 
     <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
