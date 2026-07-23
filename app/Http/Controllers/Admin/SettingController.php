@@ -82,10 +82,31 @@ class SettingController extends Controller
         $known = config('templates.templates', []);
         abort_if(! array_key_exists($key, $known), 404);
 
-        $request->validate([
-            'image' => 'nullable|file|max:5120',
-            'remove_image' => 'nullable|boolean',
-        ]);
+        // Diagnosa dulu: pesan "The image failed to upload" = gagal di PHP, belum ke Cloudinary
+        if ($request->hasFile('image') && ! $request->file('image')->isValid()) {
+            return back()->with('error', $this->explainPhpUploadFailure($request->file('image')));
+        }
+
+        // post_max_size terlampaui → file tidak sampai sama sekali
+        if (! $request->hasFile('image') && ! $request->boolean('remove_image') && $this->postTooLarge()) {
+            return back()->with('error', $this->explainPostTooLarge());
+        }
+
+        try {
+            $request->validate([
+                'image' => 'nullable|file|max:5120',
+                'remove_image' => 'nullable|boolean',
+            ], [
+                'image.uploaded' => $this->explainPhpUploadFailure($request->file('image')),
+                'image.max' => 'Ukuran gambar maksimal 5MB (5120 KB).',
+                'image.file' => 'File gambar tidak valid.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Pastikan pesan tampil juga di session error (bukan cuma bullet validation)
+            $msg = collect($e->errors())->flatten()->first() ?: 'Validasi upload gagal.';
+
+            return back()->withInput()->withErrors($e->errors())->with('error', $msg);
+        }
 
         $current = $this->catalog->getPreview($key);
         $nama = $known[$key]['nama'] ?? $key;
@@ -99,7 +120,7 @@ class SettingController extends Controller
                 $this->catalog->updatePreview($key, $uploaded['url'], $uploaded['public_id']);
 
                 $note = $uploaded['via'] === 'local'
-                    ? ' (disimpan lokal — Cloudinary gagal, cek storage/logs)'
+                    ? ' (disimpan lokal — Cloudinary gagal)'
                     : '';
 
                 return back()->with('success', 'Cover "'.$nama.'" disimpan.'.$note);
@@ -127,8 +148,69 @@ class SettingController extends Controller
                 'exception' => $e,
             ]);
 
-            return back()->with('error', 'Gagal menyimpan cover. Cek storage/logs/laravel.log');
+            return back()->with('error', 'Gagal menyimpan cover: '.$e->getMessage());
         }
+    }
+
+    protected function explainPhpUploadFailure(?\Illuminate\Http\UploadedFile $file): string
+    {
+        $code = $file ? $file->getError() : UPLOAD_ERR_NO_FILE;
+        $uploadMax = ini_get('upload_max_filesize') ?: '?';
+        $postMax = ini_get('post_max_size') ?: '?';
+        $map = [
+            UPLOAD_ERR_INI_SIZE => "File melebihi upload_max_filesize PHP ({$uploadMax}).",
+            UPLOAD_ERR_FORM_SIZE => 'File melebihi batas form.',
+            UPLOAD_ERR_PARTIAL => 'Upload hanya sebagian (koneksi terputus).',
+            UPLOAD_ERR_NO_FILE => 'Tidak ada file yang diterima server.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Folder tmp PHP tidak ada di server.',
+            UPLOAD_ERR_CANT_WRITE => 'PHP gagal menulis file ke disk.',
+            UPLOAD_ERR_EXTENSION => 'Ekstensi PHP memblokir upload.',
+        ];
+        $reason = $map[$code] ?? ("Kode error upload PHP: {$code}.");
+
+        return "Upload gagal di PHP (belum ke Cloudinary). {$reason} "
+            ."Limit server: upload_max_filesize={$uploadMax}, post_max_size={$postMax}. "
+            .'Naikkan keduanya di cPanel → MultiPHP INI Editor (minimal 8M), atau pakai JPG lebih kecil.';
+    }
+
+    protected function postTooLarge(): bool
+    {
+        $contentLength = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
+        if ($contentLength <= 0) {
+            return false;
+        }
+        $postMax = $this->iniBytes((string) ini_get('post_max_size'));
+        if ($postMax <= 0) {
+            return false;
+        }
+
+        return empty($_POST) && empty($_FILES) && $contentLength > $postMax;
+    }
+
+    protected function explainPostTooLarge(): string
+    {
+        $postMax = ini_get('post_max_size') ?: '?';
+        $uploadMax = ini_get('upload_max_filesize') ?: '?';
+
+        return "Request terlalu besar untuk post_max_size PHP ({$postMax}). "
+            ."File tidak sampai ke Laravel. Naikkan post_max_size & upload_max_filesize di cPanel (minimal 8M). "
+            ."Sekarang: upload_max_filesize={$uploadMax}, post_max_size={$postMax}.";
+    }
+
+    protected function iniBytes(string $value): int
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return 0;
+        }
+        $unit = strtolower(substr($value, -1));
+        $num = (float) $value;
+        return (int) match ($unit) {
+            'g' => $num * 1024 * 1024 * 1024,
+            'm' => $num * 1024 * 1024,
+            'k' => $num * 1024,
+            default => (float) $value,
+        };
     }
 
     /**

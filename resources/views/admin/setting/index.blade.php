@@ -91,7 +91,13 @@
 </form>
 
 <div class="mt-8 space-y-2">
-    <p class="text-sm font-medium text-gray-700 mb-3">Unggah cover template</p>
+    <p class="text-sm font-medium text-gray-700 mb-1">Unggah cover template</p>
+    <p class="text-xs text-gray-500 mb-3">
+        JPG/PNG/WEBP, disarankan &lt; 2MB.
+        Limit PHP server: upload_max_filesize={{ ini_get('upload_max_filesize') ?: '?' }},
+        post_max_size={{ ini_get('post_max_size') ?: '?' }}.
+        Jika error “failed to upload”, naikkan keduanya di cPanel MultiPHP INI (min. 8M).
+    </p>
     @foreach ($templates as $key => $t)
         <div class="card px-4 py-3 flex flex-wrap items-center gap-3">
             <span class="text-sm font-medium w-28 shrink-0">{{ $t['nama'] }}</span>
