@@ -2,8 +2,8 @@
     <div class="features-glow" aria-hidden="true"></div>
 
     <div class="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
-        <div class="w-full mb-14 md:mb-20 reveal border border-red-500">
-            <p class="section-label-feature text-center border border-red-500">Yang Kamu Dapatkan</p>
+        <div class="w-full mb-14 md:mb-20 reveal">
+            <p class="section-label-feature text-center">Yang Kamu Dapatkan</p>
             <h2 class="section-heading text-center">
                 Hidup, nyaman dibuka,<br>
                 <span class="gold-gradient-text">enak di HP</span>

@@ -36,8 +36,10 @@
 
     {{-- Utilities inlined di Blade agar layout tidak tergantung upload CSS baru --}}
     @php
-        $appCssVer = @filemtime(public_path('css/app.css')) ?: time();
-        $appJsVer = @filemtime(public_path('js/app.js')) ?: time();
+        $cssPath = public_path('css/app.css');
+        $jsPath = public_path('js/app.js');
+        $appCssVer = is_file($cssPath) ? filemtime($cssPath) : time();
+        $appJsVer = is_file($jsPath) ? filemtime($jsPath) : time();
     @endphp
     @include('partials.landing-tw-inline')
 
@@ -57,6 +59,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     </noscript>
     <link rel="stylesheet" type="text/css" href="{{ asset('css/app.css') }}?v={{ $appCssVer }}">
+    @include('partials.landing-dark-text')
 </head>
 
 <body class="font-sans antialiased">
@@ -77,7 +80,7 @@
 
     @include('partials.campaign-popup')
 
-    <script src="{{ asset('js/app.js') }}?v={{ $appJsVer }} type"></script>
+    <script src="{{ asset('js/app.js') }}?v={{ $appJsVer }}"></script>
 </body>
 
 </html>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\CatalogRepository;
 use App\Repositories\CategoryRepository;
 use App\Services\CloudinaryService;
+use App\Services\FileUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
@@ -16,7 +17,8 @@ class SettingController extends Controller
     public function __construct(
         protected CatalogRepository $catalog,
         protected CategoryRepository $categories,
-        protected CloudinaryService $cloudinary
+        protected CloudinaryService $cloudinary,
+        protected FileUploadService $uploads
     ) {
     }
 
@@ -80,39 +82,213 @@ class SettingController extends Controller
         $known = config('templates.templates', []);
         abort_if(! array_key_exists($key, $known), 404);
 
-        $request->validate([
-            'image' => 'nullable|file|max:5120',
-            'remove_image' => 'nullable|boolean',
-        ]);
+        // Diagnosa dulu: pesan "The image failed to upload" = gagal di PHP, belum ke Cloudinary
+        if ($request->hasFile('image') && ! $request->file('image')->isValid()) {
+            return back()->with('error', $this->explainPhpUploadFailure($request->file('image')));
+        }
 
-        $current = $this->catalog->getPreview($key);
+        // post_max_size terlampaui → file tidak sampai sama sekali
+        if (! $request->hasFile('image') && ! $request->boolean('remove_image') && $this->postTooLarge()) {
+            return back()->with('error', $this->explainPostTooLarge());
+        }
 
         try {
+            $request->validate([
+                'image' => 'nullable|file|max:5120',
+                'remove_image' => 'nullable|boolean',
+            ], [
+                'image.uploaded' => $this->explainPhpUploadFailure($request->file('image')),
+                'image.max' => 'Ukuran gambar maksimal 5MB (5120 KB).',
+                'image.file' => 'File gambar tidak valid.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Pastikan pesan tampil juga di session error (bukan cuma bullet validation)
+            $msg = collect($e->errors())->flatten()->first() ?: 'Validasi upload gagal.';
+
+            return back()->withInput()->withErrors($e->errors())->with('error', $msg);
+        }
+
+        $current = $this->catalog->getPreview($key);
+        $nama = $known[$key]['nama'] ?? $key;
+
+        try {
+            // Ada file baru → selalu upload (abaikan centang Hapus supaya tidak bentrok)
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $uploaded = $this->storeCoverImage($file, $key, $current);
+
+                $this->catalog->updatePreview($key, $uploaded['url'], $uploaded['public_id']);
+
+                $note = $uploaded['via'] === 'local'
+                    ? ' (disimpan lokal — Cloudinary gagal)'
+                    : '';
+
+                return back()->with('success', 'Cover "'.$nama.'" disimpan.'.$note);
+            }
+
             if ($request->boolean('remove_image')) {
-                $this->cloudinary->deleteImage($current['preview_cloudinary_id']);
+                $this->deleteCurrentCover($current);
                 $this->catalog->updatePreview($key, null, null);
-            } elseif ($request->hasFile('image')) {
-                if (! $this->cloudinary->isConfigured()) {
-                    return back()->with('error', 'Cloudinary belum dikonfigurasi.');
-                }
-                $uploaded = $this->cloudinary->uploadImage($request->file('image'), 'rayakanmomen/templates/'.$key);
+
+                return back()->with('success', 'Cover "'.$nama.'" dihapus.');
+            }
+
+            return back()->with('error', 'Pilih gambar atau centang hapus.');
+        } catch (InvalidArgumentException $e) {
+            Log::warning('Cover template ditolak', [
+                'key' => $key,
+                'error' => $e->getMessage(),
+                'file' => $request->file('image')?->getClientOriginalName(),
+                'size' => $request->file('image')?->getSize(),
+            ]);
+
+            return back()->with('error', $e->getMessage());
+        } catch (Throwable $e) {
+            Log::error('Gagal upload cover template '.$key.': '.$e->getMessage(), [
+                'exception' => $e,
+            ]);
+
+            return back()->with('error', 'Gagal menyimpan cover: '.$e->getMessage());
+        }
+    }
+
+    protected function explainPhpUploadFailure(?\Illuminate\Http\UploadedFile $file): string
+    {
+        $code = $file ? $file->getError() : UPLOAD_ERR_NO_FILE;
+        $uploadMax = ini_get('upload_max_filesize') ?: '?';
+        $postMax = ini_get('post_max_size') ?: '?';
+        $map = [
+            UPLOAD_ERR_INI_SIZE => "File melebihi upload_max_filesize PHP ({$uploadMax}).",
+            UPLOAD_ERR_FORM_SIZE => 'File melebihi batas form.',
+            UPLOAD_ERR_PARTIAL => 'Upload hanya sebagian (koneksi terputus).',
+            UPLOAD_ERR_NO_FILE => 'Tidak ada file yang diterima server.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Folder tmp PHP tidak ada di server.',
+            UPLOAD_ERR_CANT_WRITE => 'PHP gagal menulis file ke disk.',
+            UPLOAD_ERR_EXTENSION => 'Ekstensi PHP memblokir upload.',
+        ];
+        $reason = $map[$code] ?? ("Kode error upload PHP: {$code}.");
+
+        return "Upload gagal di PHP (belum ke Cloudinary). {$reason} "
+            ."Limit server: upload_max_filesize={$uploadMax}, post_max_size={$postMax}. "
+            .'Naikkan keduanya di cPanel → MultiPHP INI Editor (minimal 8M), atau pakai JPG lebih kecil.';
+    }
+
+    protected function postTooLarge(): bool
+    {
+        $contentLength = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
+        if ($contentLength <= 0) {
+            return false;
+        }
+        $postMax = $this->iniBytes((string) ini_get('post_max_size'));
+        if ($postMax <= 0) {
+            return false;
+        }
+
+        return empty($_POST) && empty($_FILES) && $contentLength > $postMax;
+    }
+
+    protected function explainPostTooLarge(): string
+    {
+        $postMax = ini_get('post_max_size') ?: '?';
+        $uploadMax = ini_get('upload_max_filesize') ?: '?';
+
+        return "Request terlalu besar untuk post_max_size PHP ({$postMax}). "
+            ."File tidak sampai ke Laravel. Naikkan post_max_size & upload_max_filesize di cPanel (minimal 8M). "
+            ."Sekarang: upload_max_filesize={$uploadMax}, post_max_size={$postMax}.";
+    }
+
+    protected function iniBytes(string $value): int
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return 0;
+        }
+        $unit = strtolower(substr($value, -1));
+        $num = (float) $value;
+        return (int) match ($unit) {
+            'g' => $num * 1024 * 1024 * 1024,
+            'm' => $num * 1024 * 1024,
+            'k' => $num * 1024,
+            default => (float) $value,
+        };
+    }
+
+    /**
+     * @param  array{preview_image_url: ?string, preview_cloudinary_id: ?string}  $current
+     * @return array{url: string, public_id: ?string, via: string}
+     */
+    protected function storeCoverImage($file, string $key, array $current): array
+    {
+        $cloudError = null;
+
+        if ($this->cloudinary->isConfigured()) {
+            try {
+                $uploaded = $this->cloudinary->uploadImage($file, 'rayakanmomen/templates/'.$key);
                 if ($current['preview_cloudinary_id']) {
                     $this->cloudinary->deleteImage($current['preview_cloudinary_id']);
                 }
-                $this->catalog->updatePreview($key, $uploaded['url'], $uploaded['public_id']);
-            } else {
-                return back()->with('error', 'Pilih gambar atau centang hapus.');
-            }
-        } catch (InvalidArgumentException $e) {
-            return back()->with('error', $e->getMessage());
-        } catch (Throwable $e) {
-            Log::error('Gagal upload cover template '.$key.': '.$e->getMessage());
+                $this->deleteLocalPreviewFile($current['preview_image_url'] ?? null);
 
-            return back()->with('error', 'Gagal menyimpan cover.');
+                return [
+                    'url' => $uploaded['url'],
+                    'public_id' => $uploaded['public_id'],
+                    'via' => 'cloudinary',
+                ];
+            } catch (InvalidArgumentException $e) {
+                $cloudError = $e->getMessage();
+                Log::warning('Cloudinary cover gagal, coba simpan lokal', [
+                    'key' => $key,
+                    'error' => $cloudError,
+                    'file' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'mime' => $file->getMimeType(),
+                ]);
+            }
         }
 
-        $nama = $known[$key]['nama'] ?? $key;
+        // Fallback: simpan ke public/uploads supaya cover tetap bisa dipakai
+        $relative = $this->uploads->storeUpload($file, 'covers/templates/'.$key, 'cover', 1600);
+        if (! $relative) {
+            throw new InvalidArgumentException(
+                $cloudError ?: 'Gagal menyimpan cover. Cloudinary/local gagal.'
+            );
+        }
 
-        return back()->with('success', 'Cover "'.$nama.'" disimpan.');
+        if ($current['preview_cloudinary_id']) {
+            $this->cloudinary->deleteImage($current['preview_cloudinary_id']);
+        }
+        $this->deleteLocalPreviewFile($current['preview_image_url'] ?? null);
+
+        return [
+            'url' => asset($relative),
+            'public_id' => null,
+            'via' => 'local',
+        ];
+    }
+
+    /**
+     * @param  array{preview_image_url: ?string, preview_cloudinary_id: ?string}  $current
+     */
+    protected function deleteCurrentCover(array $current): void
+    {
+        if ($current['preview_cloudinary_id']) {
+            $this->cloudinary->deleteImage($current['preview_cloudinary_id']);
+        }
+        $this->deleteLocalPreviewFile($current['preview_image_url'] ?? null);
+    }
+
+    protected function deleteLocalPreviewFile(?string $url): void
+    {
+        if (! $url) {
+            return;
+        }
+
+        $path = parse_url($url, PHP_URL_PATH) ?: $url;
+        $path = ltrim((string) $path, '/');
+        if (! str_starts_with($path, 'uploads/')) {
+            return;
+        }
+
+        $this->uploads->deletePublicPath($path);
     }
 }

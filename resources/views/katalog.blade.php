@@ -22,8 +22,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     @php
-        $appCssVer = @filemtime(public_path('css/app.css')) ?: time();
-        $appJsVer = @filemtime(public_path('js/app.js')) ?: time();
+        $cssPath = public_path('css/app.css');
+        $jsPath = public_path('js/app.js');
+        $appCssVer = is_file($cssPath) ? filemtime($cssPath) : time();
+        $appJsVer = is_file($jsPath) ? filemtime($jsPath) : time();
     @endphp
     @include('partials.landing-tw-inline')
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ $appCssVer }}">

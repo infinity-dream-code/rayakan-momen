@@ -59,7 +59,7 @@
             <label class="form-label">Foto Mempelai Wanita</label>
             <input type="file" name="foto_wanita" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="form-input">
             @if (!empty($u['foto_wanita']))
-                <img src="{{ asset($u['foto_wanita']) }}?v={{ @filemtime(public_path($u['foto_wanita'])) ?: time() }}" alt="Foto wanita" class="mt-2 w-20 h-20 object-cover rounded-full border">
+                <img src="{{ asset($u['foto_wanita']) }}?v={{ is_file(public_path($u['foto_wanita'])) ? filemtime(public_path($u['foto_wanita'])) : time() }}" alt="Foto wanita" class="mt-2 w-20 h-20 object-cover rounded-full border">
                 <p class="text-xs text-gray-400 mt-1 break-all">{{ $u['foto_wanita'] }}</p>
             @endif
         </div>
@@ -67,7 +67,7 @@
             <label class="form-label">Foto Mempelai Pria</label>
             <input type="file" name="foto_pria" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="form-input">
             @if (!empty($u['foto_pria']))
-                <img src="{{ asset($u['foto_pria']) }}?v={{ @filemtime(public_path($u['foto_pria'])) ?: time() }}" alt="Foto pria" class="mt-2 w-20 h-20 object-cover rounded-full border">
+                <img src="{{ asset($u['foto_pria']) }}?v={{ is_file(public_path($u['foto_pria'])) ? filemtime(public_path($u['foto_pria'])) : time() }}" alt="Foto pria" class="mt-2 w-20 h-20 object-cover rounded-full border">
                 <p class="text-xs text-gray-400 mt-1 break-all">{{ $u['foto_pria'] }}</p>
             @endif
         </div>
@@ -340,7 +340,7 @@
     <input type="file" name="music_mp3" accept=".mp3,audio/mpeg" class="form-input">
     @if ($isLocalMusic)
         <div class="mt-3 flex flex-wrap items-center gap-3">
-            <audio controls preload="none" class="max-w-full" src="{{ asset($musicPath) }}?v={{ @filemtime(public_path($musicPath)) ?: time() }}"></audio>
+            <audio controls preload="none" class="max-w-full" src="{{ asset($musicPath) }}?v={{ is_file(public_path($musicPath)) ? filemtime(public_path($musicPath)) : time() }}"></audio>
             <label class="text-sm text-gray-600 flex items-center gap-2">
                 <input type="checkbox" name="music_reset" value="1" class="rounded border-gray-300">
                 Hapus &amp; pakai musik default template

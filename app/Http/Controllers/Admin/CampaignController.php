@@ -39,11 +39,7 @@ class CampaignController extends Controller
         $publicId = $current['cloudinary_public_id'];
 
         try {
-            if ($request->boolean('remove_image')) {
-                $this->cloudinary->deleteImage($publicId);
-                $imageUrl = null;
-                $publicId = null;
-            } elseif ($request->hasFile('image')) {
+            if ($request->hasFile('image')) {
                 if (! $this->cloudinary->isConfigured()) {
                     return back()->with('error', 'Cloudinary belum dikonfigurasi. Isi CLOUDINARY_* di file .env');
                 }
@@ -54,6 +50,10 @@ class CampaignController extends Controller
                 }
                 $imageUrl = $uploaded['url'];
                 $publicId = $uploaded['public_id'];
+            } elseif ($request->boolean('remove_image')) {
+                $this->cloudinary->deleteImage($publicId);
+                $imageUrl = null;
+                $publicId = null;
             }
         } catch (InvalidArgumentException $e) {
             return back()->with('error', $e->getMessage());
