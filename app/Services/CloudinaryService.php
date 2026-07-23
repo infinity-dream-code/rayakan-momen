@@ -56,10 +56,10 @@ class CloudinaryService
         if (! $response->successful()) {
             $message = (string) ($response->json('error.message') ?? '');
             if ($message !== '') {
-                throw new InvalidArgumentException('Upload Cloudinary gagal: '.$message);
+                throw new InvalidArgumentException('Upload Cloudinary gagal: ' . $message);
             }
 
-            throw new InvalidArgumentException('Upload Cloudinary gagal (HTTP '.$response->status().').');
+            throw new InvalidArgumentException('Upload Cloudinary gagal (HTTP ' . $response->status() . ').');
         }
 
         $data = $response->json();
@@ -112,10 +112,10 @@ class CloudinaryService
             if ($value === null || $value === '') {
                 continue;
             }
-            $parts[] = $key.'='.$value;
+            $parts[] = $key . '=' . $value;
         }
 
-        return sha1(implode('&', $parts).$apiSecret);
+        return sha1(implode('&', $parts) . $apiSecret);
     }
 
     protected function assertSafeImage(UploadedFile $file): void

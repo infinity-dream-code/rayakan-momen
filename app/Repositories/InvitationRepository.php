@@ -9,29 +9,71 @@ use Illuminate\Support\Str;
 
 class InvitationRepository
 {
-    public function __construct(protected FileUploadService $uploads)
-    {
-    }
+    public function __construct(protected FileUploadService $uploads) {}
 
     /** Columns stored on invitations table (not payload). */
     protected array $columns = [
-        'id', 'slug', 'status', 'access_state', 'tema', 'kategori',
-        'nama_pria', 'nama_wanita', 'nama_anak', 'ortu_pria', 'ortu_wanita',
-        'tanggal_akad', 'waktu_akad', 'tempat_akad', 'alamat_akad',
-        'tanggal_resepsi', 'waktu_resepsi', 'tempat_resepsi', 'alamat_resepsi',
-        'maps_url', 'kutipan', 'kutipan_sumber', 'youtube_url',
-        'foto_wanita', 'foto_pria', 'foto_anak', 'cover_image', 'qris_image',
-        'views', 'expires_at', 'purge_at', 'created_at', 'updated_at',
+        'id',
+        'slug',
+        'status',
+        'access_state',
+        'tema',
+        'kategori',
+        'nama_pria',
+        'nama_wanita',
+        'nama_anak',
+        'ortu_pria',
+        'ortu_wanita',
+        'tanggal_akad',
+        'waktu_akad',
+        'tempat_akad',
+        'alamat_akad',
+        'tanggal_resepsi',
+        'waktu_resepsi',
+        'tempat_resepsi',
+        'alamat_resepsi',
+        'maps_url',
+        'kutipan',
+        'kutipan_sumber',
+        'youtube_url',
+        'foto_wanita',
+        'foto_pria',
+        'foto_anak',
+        'cover_image',
+        'qris_image',
+        'views',
+        'expires_at',
+        'purge_at',
+        'created_at',
+        'updated_at',
     ];
 
     protected array $payloadKeys = [
-        'galeri', 'jadwal', 'alasan_sayang', 'dress_code', 'usia',
-        'ayah_host', 'ibu_host', 'ayah_pria', 'ibu_pria', 'ayah_wanita', 'ibu_wanita',
-        'nama_lengkap_pria', 'nama_lengkap_wanita',
-        'waktu_akad_mulai', 'waktu_akad_selesai',
-        'waktu_resepsi_mulai', 'waktu_resepsi_selesai',
-        'tanggal_spesial', 'tanggal_acara', 'waktu_acara', 'waktu_acara_mulai', 'waktu_acara_selesai',
-        'tempat_acara', 'alamat_acara', 'pesan_janji',
+        'galeri',
+        'jadwal',
+        'alasan_sayang',
+        'dress_code',
+        'usia',
+        'ayah_host',
+        'ibu_host',
+        'ayah_pria',
+        'ibu_pria',
+        'ayah_wanita',
+        'ibu_wanita',
+        'nama_lengkap_pria',
+        'nama_lengkap_wanita',
+        'waktu_akad_mulai',
+        'waktu_akad_selesai',
+        'waktu_resepsi_mulai',
+        'waktu_resepsi_selesai',
+        'tanggal_spesial',
+        'tanggal_acara',
+        'waktu_acara',
+        'waktu_acara_mulai',
+        'waktu_acara_selesai',
+        'tempat_acara',
+        'alamat_acara',
+        'pesan_janji',
         'maps_url_resepsi',
     ];
 
@@ -66,7 +108,7 @@ class InvitationRepository
             [$limit]
         );
 
-        return array_map(fn ($r) => (array) $r, $rows);
+        return array_map(fn($r) => (array) $r, $rows);
     }
 
     public function find(string $id): ?array
@@ -167,14 +209,40 @@ class InvitationRepository
                     ?,?,?,?,?,?
                 )',
                 [
-                    $row['id'], $row['slug'], $row['status'], $row['access_state'], $row['tema'], $row['kategori'],
-                    $row['nama_pria'], $row['nama_wanita'], $row['nama_anak'], $row['ortu_pria'], $row['ortu_wanita'],
-                    $row['tanggal_akad'], $row['waktu_akad'], $row['tempat_akad'], $row['alamat_akad'],
-                    $row['tanggal_resepsi'], $row['waktu_resepsi'], $row['tempat_resepsi'], $row['alamat_resepsi'],
-                    $row['maps_url'], $row['kutipan'], $row['kutipan_sumber'], $row['youtube_url'],
-                    $row['foto_wanita'], $row['foto_pria'], $row['foto_anak'], $row['cover_image'], $row['qris_image'],
-                    $row['views'], json_encode($payload, JSON_UNESCAPED_UNICODE),
-                    $row['expires_at'], $row['purge_at'], $row['created_at'], $row['updated_at'],
+                    $row['id'],
+                    $row['slug'],
+                    $row['status'],
+                    $row['access_state'],
+                    $row['tema'],
+                    $row['kategori'],
+                    $row['nama_pria'],
+                    $row['nama_wanita'],
+                    $row['nama_anak'],
+                    $row['ortu_pria'],
+                    $row['ortu_wanita'],
+                    $row['tanggal_akad'],
+                    $row['waktu_akad'],
+                    $row['tempat_akad'],
+                    $row['alamat_akad'],
+                    $row['tanggal_resepsi'],
+                    $row['waktu_resepsi'],
+                    $row['tempat_resepsi'],
+                    $row['alamat_resepsi'],
+                    $row['maps_url'],
+                    $row['kutipan'],
+                    $row['kutipan_sumber'],
+                    $row['youtube_url'],
+                    $row['foto_wanita'],
+                    $row['foto_pria'],
+                    $row['foto_anak'],
+                    $row['cover_image'],
+                    $row['qris_image'],
+                    $row['views'],
+                    json_encode($payload, JSON_UNESCAPED_UNICODE),
+                    $row['expires_at'],
+                    $row['purge_at'],
+                    $row['created_at'],
+                    $row['updated_at'],
                 ]
             );
 
@@ -220,13 +288,35 @@ class InvitationRepository
                     payload_json=?, updated_at=?
                  WHERE id=?',
                 [
-                    $row['slug'], $row['status'], $row['access_state'], $row['tema'], $row['kategori'],
-                    $row['nama_pria'], $row['nama_wanita'], $row['nama_anak'], $row['ortu_pria'], $row['ortu_wanita'],
-                    $row['tanggal_akad'], $row['waktu_akad'], $row['tempat_akad'], $row['alamat_akad'],
-                    $row['tanggal_resepsi'], $row['waktu_resepsi'], $row['tempat_resepsi'], $row['alamat_resepsi'],
-                    $row['maps_url'], $row['kutipan'], $row['kutipan_sumber'], $row['youtube_url'],
-                    $row['foto_wanita'], $row['foto_pria'], $row['foto_anak'], $row['cover_image'], $row['qris_image'],
-                    json_encode($payload, JSON_UNESCAPED_UNICODE), $row['updated_at'],
+                    $row['slug'],
+                    $row['status'],
+                    $row['access_state'],
+                    $row['tema'],
+                    $row['kategori'],
+                    $row['nama_pria'],
+                    $row['nama_wanita'],
+                    $row['nama_anak'],
+                    $row['ortu_pria'],
+                    $row['ortu_wanita'],
+                    $row['tanggal_akad'],
+                    $row['waktu_akad'],
+                    $row['tempat_akad'],
+                    $row['alamat_akad'],
+                    $row['tanggal_resepsi'],
+                    $row['waktu_resepsi'],
+                    $row['tempat_resepsi'],
+                    $row['alamat_resepsi'],
+                    $row['maps_url'],
+                    $row['kutipan'],
+                    $row['kutipan_sumber'],
+                    $row['youtube_url'],
+                    $row['foto_wanita'],
+                    $row['foto_pria'],
+                    $row['foto_anak'],
+                    $row['cover_image'],
+                    $row['qris_image'],
+                    json_encode($payload, JSON_UNESCAPED_UNICODE),
+                    $row['updated_at'],
                     $id,
                 ]
             );
@@ -434,7 +524,7 @@ class InvitationRepository
         if ($slug === '') {
             return;
         }
-        Cache::forget(config('undangan.cache_key_prefix', 'undangan:html:').Str::lower($slug));
+        Cache::forget(config('undangan.cache_key_prefix', 'undangan:html:') . Str::lower($slug));
     }
 
     protected function hydrate(object $row): array
@@ -473,10 +563,10 @@ class InvitationRepository
         );
 
         $merged = array_merge($payload, $arr);
-        $merged['cerita'] = array_map(fn ($r) => (array) $r, $stories);
-        $merged['rekening'] = array_map(fn ($r) => (array) $r, $accounts);
-        $merged['ewallet'] = array_map(fn ($r) => (array) $r, $ewallets);
-        $merged['ucapan_tersimpan'] = array_map(fn ($r) => (array) $r, $wishes);
+        $merged['cerita'] = array_map(fn($r) => (array) $r, $stories);
+        $merged['rekening'] = array_map(fn($r) => (array) $r, $accounts);
+        $merged['ewallet'] = array_map(fn($r) => (array) $r, $ewallets);
+        $merged['ucapan_tersimpan'] = array_map(fn($r) => (array) $r, $wishes);
         $merged['galeri'] = $merged['galeri'] ?? [];
         $merged['jadwal'] = $merged['jadwal'] ?? [];
         $merged['alasan_sayang'] = $merged['alasan_sayang'] ?? [];

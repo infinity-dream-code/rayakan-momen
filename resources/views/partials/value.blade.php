@@ -6,10 +6,11 @@
             <p class="section-label">Kenapa Rayakan Momen</p>
             <h2 class="section-heading text-left mb-4">
                 Dibuat untuk harimu,<br>
-                <span class="text-gold-dark-accent">bukan sekadar desain biasa</span>
+                <span class="text-gold-dark-accent">bukan sekedar desain biasa</span>
             </h2>
             <p class="text-muted text-sm sm:text-base leading-relaxed">
-                Satu tempat untuk undangan pernikahan, ulang tahun anak, dan kejutan pasangan. Pilih desain, lihat contohnya, lalu kami bantu sampai link siap dibagikan.
+                Satu tempat untuk undangan pernikahan, ulang tahun anak, dan kejutan pasangan. Pilih desain, lihat
+                contohnya, lalu kami bantu sampai link siap dibagikan.
             </p>
         </div>
 
@@ -26,7 +27,8 @@
                 <span class="value-point-num">02</span>
                 <h3 class="font-display text-xl text-charcoal mb-2">Isi sesuai acaranya</h3>
                 <p class="text-sm text-muted leading-relaxed">
-                    Konfirmasi hadir, hitung mundur, galeri foto, amplop digital, atau surat kejutan — menyesuaikan jenis undangannya.
+                    Konfirmasi hadir, hitung mundur, galeri foto, amplop digital, atau surat kejutan — menyesuaikan
+                    jenis undangannya.
                 </p>
             </article>
 

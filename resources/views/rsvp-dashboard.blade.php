@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,8 +8,11 @@
     <title>Dashboard RSVP — {{ $title }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="shortcut icon" href="{{ asset('logo.png') }}" type="image/x-icon">
     <style>
         :root {
             --navy: #1a2234;
@@ -18,7 +22,11 @@
             --ivory: #faf7f2;
             --line: #eee8df;
         }
-        * { box-sizing: border-box; }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
@@ -26,8 +34,17 @@
             color: var(--navy);
             min-height: 100vh;
         }
-        .font-display { font-family: 'Playfair Display', serif; }
-        .wrap { max-width: 920px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .wrap {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 1.25rem 1rem 3rem;
+        }
+
         .hero {
             background: linear-gradient(135deg, var(--navy-deep), var(--navy));
             color: #fff;
@@ -37,43 +54,89 @@
             position: relative;
             overflow: hidden;
         }
+
         .hero::after {
             content: '';
             position: absolute;
-            right: -40px; top: -40px;
-            width: 160px; height: 160px;
+            right: -40px;
+            top: -40px;
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
-            background: rgba(201,168,76,.15);
+            background: rgba(201, 168, 76, .15);
         }
-        .hero-label { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-soft); opacity: .9; }
-        .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.5rem, 4vw, 2rem); margin: .4rem 0 .35rem; font-weight: 600; }
-        .hero p { margin: 0; color: rgba(255,255,255,.55); font-size: .875rem; }
+
+        .hero-label {
+            font-size: .75rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--gold-soft);
+            opacity: .9;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin: .4rem 0 .35rem;
+            font-weight: 600;
+        }
+
+        .hero p {
+            margin: 0;
+            color: rgba(255, 255, 255, .55);
+            font-size: .875rem;
+        }
+
         .stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: .75rem;
             margin-bottom: 1.25rem;
         }
+
         @media (max-width: 560px) {
-            .stats { grid-template-columns: 1fr; }
+            .stats {
+                grid-template-columns: 1fr;
+            }
         }
+
         .stat {
             background: #fff;
-            border: 1px solid rgba(201,168,76,.25);
+            border: 1px solid rgba(201, 168, 76, .25);
             border-radius: 1rem;
             padding: 1.1rem 1rem;
             text-align: center;
         }
-        .stat .num { font-family: 'Playfair Display', serif; font-size: 1.75rem; line-height: 1.2; }
-        .stat .lbl { font-size: .7rem; color: #777; margin-top: .25rem; text-transform: uppercase; letter-spacing: .06em; }
-        .stat.hadir .num { color: #059669; }
-        .stat.tidak .num { color: #e11d48; }
+
+        .stat .num {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            line-height: 1.2;
+        }
+
+        .stat .lbl {
+            font-size: .7rem;
+            color: #777;
+            margin-top: .25rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .stat.hadir .num {
+            color: #059669;
+        }
+
+        .stat.tidak .num {
+            color: #e11d48;
+        }
+
         .panel {
             background: #fff;
-            border: 1px solid rgba(201,168,76,.22);
+            border: 1px solid rgba(201, 168, 76, .22);
             border-radius: 1.25rem;
             overflow: hidden;
         }
+
         .panel-head {
             padding: 1rem 1.25rem;
             border-bottom: 1px solid var(--line);
@@ -83,13 +146,20 @@
             gap: .75rem;
             flex-wrap: wrap;
         }
-        .panel-head h2 { margin: 0; font-family: 'Playfair Display', serif; font-size: 1.15rem; }
+
+        .panel-head h2 {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+        }
+
         .share-row {
             display: flex;
             gap: .5rem;
             flex-wrap: wrap;
             align-items: center;
         }
+
         .btn {
             border: 0;
             border-radius: 999px;
@@ -103,15 +173,28 @@
             gap: .4rem;
             text-decoration: none;
         }
-        .btn-ghost { background: var(--ivory); color: var(--navy); border: 1px solid #e5e0d8; }
-        .list { padding: .5rem 0; }
+
+        .btn-ghost {
+            background: var(--ivory);
+            color: var(--navy);
+            border: 1px solid #e5e0d8;
+        }
+
+        .list {
+            padding: .5rem 0;
+        }
+
         .item {
             padding: 1rem 1.25rem;
             border-bottom: 1px solid var(--line);
             display: grid;
             gap: .35rem;
         }
-        .item:last-child { border-bottom: 0; }
+
+        .item:last-child {
+            border-bottom: 0;
+        }
+
         .item-top {
             display: flex;
             justify-content: space-between;
@@ -119,9 +202,24 @@
             align-items: flex-start;
             flex-wrap: wrap;
         }
-        .name { font-weight: 600; font-size: .95rem; }
-        .time { font-size: .7rem; color: #999; }
-        .msg { color: #555; font-size: .875rem; line-height: 1.55; word-break: break-word; }
+
+        .name {
+            font-weight: 600;
+            font-size: .95rem;
+        }
+
+        .time {
+            font-size: .7rem;
+            color: #999;
+        }
+
+        .msg {
+            color: #555;
+            font-size: .875rem;
+            line-height: 1.55;
+            word-break: break-word;
+        }
+
         .badge {
             display: inline-flex;
             align-items: center;
@@ -130,23 +228,38 @@
             font-size: .7rem;
             font-weight: 600;
         }
-        .badge-hadir { background: #ecfdf5; color: #047857; }
-        .badge-tidak { background: #fff1f2; color: #be123c; }
+
+        .badge-hadir {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .badge-tidak {
+            background: #fff1f2;
+            color: #be123c;
+        }
+
         .empty {
             padding: 3rem 1.5rem;
             text-align: center;
             color: #999;
             font-size: .9rem;
         }
+
         .foot {
             text-align: center;
             margin-top: 1.5rem;
             font-size: .75rem;
             color: #999;
         }
-        .foot a { color: var(--gold); text-decoration: none; }
+
+        .foot a {
+            color: var(--gold);
+            text-decoration: none;
+        }
     </style>
 </head>
+
 <body>
     <div class="wrap">
         <div class="hero">
@@ -173,7 +286,8 @@
         <div class="panel">
             <div class="panel-head">
                 <h2>Ucapan Tamu</h2>
-                <a class="btn btn-ghost" href="{{ url('/'.$undangan['slug']) }}" target="_blank" rel="noopener">Lihat Undangan</a>
+                <a class="btn btn-ghost" href="{{ url('/' . $undangan['slug']) }}" target="_blank" rel="noopener">Lihat
+                    Undangan</a>
             </div>
 
             <div class="list">
@@ -181,7 +295,9 @@
                     @php
                         $isHadir = ($item['kehadiran'] ?? '') === 'hadir';
                         $waktu = !empty($item['created_at'])
-                            ? \Illuminate\Support\Carbon::parse($item['created_at'])->timezone('Asia/Jakarta')->format('d M Y')
+                            ? \Illuminate\Support\Carbon::parse($item['created_at'])
+                                ->timezone('Asia/Jakarta')
+                                ->format('d M Y')
                             : '';
                     @endphp
                     <div class="item">
@@ -200,7 +316,8 @@
                     </div>
                 @empty
                     <div class="empty">
-                        <i class="fa-regular fa-comment-dots" style="font-size:1.75rem;display:block;margin-bottom:.75rem;opacity:.5;"></i>
+                        <i class="fa-regular fa-comment-dots"
+                            style="font-size:1.75rem;display:block;margin-bottom:.75rem;opacity:.5;"></i>
                         Belum ada ucapan / RSVP.
                     </div>
                 @endforelse
@@ -212,4 +329,5 @@
         </div>
     </div>
 </body>
+
 </html>

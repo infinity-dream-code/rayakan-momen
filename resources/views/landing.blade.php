@@ -1,23 +1,29 @@
 ﻿<!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Rayakan Momen — Undangan Digital Pernikahan, Ulang Tahun &amp; Pasangan</title>
-    <meta name="description" content="Rayakan Momen — jasa undangan digital untuk pernikahan, ulang tahun anak, dan kejutan pasangan. Lihat contoh, pilih desain, lalu pesan lewat WhatsApp.">
-    <meta name="keywords" content="undangan digital, undangan pernikahan, undangan ulang tahun anak, undangan pasangan, Rayakan Momen">
+    <meta name="description"
+        content="Rayakan Momen — jasa undangan digital untuk pernikahan, ulang tahun anak, dan kejutan pasangan. Lihat contoh, pilih desain, lalu pesan lewat WhatsApp.">
+    <meta name="keywords"
+        content="undangan digital, undangan pernikahan, undangan ulang tahun anak, undangan pasangan, Rayakan Momen">
     <meta name="author" content="Rayakan Momen">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Rayakan Momen — Undangan Digital Pernikahan, Ulang Tahun &amp; Pasangan">
-    <meta property="og:description" content="Pilih undangan digital untuk pernikahan, ulang tahun anak, atau kejutan pasangan. Contoh tersedia — siap dibagikan lewat WhatsApp.">
+    <meta property="og:description"
+        content="Pilih undangan digital untuk pernikahan, ulang tahun anak, atau kejutan pasangan. Contoh tersedia — siap dibagikan lewat WhatsApp.">
     <meta property="og:image" content="{{ cdn_image('hero_wedding', 'f_auto,q_auto:eco,w_1200,c_fill,g_auto') }}">
     <meta property="og:url" content="{{ url('/') }}">
     <meta property="og:site_name" content="Rayakan Momen">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Rayakan Momen — Jasa Undangan Digital">
-    <meta name="twitter:description" content="Undangan digital untuk pernikahan, ulang tahun anak, dan kejutan pasangan. Mulai dari Rp 150.000.">
+    <meta name="twitter:description"
+        content="Undangan digital untuk pernikahan, ulang tahun anak, dan kejutan pasangan. Mulai dari Rp 150.000.">
     <meta name="twitter:image" content="{{ cdn_image('hero_wedding', 'f_auto,q_auto:eco,w_1200,c_fill,g_auto') }}">
     <link rel="canonical" href="{{ url('/') }}">
+    <link rel="shortcut icon" href="{{ asset('logo.png') }}" type="image/x-icon">
 
     <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
@@ -25,11 +31,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     {{-- LCP: preload hero mobile-first --}}
-    <link rel="preload" as="image"
-          href="{{ cdn_image('hero_wedding', 'f_auto,q_auto:eco,w_960,c_limit') }}"
-          imagesrcset="{{ cdn_srcset('hero_wedding', [640, 960, 1280, 1920]) }}"
-          imagesizes="100vw"
-          fetchpriority="high">
+    <link rel="preload" as="image" href="{{ cdn_image('hero_wedding', 'f_auto,q_auto:eco,w_960,c_limit') }}"
+        imagesrcset="{{ cdn_srcset('hero_wedding', [640, 960, 1280, 1920]) }}" imagesizes="100vw" fetchpriority="high">
 
     {{-- Utilities inlined di Blade agar layout tidak tergantung upload CSS baru --}}
     @php
@@ -37,24 +40,25 @@
         $appJsVer = @filemtime(public_path('js/app.js')) ?: time();
     @endphp
     @include('partials.landing-tw-inline')
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ $appCssVer }}">
 
     {{-- Fonts non-blocking --}}
     <link rel="preload" as="style"
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600&display=swap"
-          onload="this.onload=null;this.rel='stylesheet'">
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600&display=swap"
+        onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600&display=swap">
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600&display=swap">
     </noscript>
 
     {{-- Icons non-blocking (full FA is heavy) --}}
-    <link rel="preload" as="style"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-          onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     </noscript>
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/app.css') }}?v={{ $appCssVer }}">
 </head>
+
 <body class="font-sans antialiased">
     @include('partials.navbar')
 
@@ -73,6 +77,7 @@
 
     @include('partials.campaign-popup')
 
-    <script src="{{ asset('js/app.js') }}?v={{ $appJsVer }}" defer></script>
+    <script src="{{ asset('js/app.js') }}?v={{ $appJsVer }} type"></script>
 </body>
+
 </html>

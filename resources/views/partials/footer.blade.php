@@ -2,11 +2,13 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
             <div class="lg:col-span-1">
-                <a href="{{ route('landing') }}#beranda" class="font-display text-2xl text-gold-light-accent tracking-wide inline-block mb-4">
+                <a href="{{ route('landing') }}#beranda"
+                    class="font-display text-2xl text-gold-light-accent tracking-wide inline-block mb-4">
                     Rayakan Momen
                 </a>
                 <p class="text-sm leading-relaxed text-on-dark-soft">
-                    Jasa undangan digital untuk pernikahan, ulang tahun anak, dan kejutan pasangan. Pilih desain, lihat harga, siap dibagikan lewat WhatsApp.
+                    Jasa undangan digital untuk pernikahan, ulang tahun anak, dan kejutan pasangan. Pilih desain, lihat
+                    harga, siap dibagikan lewat WhatsApp.
                 </p>
             </div>
 
@@ -24,18 +26,16 @@
                 <h4 class="text-on-dark font-medium text-sm mb-4 tracking-wide">Kontak</h4>
                 <ul class="space-y-3">
                     <li>
-                        <a href="https://wa.me/6285777433886"
-                           target="_blank"
-                           rel="noopener noreferrer"
-                           class="footer-link inline-flex items-center gap-2">
+                        <a href="https://wa.me/6285199641845" target="_blank" rel="noopener noreferrer"
+                            class="footer-link inline-flex items-center gap-2">
                             <i class="fa-brands fa-whatsapp text-gold-accent"></i>
-                            0857-7743-3886
+                            0851-9964-1845
                         </a>
                     </li>
                     <li>
-                        <a href="mailto:halo@rayakanmomen.com" class="footer-link inline-flex items-center gap-2">
+                        <a href="mailto:rayakanmomen0@gmail.com" class="footer-link inline-flex items-center gap-2">
                             <i class="fa-solid fa-envelope text-gold-accent"></i>
-                            halo@rayakanmomen.com
+                            rayakanmomen0@gmail.com
                         </a>
                     </li>
                 </ul>
@@ -44,25 +44,16 @@
             <div>
                 <h4 class="text-on-dark font-medium text-sm mb-4 tracking-wide">Sosial Media</h4>
                 <div class="flex gap-3">
-                    <a href="https://instagram.com/rayakanmomen"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="social-btn"
-                       aria-label="Instagram Rayakan Momen">
+                    <a href="https://instagram.com/rayakanmomen" target="_blank" rel="noopener noreferrer"
+                        class="social-btn" aria-label="Instagram Rayakan Momen">
                         <i class="fa-brands fa-instagram"></i>
                     </a>
-                    <a href="https://tiktok.com/@rayakanmomen"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="social-btn"
-                       aria-label="TikTok Rayakan Momen">
+                    <a href="https://tiktok.com/@rayakanmomen" target="_blank" rel="noopener noreferrer"
+                        class="social-btn" aria-label="TikTok Rayakan Momen">
                         <i class="fa-brands fa-tiktok"></i>
                     </a>
-                    <a href="https://wa.me/6285777433886"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="social-btn"
-                       aria-label="WhatsApp Rayakan Momen">
+                    <a href="https://wa.me/6285199641845" target="_blank" rel="noopener noreferrer" class="social-btn"
+                        aria-label="WhatsApp Rayakan Momen">
                         <i class="fa-brands fa-whatsapp"></i>
                     </a>
                 </div>
