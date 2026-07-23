@@ -21,6 +21,9 @@ Route::get('/robots.txt', [InvitationPublicController::class, 'robots'])->name('
 Route::get('/dashboard-rsvp/{token}', [RsvpDashboardController::class, 'show'])
     ->where('token', '[A-Za-z0-9_-]+')
     ->name('rsvp.dashboard');
+Route::get('/dashboard-rsvp/{token}/bagikan', [RsvpDashboardController::class, 'bagikan'])
+    ->where('token', '[A-Za-z0-9_-]+')
+    ->name('rsvp.bagikan');
 Route::post('/dashboard-rsvp/{token}/tamu', [RsvpDashboardController::class, 'storeTamu'])
     ->where('token', '[A-Za-z0-9_-]+')
     ->middleware('throttle:30,1')

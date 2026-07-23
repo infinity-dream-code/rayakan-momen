@@ -23,9 +23,7 @@
             --line: #eee8df;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -33,10 +31,6 @@
             background: linear-gradient(165deg, #f4f1eb 0%, #ebe4d8 45%, #f7f4ef 100%);
             color: var(--navy);
             min-height: 100vh;
-        }
-
-        .font-display {
-            font-family: 'Playfair Display', serif;
         }
 
         .wrap {
@@ -87,6 +81,15 @@
             font-size: .875rem;
         }
 
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            margin-top: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+
         .stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -95,9 +98,7 @@
         }
 
         @media (max-width: 560px) {
-            .stats {
-                grid-template-columns: 1fr;
-            }
+            .stats { grid-template-columns: 1fr; }
         }
 
         .stat {
@@ -122,13 +123,8 @@
             letter-spacing: .06em;
         }
 
-        .stat.hadir .num {
-            color: #059669;
-        }
-
-        .stat.tidak .num {
-            color: #e11d48;
-        }
+        .stat.hadir .num { color: #059669; }
+        .stat.tidak .num { color: #e11d48; }
 
         .panel {
             background: #fff;
@@ -141,88 +137,12 @@
         .panel-head {
             padding: 1rem 1.25rem;
             border-bottom: 1px solid var(--line);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: .75rem;
-            flex-wrap: wrap;
         }
 
         .panel-head h2 {
             margin: 0;
             font-family: 'Playfair Display', serif;
             font-size: 1.15rem;
-        }
-
-        .panel-sub {
-            margin: .2rem 0 0;
-            font-size: .75rem;
-            color: #888;
-        }
-
-        .panel-body {
-            padding: 1rem 1.25rem 1.25rem;
-        }
-
-        .alert {
-            border-radius: .85rem;
-            padding: .75rem 1rem;
-            font-size: .85rem;
-            margin-bottom: 1rem;
-        }
-
-        .alert-ok {
-            background: #ecfdf5;
-            color: #047857;
-            border: 1px solid #a7f3d0;
-        }
-
-        .alert-err {
-            background: #fff1f2;
-            color: #be123c;
-            border: 1px solid #fecdd3;
-        }
-
-        .alert-link {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .5rem;
-            align-items: center;
-            margin-top: .65rem;
-        }
-
-        .alert-link code {
-            flex: 1;
-            min-width: 0;
-            font-size: .72rem;
-            background: rgba(255, 255, 255, .7);
-            border-radius: .5rem;
-            padding: .45rem .6rem;
-            word-break: break-all;
-            color: var(--navy);
-        }
-
-        .tamu-form {
-            display: flex;
-            gap: .5rem;
-            flex-wrap: wrap;
-        }
-
-        .tamu-form input {
-            flex: 1;
-            min-width: 180px;
-            border: 1px solid #e5e0d8;
-            border-radius: .85rem;
-            padding: .7rem .9rem;
-            font-family: inherit;
-            font-size: .9rem;
-            background: var(--ivory);
-            color: var(--navy);
-        }
-
-        .tamu-form input:focus {
-            outline: 2px solid rgba(201, 168, 76, .45);
-            border-color: var(--gold);
         }
 
         .btn {
@@ -241,34 +161,17 @@
         }
 
         .btn-ghost {
-            background: var(--ivory);
-            color: var(--navy);
-            border: 1px solid #e5e0d8;
-        }
-
-        .btn-primary {
-            background: var(--navy);
+            background: rgba(255, 255, 255, .12);
             color: #fff;
+            border: 1px solid rgba(255, 255, 255, .22);
         }
 
-        .btn-wa {
-            background: #25d366;
-            color: #fff;
+        .btn-gold {
+            background: var(--gold);
+            color: var(--navy-deep);
         }
 
-        .btn-icon {
-            padding: .5rem .7rem;
-        }
-
-        .btn-danger {
-            background: #fff1f2;
-            color: #be123c;
-            border: 1px solid #fecdd3;
-        }
-
-        .list {
-            padding: .5rem 0;
-        }
+        .list { padding: .5rem 0; }
 
         .item {
             padding: 1rem 1.25rem;
@@ -277,9 +180,7 @@
             gap: .35rem;
         }
 
-        .item:last-child {
-            border-bottom: 0;
-        }
+        .item:last-child { border-bottom: 0; }
 
         .item-top {
             display: flex;
@@ -289,36 +190,9 @@
             flex-wrap: wrap;
         }
 
-        .name {
-            font-weight: 600;
-            font-size: .95rem;
-        }
-
-        .time {
-            font-size: .7rem;
-            color: #999;
-        }
-
-        .msg {
-            color: #555;
-            font-size: .875rem;
-            line-height: 1.55;
-            word-break: break-word;
-        }
-
-        .link-url {
-            font-size: .72rem;
-            color: #777;
-            word-break: break-all;
-            line-height: 1.4;
-        }
-
-        .item-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .4rem;
-            margin-top: .35rem;
-        }
+        .name { font-weight: 600; font-size: .95rem; }
+        .time { font-size: .7rem; color: #999; }
+        .msg { color: #555; font-size: .875rem; line-height: 1.55; word-break: break-word; }
 
         .badge {
             display: inline-flex;
@@ -329,42 +203,14 @@
             font-weight: 600;
         }
 
-        .badge-hadir {
-            background: #ecfdf5;
-            color: #047857;
-        }
-
-        .badge-tidak {
-            background: #fff1f2;
-            color: #be123c;
-        }
+        .badge-hadir { background: #ecfdf5; color: #047857; }
+        .badge-tidak { background: #fff1f2; color: #be123c; }
 
         .empty {
             padding: 2.5rem 1.5rem;
             text-align: center;
             color: #999;
             font-size: .9rem;
-        }
-
-        .toast {
-            position: fixed;
-            left: 50%;
-            bottom: 1.25rem;
-            transform: translateX(-50%) translateY(120%);
-            background: var(--navy);
-            color: #fff;
-            padding: .65rem 1.1rem;
-            border-radius: 999px;
-            font-size: .8rem;
-            z-index: 50;
-            opacity: 0;
-            transition: .25s ease;
-            pointer-events: none;
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
         }
 
         .foot {
@@ -374,100 +220,27 @@
             color: #999;
         }
 
-        .foot a {
-            color: var(--gold);
-            text-decoration: none;
-        }
-
-        .list-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: .75rem;
-            flex-wrap: wrap;
-            padding: .65rem 1.25rem;
-            border-top: 1px solid var(--line);
-            border-bottom: 1px solid var(--line);
-            background: #fcfbf8;
-            font-size: .75rem;
-            color: #777;
-        }
-
-        .list-meta strong {
-            color: var(--navy);
-        }
-
-        .list-meta.full {
-            background: #fff1f2;
-            color: #be123c;
-        }
-
-        .pager {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: .4rem;
-            flex-wrap: wrap;
-            padding: 1rem 1.25rem 1.15rem;
-            border-top: 1px solid var(--line);
-        }
-
-        .pager a,
-        .pager span {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 2rem;
-            height: 2rem;
-            padding: 0 .55rem;
-            border-radius: 999px;
-            font-size: .78rem;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        .pager a {
-            background: var(--ivory);
-            color: var(--navy);
-            border: 1px solid #e5e0d8;
-        }
-
-        .pager a:hover {
-            border-color: var(--gold);
-        }
-
-        .pager .is-active {
-            background: var(--navy);
-            color: #fff;
-            border: 1px solid var(--navy);
-        }
-
-        .pager .is-disabled {
-            opacity: .35;
-            pointer-events: none;
-            background: var(--ivory);
-            color: #999;
-            border: 1px solid #e5e0d8;
-        }
-
-        .tamu-form input:disabled,
-        .tamu-form button:disabled {
-            opacity: .55;
-            cursor: not-allowed;
-        }
+        .foot a { color: var(--gold); text-decoration: none; }
     </style>
 </head>
 
 <body>
-    @php
-        $inviteTitle = $title;
-        $waTextTpl = 'Assalamualaikum Wr. Wb.\n\nDengan hormat, kami mengundang *{nama}* untuk membuka undangan digital *{title}*.\n\n{link}\n\nTerima kasih.';
-    @endphp
     <div class="wrap">
         <div class="hero">
             <div class="hero-label">Dashboard RSVP</div>
             <h1>{{ $title }}</h1>
             <p>Daftar ucapan &amp; konfirmasi kehadiran tamu</p>
+            <div class="hero-actions">
+                <a class="btn btn-ghost" href="{{ $baseInviteUrl }}" target="_blank" rel="noopener">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat Undangan
+                </a>
+                <a class="btn btn-gold" href="{{ route('rsvp.bagikan', $token) }}">
+                    <i class="fa-solid fa-link"></i> Bagikan Link
+                    @if ($tamuTotal > 0)
+                        ({{ $tamuTotal }}/{{ $tamuMax }})
+                    @endif
+                </a>
+            </div>
         </div>
 
         <div class="stats">
@@ -483,138 +256,6 @@
                 <div class="num">{{ $tidakHadir }}</div>
                 <div class="lbl">Tidak Hadir</div>
             </div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-head">
-                <div>
-                    <h2>Bagikan Undangan</h2>
-                    <p class="panel-sub">Tambah nama tamu, lalu salin link atau kirim lewat WhatsApp</p>
-                </div>
-                <a class="btn btn-ghost" href="{{ $baseInviteUrl }}" target="_blank" rel="noopener">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat Undangan
-                </a>
-            </div>
-            <div class="panel-body">
-                @if (session('tamu_error'))
-                    <div class="alert alert-err">{{ session('tamu_error') }}</div>
-                @endif
-                @if (session('tamu_success'))
-                    <div class="alert alert-ok">
-                        {{ session('tamu_success') }}
-                        @if (session('tamu_last_link'))
-                            <div class="alert-link">
-                                <code id="lastLink">{{ session('tamu_last_link') }}</code>
-                                <button type="button" class="btn btn-ghost btn-icon" data-copy="{{ session('tamu_last_link') }}">
-                                    <i class="fa-regular fa-copy"></i> Salin
-                                </button>
-                                <a class="btn btn-wa btn-icon"
-                                    href="https://wa.me/?text={{ rawurlencode(str_replace(['{nama}', '{title}', '{link}'], [session('tamu_last_nama'), $inviteTitle, session('tamu_last_link')], $waTextTpl)) }}"
-                                    target="_blank" rel="noopener">
-                                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                                </a>
-                            </div>
-                        @endif
-                    </div>
-                @endif
-
-                <form class="tamu-form" method="post" action="{{ route('rsvp.tamu.store', $token) }}">
-                    @csrf
-                    <input type="text" name="nama" value="{{ old('nama') }}" maxlength="80"
-                        placeholder="Contoh: Budi & Keluarga" required autocomplete="name"
-                        @if ($tamuFull) disabled @endif>
-                    <button type="submit" class="btn btn-primary" @if ($tamuFull) disabled @endif>
-                        <i class="fa-solid fa-plus"></i> Buat Link
-                    </button>
-                </form>
-                @if ($tamuFull)
-                    <p class="panel-sub" style="margin-top:.75rem;color:#be123c;">
-                        Kuota 50 nama penuh. Hapus nama di daftar sebelum menambah lagi.
-                    </p>
-                @endif
-            </div>
-
-            <div class="list-meta {{ $tamuFull ? 'full' : '' }}">
-                <span>Daftar link: <strong>{{ $tamuTotal }}</strong> / {{ $tamuMax }} nama</span>
-                @if ($tamuLinks->total() > 0)
-                    <span>Halaman {{ $tamuLinks->currentPage() }} dari {{ $tamuLinks->lastPage() }}</span>
-                @endif
-            </div>
-
-            <div class="list">
-                @forelse ($tamuLinks as $tamu)
-                    @php
-                        $namaTamu = (string) ($tamu['nama'] ?? '');
-                        $linkTamu = $baseInviteUrl . '?to=' . rawurlencode($namaTamu);
-                        $waText = str_replace(
-                            ['{nama}', '{title}', '{link}'],
-                            [$namaTamu, $inviteTitle, $linkTamu],
-                            $waTextTpl
-                        );
-                    @endphp
-                    <div class="item">
-                        <div class="item-top">
-                            <div>
-                                <div class="name">{{ $namaTamu }}</div>
-                                <div class="link-url">{{ $linkTamu }}</div>
-                            </div>
-                        </div>
-                        <div class="item-actions">
-                            <button type="button" class="btn btn-ghost btn-icon" data-copy="{{ $linkTamu }}">
-                                <i class="fa-regular fa-copy"></i> Salin
-                            </button>
-                            <a class="btn btn-wa btn-icon"
-                                href="https://wa.me/?text={{ rawurlencode($waText) }}"
-                                target="_blank" rel="noopener">
-                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                            </a>
-                            <form method="post"
-                                action="{{ route('rsvp.tamu.destroy', [$token, $tamu['id']]) }}?page={{ $tamuLinks->currentPage() }}"
-                                onsubmit="return confirm('Hapus {{ addslashes($namaTamu) }} dari daftar?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-icon" title="Hapus">
-                                    <i class="fa-regular fa-trash-can"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                @empty
-                    <div class="empty">
-                        <i class="fa-solid fa-user-plus"
-                            style="font-size:1.5rem;display:block;margin-bottom:.75rem;opacity:.45;"></i>
-                        Belum ada nama. Tambahkan tamu di atas untuk membuat link personal.
-                    </div>
-                @endforelse
-            </div>
-
-            @if ($tamuLinks->lastPage() > 1)
-                <nav class="pager" aria-label="Navigasi daftar link">
-                    @if ($tamuLinks->onFirstPage())
-                        <span class="is-disabled"><i class="fa-solid fa-chevron-left"></i></span>
-                    @else
-                        <a href="{{ $tamuLinks->previousPageUrl() }}" aria-label="Sebelumnya">
-                            <i class="fa-solid fa-chevron-left"></i>
-                        </a>
-                    @endif
-
-                    @foreach ($tamuLinks->getUrlRange(1, $tamuLinks->lastPage()) as $page => $url)
-                        @if ($page == $tamuLinks->currentPage())
-                            <span class="is-active">{{ $page }}</span>
-                        @else
-                            <a href="{{ $url }}">{{ $page }}</a>
-                        @endif
-                    @endforeach
-
-                    @if ($tamuLinks->hasMorePages())
-                        <a href="{{ $tamuLinks->nextPageUrl() }}" aria-label="Berikutnya">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </a>
-                    @else
-                        <span class="is-disabled"><i class="fa-solid fa-chevron-right"></i></span>
-                    @endif
-                </nav>
-            @endif
         </div>
 
         <div class="panel">
@@ -660,42 +301,6 @@
             Powered by <a href="{{ url('/') }}">Rayakan Momen</a>
         </div>
     </div>
-
-    <div class="toast" id="toast" role="status"></div>
-
-    <script>
-        (function() {
-            var toast = document.getElementById('toast');
-            var timer;
-
-            function showToast(msg) {
-                toast.textContent = msg;
-                toast.classList.add('show');
-                clearTimeout(timer);
-                timer = setTimeout(function() {
-                    toast.classList.remove('show');
-                }, 1800);
-            }
-
-            document.querySelectorAll('[data-copy]').forEach(function(btn) {
-                btn.addEventListener('click', async function() {
-                    var text = btn.getAttribute('data-copy') || '';
-                    try {
-                        await navigator.clipboard.writeText(text);
-                        showToast('Link disalin');
-                    } catch (e) {
-                        var ta = document.createElement('textarea');
-                        ta.value = text;
-                        document.body.appendChild(ta);
-                        ta.select();
-                        document.execCommand('copy');
-                        ta.remove();
-                        showToast('Link disalin');
-                    }
-                });
-            });
-        })();
-    </script>
 </body>
 
 </html>

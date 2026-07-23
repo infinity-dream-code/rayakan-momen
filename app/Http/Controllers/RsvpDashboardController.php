@@ -19,15 +19,35 @@ class RsvpDashboardController extends Controller
     ) {
     }
 
-    public function show(Request $request, string $token)
+    public function show(string $token)
     {
         $undangan = $this->resolveUndangan($token);
         $ucapan = $undangan['ucapan_tersimpan'] ?? [];
         $hadir = count(array_filter($ucapan, fn ($u) => ($u['kehadiran'] ?? '') === 'hadir'));
         $tidakHadir = count(array_filter($ucapan, fn ($u) => ($u['kehadiran'] ?? '') === 'tidak_hadir'));
         $total = count($ucapan);
+        $tamuTotal = count(array_filter(
+            is_array($undangan['tamu_links'] ?? null) ? $undangan['tamu_links'] : [],
+            fn ($g) => is_array($g) && filled($g['nama'] ?? null)
+        ));
 
-        $title = $this->displayTitle($undangan);
+        return view('rsvp-dashboard', [
+            'token' => $token,
+            'undangan' => $undangan,
+            'ucapan' => $ucapan,
+            'hadir' => $hadir,
+            'tidakHadir' => $tidakHadir,
+            'total' => $total,
+            'title' => $this->displayTitle($undangan),
+            'tamuTotal' => $tamuTotal,
+            'tamuMax' => self::TAMU_MAX,
+            'baseInviteUrl' => url('/'.$undangan['slug']),
+        ]);
+    }
+
+    public function bagikan(Request $request, string $token)
+    {
+        $undangan = $this->resolveUndangan($token);
         $allTamu = array_values(array_reverse(array_filter(
             is_array($undangan['tamu_links'] ?? null) ? $undangan['tamu_links'] : [],
             fn ($g) => is_array($g) && filled($g['nama'] ?? null)
@@ -52,14 +72,10 @@ class RsvpDashboardController extends Controller
             ]
         );
 
-        return view('rsvp-dashboard', [
+        return view('rsvp-bagikan', [
             'token' => $token,
             'undangan' => $undangan,
-            'ucapan' => $ucapan,
-            'hadir' => $hadir,
-            'tidakHadir' => $tidakHadir,
-            'total' => $total,
-            'title' => $title,
+            'title' => $this->displayTitle($undangan),
             'tamuLinks' => $tamuLinks,
             'tamuTotal' => $tamuTotal,
             'tamuMax' => self::TAMU_MAX,
@@ -83,7 +99,7 @@ class RsvpDashboardController extends Controller
 
         if (! ($result['ok'] ?? false)) {
             return redirect()
-                ->route('rsvp.dashboard', ['token' => $token])
+                ->route('rsvp.bagikan', ['token' => $token])
                 ->withInput()
                 ->with('tamu_error', $result['error'] ?? 'Gagal menambah nama.');
         }
@@ -92,7 +108,7 @@ class RsvpDashboardController extends Controller
         $link = $this->guestInviteUrl((string) $undangan['slug'], $nama);
 
         return redirect()
-            ->route('rsvp.dashboard', ['token' => $token])
+            ->route('rsvp.bagikan', ['token' => $token])
             ->with([
                 'tamu_success' => 'Link untuk '.$nama.' siap dibagikan.',
                 'tamu_last_link' => $link,
@@ -108,7 +124,7 @@ class RsvpDashboardController extends Controller
         $page = max(1, (int) $request->query('page', 1));
 
         return redirect()
-            ->route('rsvp.dashboard', array_filter([
+            ->route('rsvp.bagikan', array_filter([
                 'token' => $token,
                 'page' => $page > 1 ? $page : null,
             ]))
