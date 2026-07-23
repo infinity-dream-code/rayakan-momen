@@ -262,11 +262,20 @@ class InvitationTemplateRenderer
                 ['Nur Aisyah Putri', $wanitaL],
                 ['AHMAD ZAKI RAMADHAN', mb_strtoupper($priaL)],
                 ['NUR AISYAH PUTRI', mb_strtoupper($wanitaL)],
-                ['Ahmad Zaki <span class="text-gold-400 italic">&amp;</span> Nur Aisyah', $pria.' <span class="text-gold-400 italic">&amp;</span> '.$wanita],
-                ['Ahmad Zaki <span class="amp">&amp;</span> Nur Aisyah', $pria.' <span class="amp">&amp;</span> '.$wanita],
-                ['Ahmad Zaki &amp; Nur Aisyah', $pria.' &amp; '.$wanita],
+                // HTML amp — jangan di-escape ulang (flag false)
+                [
+                    'Ahmad Zaki <span class="text-gold-400 italic">&amp;</span> Nur Aisyah',
+                    e($pria).' <span class="text-gold-400 italic">&amp;</span> '.e($wanita),
+                    false,
+                ],
+                [
+                    'Ahmad Zaki <span class="amp">&amp;</span> Nur Aisyah',
+                    e($pria).' <span class="amp">&amp;</span> '.e($wanita),
+                    false,
+                ],
+                ['Ahmad Zaki &amp; Nur Aisyah', $pria.' & '.$wanita],
                 ['Ahmad Zaki & Nur Aisyah', $pria.' & '.$wanita],
-                ['Zaki &amp; Aisyah', $pria.' &amp; '.$wanita],
+                ['Zaki &amp; Aisyah', $pria.' & '.$wanita],
                 ['Zaki & Aisyah', $pria.' & '.$wanita],
                 ['#ZakiAisyahBersanding', '#'.preg_replace('/\s+/', '', $pria.$wanita)],
                 ['Zaki', $pria],
@@ -284,9 +293,12 @@ class InvitationTemplateRenderer
             ],
         };
 
-        foreach ($pairs as [$from, $to]) {
+        foreach ($pairs as $pair) {
+            $from = $pair[0] ?? '';
+            $to = $pair[1] ?? '';
+            $escape = $pair[2] ?? true;
             if ($from !== '' && $to !== '') {
-                $html = str_replace($from, e($to), $html);
+                $html = str_replace($from, $escape ? e($to) : $to, $html);
             }
         }
 
