@@ -10,7 +10,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="shortcut icon" href="{{ asset('images/logo.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('logo.png') }}" type="image/x-icon">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -31,6 +31,8 @@
 <body class="min-h-screen bg-[#0e1320] flex items-center justify-center px-4">
     <div class="w-full max-w-md">
         <div class="text-center mb-8">
+            <img src="{{ asset('logo-gold.png') }}" alt="Rayakan Momen" width="64" height="96"
+                class="mx-auto mb-3 object-contain" decoding="async" style="background:transparent;height:4.5rem;width:auto">
             <h1 class="font-display text-3xl text-[#e8d5a3]">Rayakan Momen</h1>
             <p class="text-white/45 text-sm mt-2">Verifikasi PIN Admin</p>
         </div>

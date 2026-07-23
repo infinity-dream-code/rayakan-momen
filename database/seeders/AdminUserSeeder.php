@@ -9,8 +9,12 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
+        User::query()
+            ->whereIn('email', ['admin@gmail.com', 'rayakanmomen0@gmail.com'])
+            ->update(['email' => 'admin@rayakanmomen.com']);
+
         User::updateOrCreate(
-            ['email' => 'admin@gmail.com'],
+            ['email' => 'admin@rayakanmomen.com'],
             [
                 'name' => 'Admin',
                 'password' => 'Rama Sat119',

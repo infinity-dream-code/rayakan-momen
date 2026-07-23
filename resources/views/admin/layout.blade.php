@@ -1,17 +1,17 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Admin') — Rayakan Momen</title>
+    <title>@yield('title', 'Admin') ? Rayakan Momen</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="shortcut icon" href="{{ asset('images/logo.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('logo.png') }}" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
@@ -117,8 +117,12 @@
     <div class="flex min-h-screen">
         <aside class="sidebar w-64 shrink-0 hidden md:flex flex-col fixed inset-y-0 left-0 z-30">
             <div class="px-6 py-6 border-b border-white/10">
-                <a href="{{ route('admin.dashboard') }}" class="font-display text-xl text-[#e8d5a3]">
-                    Rayakan Momen
+                @php $logoVer = is_file(public_path('logo-gold.png')) ? filemtime(public_path('logo-gold.png')) : time(); @endphp
+                <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2.5 no-underline">
+                    <img src="{{ asset('logo-gold.png') }}?v={{ $logoVer }}"
+                        alt="" width="32" height="48" class="object-contain" decoding="async"
+                        style="background:transparent;height:2.5rem;width:auto">
+                    <span class="font-display text-xl text-[#e8d5a3]">Rayakan Momen</span>
                 </a>
                 <p class="text-white/40 text-xs mt-1">Panel Admin</p>
             </div>

@@ -1,4 +1,4 @@
-﻿@php
+@php
     $tema = $undangan['tema'] ?? 'elegan';
     $isDark = $tema === 'langit_malam';
     $isClassic = $tema === 'classic';
@@ -20,7 +20,7 @@
 
     $tanggalUtama = $undangan['tanggal_resepsi'] ?? ($undangan['tanggal_akad'] ?? null);
     $tanggalFormatted = $tanggalUtama
-        ? \Illuminate\Support\Carbon::parse($tanggalUtama)->locale('id')->translatedFormat('l · d F Y')
+        ? \Illuminate\Support\Carbon::parse($tanggalUtama)->locale('id')->translatedFormat('l � d F Y')
         : null;
 @endphp
 <!DOCTYPE html>
@@ -29,14 +29,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $undangan['nama_wanita'] }} & {{ $undangan['nama_pria'] }} — Undangan Pernikahan</title>
+    <title>{{ $undangan['nama_wanita'] }} & {{ $undangan['nama_pria'] }} � Undangan Pernikahan</title>
     <meta name="description"
         content="Undangan pernikahan digital {{ $undangan['nama_wanita'] }} & {{ $undangan['nama_pria'] }}">
     <link
         href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="shortcut icon" href="images/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('logo.png') }}" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
@@ -441,7 +441,7 @@
             </section>
 
             <footer class="text-center py-8 text-xs" style="color:var(--muted)">
-                Made with ♥ by <a href="{{ url('/') }}" class="underline" style="color:var(--accent)">Rayakan
+                Made with ? by <a href="{{ url('/') }}" class="underline" style="color:var(--accent)">Rayakan
                     Momen</a>
             </footer>
         </div>

@@ -1,15 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,nofollow">
-    <title>Undangan tidak tersedia — Rayakan Momen</title>
+    <title>Undangan tidak tersedia � Rayakan Momen</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Poppins:wght@400;500&display=swap"
         rel="stylesheet">
-    <link rel="shortcut icon" href="images/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('logo.png') }}" type="image/x-icon">
     <style>
         body {
             margin: 0;

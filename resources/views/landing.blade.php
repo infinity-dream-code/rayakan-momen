@@ -1,17 +1,17 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Rayakan Momen â€” Undangan Digital Pernikahan, Ulang Tahun &amp; Pasangan</title>
+    <title>Rayakan Momen — Undangan Digital Pernikahan, Ulang Tahun &amp; Pasangan</title>
     <meta name="description"
-        content="Rayakan Momen â€” undangan digital siap 1 hari. Dashboard RSVP, link personal per tamu, untuk pernikahan, ulang tahun anak, dan kejutan pasangan.">
+        content="Rayakan Momen — undangan digital siap 1 hari. Dashboard RSVP, link personal per tamu, untuk pernikahan, ulang tahun anak, dan kejutan pasangan.">
     <meta name="keywords"
         content="undangan digital, undangan pernikahan, undangan ulang tahun anak, undangan pasangan, Rayakan Momen">
     <meta name="author" content="Rayakan Momen">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Rayakan Momen â€” Undangan Digital Pernikahan, Ulang Tahun &amp; Pasangan">
+    <meta property="og:title" content="Rayakan Momen — Undangan Digital Pernikahan, Ulang Tahun &amp; Pasangan">
     <meta property="og:description"
         content="Pengerjaan biasanya 1 hari. Pantau RSVP di dashboard, buat &amp; bagikan link personal per tamu.">
     <meta property="og:image"
@@ -19,13 +19,13 @@
     <meta property="og:url" content="{{ url('/') }}">
     <meta property="og:site_name" content="Rayakan Momen">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Rayakan Momen â€” Jasa Undangan Digital">
+    <meta name="twitter:title" content="Rayakan Momen — Jasa Undangan Digital">
     <meta name="twitter:description"
         content="Undangan digital untuk pernikahan, ulang tahun anak, dan kejutan pasangan. Mulai dari Rp 150.000.">
     <meta name="twitter:image"
         content="https://res.cloudinary.com/zujq4fvj/image/upload/v1784771473/RAYAKAN_MOMEN_veeyix.png">
     <link rel="canonical" href="{{ url('/') }}">
-    <link rel="shortcut icon" href="{{ asset('images/logo.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('logo.png') }}" type="image/x-icon">
 
     <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">

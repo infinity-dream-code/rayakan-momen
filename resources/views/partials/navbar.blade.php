@@ -30,13 +30,50 @@
             display: none !important
         }
     }
+
+    .nav-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: .7rem;
+        text-decoration: none;
+        flex-shrink: 0;
+    }
+
+    .nav-brand img {
+        width: auto;
+        height: 2.55rem;
+        object-fit: contain;
+        display: block;
+        background: transparent;
+    }
+
+    .nav-brand-text {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        color: #e8d5a3;
+        letter-spacing: .02em;
+        line-height: 1.1;
+        white-space: nowrap;
+    }
+
+    @media (min-width: 768px) {
+        .nav-brand img {
+            height: 2.85rem;
+        }
+
+        .nav-brand-text {
+            font-size: 1.35rem;
+        }
+    }
 </style>
 <nav id="navbar" class="nav-blur fixed top-0 inset-x-0 z-50 transition-all duration-300">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="flex items-center justify-between h-16 md:h-[4.5rem]">
-            <a href="{{ route('landing') }}#beranda"
-                class="font-display text-xl md:text-2xl text-gold-light-accent tracking-wide">
-                Rayakan Momen
+            <a href="{{ route('landing') }}#beranda" class="nav-brand" aria-label="Rayakan Momen">
+                @php $logoVer = is_file(public_path('logo-gold.png')) ? filemtime(public_path('logo-gold.png')) : time(); @endphp
+                <img src="{{ asset('logo-gold.png') }}?v={{ $logoVer }}"
+                    alt="" width="36" height="54" decoding="async">
+                <span class="nav-brand-text">Rayakan Momen</span>
             </a>
 
             <ul class="hidden lg:flex items-center gap-8">
