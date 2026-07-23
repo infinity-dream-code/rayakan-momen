@@ -14,14 +14,16 @@
     <meta property="og:title" content="Rayakan Momen — Undangan Digital Pernikahan, Ulang Tahun &amp; Pasangan">
     <meta property="og:description"
         content="Pilih undangan digital untuk pernikahan, ulang tahun anak, atau kejutan pasangan. Contoh tersedia — siap dibagikan lewat WhatsApp.">
-    <meta property="og:image" content="{{ cdn_image('hero_wedding', 'f_auto,q_auto:eco,w_1200,c_fill,g_auto') }}">
+    <meta property="og:image"
+        content="https://res.cloudinary.com/zujq4fvj/image/upload/v1784771473/RAYAKAN_MOMEN_veeyix.png">
     <meta property="og:url" content="{{ url('/') }}">
     <meta property="og:site_name" content="Rayakan Momen">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Rayakan Momen — Jasa Undangan Digital">
     <meta name="twitter:description"
         content="Undangan digital untuk pernikahan, ulang tahun anak, dan kejutan pasangan. Mulai dari Rp 150.000.">
-    <meta name="twitter:image" content="{{ cdn_image('hero_wedding', 'f_auto,q_auto:eco,w_1200,c_fill,g_auto') }}">
+    <meta name="twitter:image"
+        content="https://res.cloudinary.com/zujq4fvj/image/upload/v1784771473/RAYAKAN_MOMEN_veeyix.png">
     <link rel="canonical" href="{{ url('/') }}">
     <link rel="shortcut icon" href="{{ asset('images/logo.png') }}" type="image/x-icon">
 
