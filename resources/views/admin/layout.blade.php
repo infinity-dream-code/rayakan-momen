@@ -187,16 +187,13 @@
                     <div class="alert-success rounded-xl px-4 py-3 mb-5 text-sm">{{ session('success') }}</div>
                 @endif
                 @if (session('error'))
-                    <div class="alert-error rounded-xl px-4 py-3 mb-5 text-sm whitespace-pre-wrap break-words">{{ session('error') }}</div>
-                @endif
-                @if (session('upload_debug'))
-                    <div class="rounded-xl px-4 py-3 mb-5 text-xs bg-amber-50 text-amber-900 border border-amber-200 whitespace-pre-wrap break-all">{{ session('upload_debug') }}</div>
+                    <div class="alert-error rounded-xl px-4 py-3 mb-5 text-sm">{{ session('error') }}</div>
                 @endif
                 @if ($errors->any())
                     <div class="alert-error rounded-xl px-4 py-3 mb-5 text-sm">
                         <ul class="list-disc pl-4 space-y-1">
                             @foreach ($errors->all() as $error)
-                                <li class="break-words">{{ $error }}</li>
+                                <li>{{ $error }}</li>
                             @endforeach
                         </ul>
                     </div>

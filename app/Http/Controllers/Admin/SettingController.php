@@ -120,7 +120,7 @@ class SettingController extends Controller
                 $this->catalog->updatePreview($key, $uploaded['url'], $uploaded['public_id']);
 
                 $note = $uploaded['via'] === 'local'
-                    ? ' (disimpan lokal — Cloudinary gagal)'
+                    ? ' (disimpan lokal)'
                     : '';
 
                 return back()->with('success', 'Cover "'.$nama.'" disimpan.'.$note);
@@ -135,42 +135,28 @@ class SettingController extends Controller
 
             return back()->with('error', 'Pilih gambar atau centang hapus.');
         } catch (InvalidArgumentException $e) {
-            Log::warning('Cover template ditolak', [
-                'key' => $key,
-                'error' => $e->getMessage(),
-                'file' => $request->file('image')?->getClientOriginalName(),
-                'size' => $request->file('image')?->getSize(),
-            ]);
-
             return back()->with('error', $e->getMessage());
         } catch (Throwable $e) {
-            Log::error('Gagal upload cover template '.$key.': '.$e->getMessage(), [
-                'exception' => $e,
-            ]);
+            Log::error('Gagal upload cover template '.$key.': '.$e->getMessage());
 
-            return back()->with('error', 'Gagal menyimpan cover: '.$e->getMessage());
+            return back()->with('error', 'Gagal menyimpan cover.');
         }
     }
 
     protected function explainPhpUploadFailure(?\Illuminate\Http\UploadedFile $file): string
     {
         $code = $file ? $file->getError() : UPLOAD_ERR_NO_FILE;
-        $uploadMax = ini_get('upload_max_filesize') ?: '?';
-        $postMax = ini_get('post_max_size') ?: '?';
         $map = [
-            UPLOAD_ERR_INI_SIZE => "File melebihi upload_max_filesize PHP ({$uploadMax}).",
+            UPLOAD_ERR_INI_SIZE => 'File terlalu besar untuk limit upload server.',
             UPLOAD_ERR_FORM_SIZE => 'File melebihi batas form.',
-            UPLOAD_ERR_PARTIAL => 'Upload hanya sebagian (koneksi terputus).',
-            UPLOAD_ERR_NO_FILE => 'Tidak ada file yang diterima server.',
-            UPLOAD_ERR_NO_TMP_DIR => 'Folder tmp PHP tidak ada di server.',
-            UPLOAD_ERR_CANT_WRITE => 'PHP gagal menulis file ke disk.',
-            UPLOAD_ERR_EXTENSION => 'Ekstensi PHP memblokir upload.',
+            UPLOAD_ERR_PARTIAL => 'Upload terputus. Coba lagi.',
+            UPLOAD_ERR_NO_FILE => 'Tidak ada file yang dipilih.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Folder sementara server tidak tersedia.',
+            UPLOAD_ERR_CANT_WRITE => 'Gagal menulis file ke server.',
+            UPLOAD_ERR_EXTENSION => 'Upload diblokir ekstensi PHP.',
         ];
-        $reason = $map[$code] ?? ("Kode error upload PHP: {$code}.");
 
-        return "Upload gagal di PHP (belum ke Cloudinary). {$reason} "
-            ."Limit server: upload_max_filesize={$uploadMax}, post_max_size={$postMax}. "
-            .'Naikkan keduanya di cPanel → MultiPHP INI Editor (minimal 8M), atau pakai JPG lebih kecil.';
+        return $map[$code] ?? 'Upload gambar gagal.';
     }
 
     protected function postTooLarge(): bool
@@ -189,12 +175,7 @@ class SettingController extends Controller
 
     protected function explainPostTooLarge(): string
     {
-        $postMax = ini_get('post_max_size') ?: '?';
-        $uploadMax = ini_get('upload_max_filesize') ?: '?';
-
-        return "Request terlalu besar untuk post_max_size PHP ({$postMax}). "
-            ."File tidak sampai ke Laravel. Naikkan post_max_size & upload_max_filesize di cPanel (minimal 8M). "
-            ."Sekarang: upload_max_filesize={$uploadMax}, post_max_size={$postMax}.";
+        return 'File terlalu besar untuk limit server. Coba gambar lebih kecil.';
     }
 
     protected function iniBytes(string $value): int
