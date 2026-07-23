@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
 class CloudinaryService
@@ -70,6 +71,15 @@ class CloudinaryService
             if ($message === '') {
                 $message = (string) ($response->header('X-Cld-Error') ?: '');
             }
+
+            Log::warning('Cloudinary upload gagal', [
+                'status' => $response->status(),
+                'message' => $message,
+                'body' => $response->body(),
+                'x_cld_error' => $response->header('X-Cld-Error'),
+                'folder' => $folder,
+            ]);
+
             if ($message !== '') {
                 throw new InvalidArgumentException('Upload Cloudinary gagal: '.$message);
             }

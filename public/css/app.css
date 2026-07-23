@@ -206,7 +206,7 @@ a:focus {
 .section-desc-feature {
     font-size: 0.9375rem;
     line-height: 1.7;
-    color: rgba(18, 22, 31, 0.6);
+    color: rgba(255, 255, 255, 0.65);
     margin-left: auto;
     margin-right: auto;
 }
@@ -215,7 +215,7 @@ a:focus {
     color: rgba(255, 255, 255, 0.55);
 }
 .section-dark .section-desc-feature {
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.65);
 }
 
 .floral-line {
