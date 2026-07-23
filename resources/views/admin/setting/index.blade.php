@@ -91,25 +91,20 @@
 </form>
 
 <div class="mt-8 space-y-2">
-    <p class="text-sm font-medium text-gray-700 mb-1">Unggah cover template</p>
-    <p class="text-xs text-gray-500 mb-3">
-        JPG/PNG/WEBP, disarankan &lt; 2MB.
-        Limit PHP server: upload_max_filesize={{ ini_get('upload_max_filesize') ?: '?' }},
-        post_max_size={{ ini_get('post_max_size') ?: '?' }}.
-        Jika error “failed to upload”, naikkan keduanya di cPanel MultiPHP INI (min. 8M).
-    </p>
+    <p class="text-sm font-medium text-gray-700 mb-3">Unggah cover template</p>
     @foreach ($templates as $key => $t)
         <div class="card px-4 py-3 flex flex-wrap items-center gap-3">
             <span class="text-sm font-medium w-28 shrink-0">{{ $t['nama'] }}</span>
             <form method="POST" action="{{ route('admin.setting.image', $key) }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-3 flex-1 cover-upload-form">
                 @csrf
                 <input type="file" name="image" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="form-input text-xs py-1.5 flex-1 min-w-[140px] cover-file">
+                <span class="text-[11px] text-gray-400 cover-status hidden"></span>
                 @if ($t['preview'] ?? null)
                     <label class="inline-flex items-center gap-1 text-xs text-gray-600 cursor-pointer">
                         <input type="checkbox" name="remove_image" value="1" class="rounded border-gray-300 cover-remove"> Hapus
                     </label>
                 @endif
-                <button type="submit" class="btn-gold px-4 py-2 rounded-lg text-xs">Unggah cover</button>
+                <button type="submit" class="btn-gold px-4 py-2 rounded-lg text-xs cover-submit">Unggah cover</button>
             </form>
         </div>
     @endforeach
@@ -124,14 +119,105 @@ document.querySelectorAll('.tpl-row').forEach(function (row) {
     }
     row.querySelectorAll('.harga-awal, .diskon-persen').forEach(function (el) { el.addEventListener('input', recalc); });
 });
+
+function compressCoverFile(file, maxSide, maxBytes) {
+    return new Promise(function (resolve, reject) {
+        if (!file || !file.type || file.type.indexOf('image/') !== 0) {
+            resolve(file);
+            return;
+        }
+        // Sudah kecil → kirim apa adanya
+        if (file.size <= maxBytes && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
+            resolve(file);
+            return;
+        }
+        var img = new Image();
+        var url = URL.createObjectURL(file);
+        img.onload = function () {
+            URL.revokeObjectURL(url);
+            var w = img.naturalWidth || img.width;
+            var h = img.naturalHeight || img.height;
+            var scale = Math.min(1, maxSide / Math.max(w, h));
+            var cw = Math.max(1, Math.round(w * scale));
+            var ch = Math.max(1, Math.round(h * scale));
+            var canvas = document.createElement('canvas');
+            canvas.width = cw;
+            canvas.height = ch;
+            var ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, cw, ch);
+            ctx.drawImage(img, 0, 0, cw, ch);
+
+            function toBlob(q) {
+                return new Promise(function (res) {
+                    canvas.toBlob(function (blob) { res(blob); }, 'image/jpeg', q);
+                });
+            }
+
+            (async function () {
+                var quality = 0.82;
+                var blob = await toBlob(quality);
+                while (blob && blob.size > maxBytes && quality > 0.45) {
+                    quality -= 0.1;
+                    blob = await toBlob(quality);
+                }
+                if (!blob) {
+                    reject(new Error('Gagal kompres gambar di browser.'));
+                    return;
+                }
+                var name = (file.name || 'cover').replace(/\.[^.]+$/, '') + '.jpg';
+                resolve(new File([blob], name, { type: 'image/jpeg', lastModified: Date.now() }));
+            })().catch(reject);
+        };
+        img.onerror = function () {
+            URL.revokeObjectURL(url);
+            reject(new Error('Gambar tidak bisa dibaca untuk kompresi.'));
+        };
+        img.src = url;
+    });
+}
+
 document.querySelectorAll('.cover-upload-form').forEach(function (form) {
-    const file = form.querySelector('.cover-file');
-    const remove = form.querySelector('.cover-remove');
-    if (file && remove) {
-        file.addEventListener('change', function () {
-            if (file.files && file.files.length) remove.checked = false;
+    var input = form.querySelector('.cover-file');
+    var remove = form.querySelector('.cover-remove');
+    var status = form.querySelector('.cover-status');
+    var btn = form.querySelector('.cover-submit');
+    var busy = false;
+
+    if (input && remove) {
+        input.addEventListener('change', function () {
+            if (input.files && input.files.length) remove.checked = false;
         });
     }
+
+    form.addEventListener('submit', function (e) {
+        if (busy) return;
+        if (remove && remove.checked && !(input.files && input.files.length)) return;
+        if (!(input.files && input.files[0])) return;
+
+        e.preventDefault();
+        busy = true;
+        if (btn) { btn.disabled = true; btn.textContent = 'Kompres...'; }
+        if (status) { status.classList.remove('hidden'); status.textContent = 'Mengompres...'; }
+
+        compressCoverFile(input.files[0], 1600, 1800 * 1024)
+            .then(function (out) {
+                var dt = new DataTransfer();
+                dt.items.add(out);
+                input.files = dt.files;
+                if (status) {
+                    status.textContent = 'Siap kirim: ' + (out.size / 1024).toFixed(0) + ' KB';
+                }
+                if (btn) btn.textContent = 'Mengunggah...';
+                form.submit();
+            })
+            .catch(function (err) {
+                busy = false;
+                if (btn) { btn.disabled = false; btn.textContent = 'Unggah cover'; }
+                if (status) status.textContent = err.message || 'Kompres gagal';
+                alert(err.message || 'Gagal kompres gambar. Coba JPG lebih kecil, atau naikkan upload_max_filesize di cPanel.');
+            });
+    });
 });
 </script>
 @endsection
