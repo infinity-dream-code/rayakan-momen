@@ -51,7 +51,7 @@
                         class="social-btn" aria-label="Instagram Rayakan Momen">
                         <i class="fa-brands fa-instagram"></i>
                     </a>
-                    <a href="https://tiktok.com/@rayakanmomen" target="_blank" rel="noopener noreferrer"
+                    <a href="https://www.tiktok.com/@rayakanmomen.com" target="_blank" rel="noopener noreferrer"
                         class="social-btn" aria-label="TikTok Rayakan Momen">
                         <i class="fa-brands fa-tiktok"></i>
                     </a>

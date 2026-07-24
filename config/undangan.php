@@ -6,14 +6,14 @@ return [
     |--------------------------------------------------------------------------
     | Client invitation lifecycle
     |--------------------------------------------------------------------------
-    | expire_days  = otomatis jadi expired (tidak bisa diakses publik), data tetap ada
-    | purge_days   = setelah ini baru muncul tombol hapus manual di admin
+    | Nonaktif hanya manual (toggle di daftar undangan).
+    | purge_days = undangan nonaktif lama (access_state expired) bisa dihapus massal.
     */
-    'expire_days' => (int) env('UNDANGAN_EXPIRE_DAYS', 90),
+    'expire_days' => null, // legacy — tidak dipakai (nonaktif manual)
     'purge_days' => (int) env('UNDANGAN_PURGE_DAYS', 180),
 
-    // Backward-compatible aliases (bulan ≈ 30 hari) — prefer *_days di atas
-    'expire_months' => (int) env('UNDANGAN_EXPIRE_MONTHS', 3),
+    // Backward-compatible aliases — prefer *_days di atas
+    'expire_months' => null,
     'purge_months' => (int) env('UNDANGAN_PURGE_MONTHS', 6),
 
     /*

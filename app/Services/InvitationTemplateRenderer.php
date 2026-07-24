@@ -1836,6 +1836,7 @@ HTML;
 
     /**
      * Footer credit Rayakan Momen — rayakanmomen.com (semua template).
+     * Selalu ditaruh sebelum </body> agar tidak tertutup overlay/canvas di #closing.
      */
     protected function injectCopyright(string $html): string
     {
@@ -1844,52 +1845,17 @@ HTML;
         }
 
         $year = date('Y');
-        $credit = '<p class="rm-copyright" style="margin:20px auto 0;opacity:0.55;font-family:Jost,sans-serif;font-size:0.68rem;letter-spacing:1px;text-align:center;">'
+        $credit = '<footer class="rm-copyright" style="position:relative;z-index:50;isolation:isolate;display:block;margin:0;padding:1.75rem 1rem 2.5rem;text-align:center;font-family:Jost,system-ui,sans-serif;font-size:0.7rem;letter-spacing:0.08em;line-height:1.5;opacity:0.8;color:inherit;">'
             .'Copyright &copy; '.$year
             .' <a href="https://rayakanmomen.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">rayakanmomen.com</a>'
-            .'</p>';
+            .'</footer>';
 
-        // Ganti teks demo / kredit lama
-        $patterns = [
-            '/<p[^>]*>\s*Dibuat dengan[\s\S]*?<\/p>/iu',
-            '/<p[^>]*class="[^"]*footer-credit[^"]*"[^>]*>[\s\S]*?<\/p>/iu',
-            '/Made with[\s\S]*?by[\s\S]*?<\/(?:p|a|span|footer)>/iu',
-        ];
+        // Hapus teks demo / kredit lama supaya tidak dobel
+        $html = preg_replace('/<p[^>]*>\s*Dibuat dengan[\s\S]*?<\/p>/iu', '', $html) ?? $html;
+        $html = preg_replace('/<p[^>]*class="[^"]*footer-credit[^"]*"[^>]*>[\s\S]*?<\/p>/iu', '', $html) ?? $html;
 
-        foreach ($patterns as $pattern) {
-            $replaced = preg_replace($pattern, $credit, $html, 1, $count);
-            if (is_string($replaced) && $count > 0) {
-                return $replaced;
-            }
-        }
-
-        // Sisipkan sebelum </footer>
-        if (stripos($html, '</footer>') !== false) {
-            return (string) preg_replace('/<\/footer>/i', $credit."\n</footer>", $html, 1);
-        }
-
-        // Template tanpa footer: sisipkan di akhir #closing
-        if (preg_match('/id=["\']closing["\']/i', $html)) {
-            $replaced = preg_replace(
-                '/(<section[^>]*\bid=["\']closing["\'][^>]*>[\s\S]*?)(<\/section>)/i',
-                '$1'.$credit."\n$2",
-                $html,
-                1,
-                $count
-            );
-            if (is_string($replaced) && $count > 0) {
-                return $replaced;
-            }
-        }
-
-        // Fallback: sebelum </body>
         if (stripos($html, '</body>') !== false) {
-            return (string) preg_replace(
-                '/<\/body>/i',
-                '<div class="rm-copyright-wrap" style="text-align:center;padding:1.25rem 1rem;">'.$credit.'</div>'."\n</body>",
-                $html,
-                1
-            );
+            return (string) preg_replace('/<\/body>/i', $credit."\n</body>", $html, 1);
         }
 
         return $html.$credit;

@@ -23,9 +23,6 @@ class InvitationController extends Controller
 
     public function index()
     {
-        // Sync status expired otomatis saat buka daftar admin
-        $this->storage->expireAllDue();
-
         $undangan = $this->storage->allForAdmin();
         $purgeEligible = $this->storage->countPurgeEligible();
 
@@ -136,6 +133,18 @@ class InvitationController extends Controller
         $this->storage->delete($id);
 
         return redirect()->route('admin.undangan.index')->with('success', 'Undangan berhasil dihapus.');
+    }
+
+    public function toggleStatus(string $id)
+    {
+        $updated = $this->storage->toggleStatus($id);
+        abort_if(! $updated, 404);
+
+        $label = ($updated['status'] ?? '') === 'aktif' ? 'diaktifkan' : 'dinonaktifkan';
+
+        return redirect()
+            ->route('admin.undangan.index')
+            ->with('success', 'Undangan berhasil '.$label.'.');
     }
 
     public function purgeExpired()

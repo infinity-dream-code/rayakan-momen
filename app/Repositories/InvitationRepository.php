@@ -128,7 +128,7 @@ class InvitationRepository
         return $rows ? $this->hydrate($rows[0]) : null;
     }
 
-    /** Public-accessible only: aktif + live (+ not past expires_at). */
+    /** Public-accessible only: status aktif (nonaktif manual). */
     public function findPublicBySlug(string $slug): ?array
     {
         $slug = Str::lower($slug);
@@ -136,10 +136,8 @@ class InvitationRepository
             'SELECT * FROM invitations
              WHERE slug = ?
                AND status = ?
-               AND access_state = ?
-               AND (expires_at IS NULL OR expires_at > NOW())
              LIMIT 1',
-            [$slug, 'aktif', 'live']
+            [$slug, 'aktif']
         );
 
         return $rows ? $this->hydrate($rows[0]) : null;
@@ -149,10 +147,9 @@ class InvitationRepository
     {
         return DB::select(
             'SELECT slug, updated_at FROM invitations
-             WHERE status = ? AND access_state = ?
-               AND (expires_at IS NULL OR expires_at > NOW())
+             WHERE status = ?
              ORDER BY updated_at DESC',
-            ['aktif', 'live']
+            ['aktif']
         );
     }
 
@@ -175,18 +172,16 @@ class InvitationRepository
     {
         $id = (string) Str::uuid();
         $now = now();
-        $expireDays = (int) config('undangan.expire_days', 90);
-        $purgeDays = (int) config('undangan.purge_days', 180);
 
         $data['id'] = $id;
         $data['slug'] = Str::lower($data['slug'] ?? '');
-        $data['status'] = $data['status'] ?? 'aktif';
-        $data['access_state'] = 'live';
+        $data['status'] = (($data['status'] ?? 'aktif') === 'aktif') ? 'aktif' : 'nonaktif';
+        $data['access_state'] = $data['status'] === 'aktif' ? 'live' : 'expired';
         $data['views'] = (int) ($data['views'] ?? 0);
         $data['created_at'] = $now->toDateTimeString();
         $data['updated_at'] = $now->toDateTimeString();
-        $data['expires_at'] = $now->copy()->addDays($expireDays)->toDateTimeString();
-        $data['purge_at'] = $now->copy()->addDays($purgeDays)->toDateTimeString();
+        $data['expires_at'] = null; // nonaktif hanya manual
+        $data['purge_at'] = null;
 
         [$row, $payload, $cerita, $rekening, $ewallet] = $this->splitData($data);
 
@@ -268,8 +263,9 @@ class InvitationRepository
         $data['id'] = $id;
         $data['slug'] = Str::lower($data['slug'] ?? $existing['slug']);
         $data['views'] = (int) ($existing['views'] ?? 0);
-        $data['access_state'] = $existing['access_state'] ?? 'live';
-        $data['expires_at'] = $existing['expires_at'] ?? null;
+        $data['status'] = (($data['status'] ?? $existing['status'] ?? 'aktif') === 'aktif') ? 'aktif' : 'nonaktif';
+        $data['access_state'] = $data['status'] === 'aktif' ? 'live' : 'expired';
+        $data['expires_at'] = null;
         $data['purge_at'] = $existing['purge_at'] ?? null;
         $data['created_at'] = $existing['created_at'] ?? now()->toDateTimeString();
         $data['updated_at'] = now()->toDateTimeString();
@@ -287,7 +283,7 @@ class InvitationRepository
                     tanggal_resepsi=?, waktu_resepsi=?, tempat_resepsi=?, alamat_resepsi=?,
                     maps_url=?, kutipan=?, kutipan_sumber=?, youtube_url=?,
                     foto_wanita=?, foto_pria=?, foto_anak=?, cover_image=?, qris_image=?,
-                    payload_json=?, updated_at=?
+                    payload_json=?, expires_at=?, updated_at=?
                  WHERE id=?',
                 [
                     $row['slug'],
@@ -318,6 +314,7 @@ class InvitationRepository
                     $row['cover_image'],
                     $row['qris_image'],
                     json_encode($payload, JSON_UNESCAPED_UNICODE),
+                    $row['expires_at'],
                     $row['updated_at'],
                     $id,
                 ]
@@ -389,58 +386,62 @@ class InvitationRepository
 
     public function markExpiredDue(): int
     {
-        return DB::update(
-            "UPDATE invitations
-             SET access_state = 'expired', status = 'nonaktif', updated_at = ?
-             WHERE access_state = 'live'
-               AND expires_at IS NOT NULL
-               AND expires_at <= NOW()",
-            [now()->toDateTimeString()]
-        );
+        // Auto-expire dimatikan — nonaktif hanya manual via toggleStatus
+        return 0;
     }
 
     /**
-     * Auto-expire one invitation by slug if past expires_at (no cron needed).
+     * @deprecated Auto-expire dimatikan
      */
     public function expireIfDueBySlug(string $slug): bool
     {
-        $slug = Str::lower($slug);
-        $affected = DB::update(
-            "UPDATE invitations
-             SET access_state = 'expired', status = 'nonaktif', updated_at = ?
-             WHERE slug = ?
-               AND access_state = 'live'
-               AND expires_at IS NOT NULL
-               AND expires_at <= NOW()",
-            [now()->toDateTimeString(), $slug]
-        );
-
-        if ($affected > 0) {
-            $this->forgetClientCache($slug);
-
-            return true;
-        }
-
         return false;
     }
 
     /**
-     * Also expire any due rows (lightweight) — call from admin list.
+     * @deprecated Auto-expire dimatikan
      */
     public function expireAllDue(): int
     {
-        $rows = DB::select(
-            "SELECT slug FROM invitations
-             WHERE access_state = 'live'
-               AND expires_at IS NOT NULL
-               AND expires_at <= NOW()"
-        );
-        $count = $this->markExpiredDue();
-        foreach ($rows as $row) {
-            $this->forgetClientCache($row->slug ?? '');
+        return 0;
+    }
+
+    /**
+     * Toggle aktif ↔ nonaktif (manual).
+     */
+    public function toggleStatus(string $id): ?array
+    {
+        $existing = $this->find($id);
+        if (! $existing) {
+            return null;
         }
 
-        return $count;
+        $next = (($existing['status'] ?? '') === 'aktif') ? 'nonaktif' : 'aktif';
+
+        return $this->setStatus($id, $next);
+    }
+
+    public function setStatus(string $id, string $status): ?array
+    {
+        $existing = $this->find($id);
+        if (! $existing) {
+            return null;
+        }
+
+        $status = $status === 'aktif' ? 'aktif' : 'nonaktif';
+        $accessState = $status === 'aktif' ? 'live' : 'expired';
+        $now = now()->toDateTimeString();
+
+        DB::update(
+            'UPDATE invitations
+             SET status = ?, access_state = ?, expires_at = NULL, updated_at = ?
+             WHERE id = ?',
+            [$status, $accessState, $now, $id]
+        );
+
+        $this->forgetClientCache((string) ($existing['slug'] ?? ''));
+
+        return $this->find($id);
     }
 
     public function countPurgeEligible(): int
@@ -481,7 +482,7 @@ class InvitationRepository
         $inv = DB::select(
             "SELECT
                 COUNT(*) AS total_undangan,
-                SUM(CASE WHEN status = 'aktif' AND access_state = 'live' THEN 1 ELSE 0 END) AS total_aktif,
+                SUM(CASE WHEN status = 'aktif' THEN 1 ELSE 0 END) AS total_aktif,
                 SUM(views) AS total_views
              FROM invitations"
         );

@@ -27,7 +27,7 @@
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Cover, detail acara, galeri (max 10 foto)</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Konfirmasi hadir &amp; buku ucapan</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-xmark text-charcoal/20 mt-0.5"></i><span class="opacity-50">Tanpa amplop digital</span></li>
-                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Aktif 3 bulan</li>
+                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Aktif tanpa batas waktu</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Revisi 1×</li>
                 </ul>
                 <a href="https://wa.me/6285199641845?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20Paket%20Silver"
@@ -52,7 +52,7 @@
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Galeri unlimited + video</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Amplop digital (bank + QRIS)</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Musik latar custom</li>
-                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Aktif 6 bulan</li>
+                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Aktif tanpa batas waktu</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Revisi 3×</li>
                 </ul>
                 <a href="https://wa.me/6285199641845?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20Paket%20Gold"
@@ -75,7 +75,7 @@
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Desain 100% custom (adat/Jawa, dark elegant, dll)</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Animasi cover premium</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Domain custom / subdomain khusus</li>
-                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Aktif selamanya</li>
+                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Aktif tanpa batas waktu</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Revisi unlimited sampai puas</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Prioritas pengerjaan (1 hari jadi)</li>
                 </ul>

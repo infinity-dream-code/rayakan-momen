@@ -21,9 +21,7 @@ class InvitationPublicController extends Controller
         // Slug sering diketik pakai spasi di address bar → normalisasi
         $slug = Str::slug(Str::lower(rawurldecode($slug)), '-');
 
-        // Auto: lewat 90 hari → status jadi expired (tanpa tunggu cron)
-        $this->invitations->expireIfDueBySlug($slug);
-
+        // Auto-expire dimatikan — nonaktif hanya lewat toggle admin
         $undangan = $this->invitations->findPublicBySlug($slug);
 
         if (! $undangan) {

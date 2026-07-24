@@ -2,31 +2,17 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\InvitationRepository;
 use Illuminate\Console\Command;
 
 class ExpireInvitationsCommand extends Command
 {
     protected $signature = 'undangan:expire';
 
-    protected $description = 'Mark invitations past expires_at as expired/nonaktif';
+    protected $description = 'No-op: undangan tidak lagi expire otomatis (nonaktif manual via admin toggle)';
 
-    public function handle(InvitationRepository $repo): int
+    public function handle(): int
     {
-        $rows = \Illuminate\Support\Facades\DB::select(
-            "SELECT slug FROM invitations
-             WHERE access_state = 'live'
-               AND expires_at IS NOT NULL
-               AND expires_at <= NOW()"
-        );
-
-        $count = $repo->markExpiredDue();
-
-        foreach ($rows as $row) {
-            $repo->forgetClientCache($row->slug ?? '');
-        }
-
-        $this->info("Expired {$count} invitation(s).");
+        $this->info('Auto-expire dimatikan. Nonaktifkan undangan lewat toggle di panel admin.');
 
         return self::SUCCESS;
     }

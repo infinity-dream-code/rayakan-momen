@@ -14,15 +14,15 @@
         <div class="flex items-center gap-2 flex-wrap">
             @if (($purgeEligible ?? 0) > 0)
                 <form method="POST" action="{{ route('admin.undangan.purge-expired') }}"
-                      onsubmit="return confirm('Hapus {{ $purgeEligible }} undangan yang sudah expired ≥180 hari? File foto ikut terhapus. Tindakan ini manual &amp; permanen.')">
+                      onsubmit="return confirm('Hapus {{ $purgeEligible }} undangan nonaktif lama? File foto ikut terhapus. Tindakan ini manual &amp; permanen.')">
                     @csrf
                     <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm border border-red-200 text-red-600 bg-red-50 hover:bg-red-100">
                         <i class="fa-solid fa-trash-can"></i>
-                        Hapus manual expired ({{ $purgeEligible }})
+                        Hapus nonaktif lama ({{ $purgeEligible }})
                     </button>
                 </form>
             @else
-                <span class="text-xs text-gray-400">Expired otomatis 90 hari · hapus manual setelah 180 hari</span>
+                <span class="text-xs text-gray-400">Nonaktifkan lewat toggle · hapus permanen pakai ikon sampah</span>
             @endif
             <a href="{{ route('admin.undangan.create') }}" class="btn-gold inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm">
                 <i class="fa-solid fa-plus"></i> Tambah Baru
@@ -44,6 +44,9 @@
             </thead>
             <tbody>
                 @forelse ($undangan as $item)
+                    @php
+                        $isAktif = ($item['status'] ?? '') === 'aktif';
+                    @endphp
                     <tr class="border-t border-[#f0ebe3]">
                         <td class="px-5 py-3.5">
                             @php
@@ -71,13 +74,19 @@
                             <p class="text-[10px] text-gray-400 uppercase tracking-wide mt-0.5">{{ str_replace('_', ' ', $kat) }}</p>
                         </td>
                         <td class="px-5 py-3.5">
-                            @if (($item['access_state'] ?? 'live') === 'expired')
-                                <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs bg-amber-50 text-amber-800">Expired</span>
-                            @elseif (($item['status'] ?? '') === 'aktif')
-                                <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700">Aktif</span>
-                            @else
-                                <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs bg-gray-100 text-gray-500">Nonaktif</span>
-                            @endif
+                            <form method="POST" action="{{ route('admin.undangan.toggle-status', $item['id']) }}" class="inline-flex items-center gap-2.5">
+                                @csrf
+                                <button type="submit"
+                                        class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/focus:ring-offset-1 {{ $isAktif ? 'bg-emerald-500' : 'bg-gray-300' }}"
+                                        role="switch"
+                                        aria-checked="{{ $isAktif ? 'true' : 'false' }}"
+                                        title="{{ $isAktif ? 'Klik untuk nonaktifkan' : 'Klik untuk aktifkan' }}">
+                                    <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 {{ $isAktif ? 'translate-x-5' : 'translate-x-0' }}"></span>
+                                </button>
+                                <span class="text-xs {{ $isAktif ? 'text-emerald-700' : 'text-gray-500' }}">
+                                    {{ $isAktif ? 'Aktif' : 'Nonaktif' }}
+                                </span>
+                            </form>
                         </td>
                         <td class="px-5 py-3.5">{{ $item['views'] ?? 0 }}</td>
                         <td class="px-5 py-3.5">{{ count($item['ucapan_tersimpan'] ?? []) }}</td>

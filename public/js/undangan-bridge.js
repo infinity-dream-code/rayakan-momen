@@ -341,7 +341,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     if (cfg.mapsUrl || cfg.mapsUrlResepsi) {
-        var mapLinks = document.querySelectorAll('a.map-btn, a.event-map');
+        var mapSel = 'a.map-btn, a.event-map, a[data-maps], a[href*="google.com/maps"], a[href*="maps.google"], a[href*="maps.app.goo.gl"], a[href*="goo.gl/maps"]';
+        var mapLinks = document.querySelectorAll(mapSel);
         mapLinks.forEach(function (a, i) {
             var u = i === 0
                 ? (cfg.mapsUrl || cfg.mapsUrlResepsi)
@@ -352,9 +353,9 @@ document.addEventListener('DOMContentLoaded', function () {
             a.rel = 'noopener noreferrer';
         });
 
-        // Kalau kartu event belum punya tombol maps, tambahkan
+        // Kalau kartu event belum punya tombol maps (mis. LIHAT PETA), baru tambahkan
         document.querySelectorAll('.event-card').forEach(function (card, i) {
-            if (card.querySelector('a.map-btn, a.event-map, a[data-maps]')) return;
+            if (card.querySelector(mapSel)) return;
             var u = i === 0
                 ? (cfg.mapsUrl || cfg.mapsUrlResepsi)
                 : (cfg.mapsUrlResepsi || cfg.mapsUrl);

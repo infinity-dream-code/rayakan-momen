@@ -220,7 +220,7 @@ return [
         'wedding_islam' => [
             'id' => 'wedding_islam',
             'kategori' => 'wedding',
-            'nama' => 'Wedding Islam',
+            'nama' => 'Wedding Islami',
             'deskripsi' => 'Nuansa islami elegan — hijau zamrud, emas, gerbang undangan, dan ayat suci.',
             'warna' => '#0e4a38',
             'harga' => 300000,
