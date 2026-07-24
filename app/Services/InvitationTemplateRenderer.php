@@ -1835,8 +1835,8 @@ HTML;
     }
 
     /**
-     * Footer credit Rayakan Momen — rayakanmomen.com (semua template).
-     * Selalu ditaruh sebelum </body> agar tidak tertutup overlay/canvas di #closing.
+     * Credit rayakanmomen.com — teks tipis di footer/closing yang sudah ada,
+     * tanpa section/background baru.
      */
     protected function injectCopyright(string $html): string
     {
@@ -1845,20 +1845,42 @@ HTML;
         }
 
         $year = date('Y');
-        $credit = '<footer class="rm-copyright" style="position:relative;z-index:50;isolation:isolate;display:block;margin:0;padding:1.75rem 1rem 2.5rem;text-align:center;font-family:Jost,system-ui,sans-serif;font-size:0.7rem;letter-spacing:0.08em;line-height:1.5;opacity:0.8;color:inherit;">'
-            .'Copyright &copy; '.$year
-            .' <a href="https://rayakanmomen.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">rayakanmomen.com</a>'
-            .'</footer>';
+        $credit = '<p class="rm-copyright relative" style="position:relative;z-index:5;display:block;margin:1.35rem auto 0;padding:0;max-width:none;background:transparent;border:0;box-shadow:none;text-align:center;font-family:inherit,system-ui,sans-serif;font-size:0.62rem;font-weight:400;letter-spacing:0.16em;text-transform:uppercase;line-height:1.4;opacity:0.48;color:inherit;">'
+            .'&copy; '.$year.' &middot; '
+            .'<a href="https://rayakanmomen.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px;">rayakanmomen.com</a>'
+            .'</p>';
 
-        // Hapus teks demo / kredit lama supaya tidak dobel
-        $html = preg_replace('/<p[^>]*>\s*Dibuat dengan[\s\S]*?<\/p>/iu', '', $html) ?? $html;
-        $html = preg_replace('/<p[^>]*class="[^"]*footer-credit[^"]*"[^>]*>[\s\S]*?<\/p>/iu', '', $html) ?? $html;
-
-        if (stripos($html, '</body>') !== false) {
-            return (string) preg_replace('/<\/body>/i', $credit."\n</body>", $html, 1);
+        // Ganti teks demo lama (sudah di dalam footer template)
+        $replaced = preg_replace('/<p[^>]*>\s*Dibuat dengan[\s\S]*?<\/p>/iu', $credit, $html, 1, $count);
+        if (is_string($replaced) && $count > 0) {
+            return $replaced;
         }
 
-        return $html.$credit;
+        $replaced = preg_replace('/<p[^>]*class="[^"]*footer-credit[^"]*"[^>]*>[\s\S]*?<\/p>/iu', $credit, $html, 1, $count);
+        if (is_string($replaced) && $count > 0) {
+            return $replaced;
+        }
+
+        // Sisipkan di footer template yang sudah ada (sama background)
+        if (stripos($html, '</footer>') !== false) {
+            return (string) preg_replace('/<\/footer>/i', $credit."\n</footer>", $html, 1);
+        }
+
+        // Template tanpa <footer>: taruh di akhir #closing
+        if (preg_match('/id=["\']closing["\']/i', $html)) {
+            $replaced = preg_replace(
+                '/(<section[^>]*\bid=["\']closing["\'][^>]*>[\s\S]*?)(<\/section>)/i',
+                '$1'.$credit."\n$2",
+                $html,
+                1,
+                $count
+            );
+            if (is_string($replaced) && $count > 0) {
+                return $replaced;
+            }
+        }
+
+        return $html;
     }
 
     protected function injectBridge(string $html, array $u): string

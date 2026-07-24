@@ -317,9 +317,9 @@
             </div>
         </section>
 
-        <footer class="text-center py-8 text-xs rm-copyright" style="color:var(--muted)">
-            Copyright &copy; {{ date('Y') }}
-            <a href="https://rayakanmomen.com" target="_blank" rel="noopener" class="underline" style="color:var(--accent)">rayakanmomen.com</a>
+        <footer class="text-center py-6 text-[11px] tracking-[0.14em] uppercase opacity-50 rm-copyright" style="color:var(--muted);background:transparent;">
+            &copy; {{ date('Y') }} &middot;
+            <a href="https://rayakanmomen.com" target="_blank" rel="noopener" class="underline" style="color:inherit">rayakanmomen.com</a>
         </footer>
     </div>
 </div>
