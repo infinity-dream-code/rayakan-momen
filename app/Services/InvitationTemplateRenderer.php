@@ -1845,32 +1845,29 @@ HTML;
         }
 
         $year = date('Y');
-        $credit = '<p class="rm-copyright relative" style="position:relative;z-index:5;display:block;margin:1.35rem auto 0;padding:0;max-width:none;background:transparent;border:0;box-shadow:none;text-align:center;font-family:inherit,system-ui,sans-serif;font-size:0.62rem;font-weight:400;letter-spacing:0.16em;text-transform:uppercase;line-height:1.4;opacity:0.48;color:inherit;">'
-            .'&copy; '.$year.' &middot; '
-            .'<a href="https://rayakanmomen.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px;">rayakanmomen.com</a>'
-            .'</p>';
+        // Di <footer> yang sudah set color → ikut warna parent
+        $creditFooter = $this->copyrightMarkup($year, 'inherit');
+        // Di #closing gelap (islami/couple) body color = ink gelap → paksa ivory
+        $creditClosing = $this->copyrightMarkup($year, 'rgba(250,246,236,.62)');
 
-        // Ganti teks demo lama (sudah di dalam footer template)
-        $replaced = preg_replace('/<p[^>]*>\s*Dibuat dengan[\s\S]*?<\/p>/iu', $credit, $html, 1, $count);
+        $replaced = preg_replace('/<p[^>]*>\s*Dibuat dengan[\s\S]*?<\/p>/iu', $creditFooter, $html, 1, $count);
         if (is_string($replaced) && $count > 0) {
             return $replaced;
         }
 
-        $replaced = preg_replace('/<p[^>]*class="[^"]*footer-credit[^"]*"[^>]*>[\s\S]*?<\/p>/iu', $credit, $html, 1, $count);
+        $replaced = preg_replace('/<p[^>]*class="[^"]*footer-credit[^"]*"[^>]*>[\s\S]*?<\/p>/iu', $creditFooter, $html, 1, $count);
         if (is_string($replaced) && $count > 0) {
             return $replaced;
         }
 
-        // Sisipkan di footer template yang sudah ada (sama background)
         if (stripos($html, '</footer>') !== false) {
-            return (string) preg_replace('/<\/footer>/i', $credit."\n</footer>", $html, 1);
+            return (string) preg_replace('/<\/footer>/i', $creditFooter."\n</footer>", $html, 1);
         }
 
-        // Template tanpa <footer>: taruh di akhir #closing
         if (preg_match('/id=["\']closing["\']/i', $html)) {
             $replaced = preg_replace(
                 '/(<section[^>]*\bid=["\']closing["\'][^>]*>[\s\S]*?)(<\/section>)/i',
-                '$1'.$credit."\n$2",
+                '$1'.$creditClosing."\n$2",
                 $html,
                 1,
                 $count
@@ -1881,6 +1878,14 @@ HTML;
         }
 
         return $html;
+    }
+
+    protected function copyrightMarkup(int|string $year, string $color): string
+    {
+        return '<p class="rm-copyright relative" style="position:relative;z-index:5;display:block;margin:1.5rem auto 0;padding:0;background:transparent;border:0;box-shadow:none;text-align:center;font-family:Jost,system-ui,sans-serif;font-size:0.64rem;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;line-height:1.5;opacity:1;color:'.$color.';">'
+            .'&copy; '.$year.' &middot; '
+            .'<a href="https://rayakanmomen.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px;">rayakanmomen.com</a>'
+            .'</p>';
     }
 
     protected function injectBridge(string $html, array $u): string
