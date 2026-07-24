@@ -9,7 +9,7 @@
             </h2>
             <div class="floral-line"></div>
             <p class="section-desc">
-                Berlaku untuk undangan pernikahan, ulang tahun anak, maupun untuk pasangan. Pilih paket — semua sudah termasuk desain, kelengkapan, dan bantuan kami.
+                Berlaku untuk undangan pernikahan, ulang tahun anak, maupun untuk pasangan. Pilih paket - semua sudah termasuk desain, kelengkapan, dan bantuan kami.
             </p>
         </div>
 
@@ -28,7 +28,7 @@
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Konfirmasi hadir &amp; buku ucapan</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-xmark text-charcoal/20 mt-0.5"></i><span class="opacity-50">Tanpa amplop digital</span></li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Aktif tanpa batas waktu</li>
-                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Revisi 1×</li>
+                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Revisi 1� - </li>
                 </ul>
                 <a href="https://wa.me/6285199641845?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20Paket%20Silver"
                    target="_blank"
@@ -53,7 +53,7 @@
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Amplop digital (bank + QRIS)</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Musik latar custom</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Aktif tanpa batas waktu</li>
-                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Revisi 3×</li>
+                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Revisi 3� - </li>
                 </ul>
                 <a href="https://wa.me/6285199641845?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20Paket%20Gold"
                    target="_blank"
@@ -90,7 +90,7 @@
 
         <div class="text-center reveal">
             <p class="text-sm text-muted mb-6 max-w-lg mx-auto">
-                Harga bisa disesuaikan untuk request khusus. Chat langsung untuk konsultasi gratis — tanpa komitmen.
+                Harga bisa disesuaikan untuk request khusus. Chat langsung untuk konsultasi gratis - tanpa komitmen.
             </p>
             <a href="https://wa.me/6285199641845?text=Halo%20Rayakan%20Momen%2C%20saya%20mau%20konsultasi%20paket%20undangan%20digital"
                target="_blank"

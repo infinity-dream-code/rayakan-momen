@@ -4,28 +4,51 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Rayakan Momen — Undangan Digital Pernikahan, Ulang Tahun &amp; Pasangan</title>
+    <title>Rayakan Momen - Undangan Digital Pernikahan, Ulang Tahun &amp; Pasangan</title>
     <meta name="description"
-        content="Rayakan Momen — undangan digital siap 1 hari. Dashboard RSVP, link personal per tamu, untuk pernikahan, ulang tahun anak, dan kejutan pasangan.">
+        content="Rayakan Momen - undangan digital siap 1 hari. Dashboard RSVP, link personal per tamu, untuk pernikahan, ulang tahun anak, dan kejutan pasangan.">
     <meta name="keywords"
         content="undangan digital, undangan pernikahan, undangan ulang tahun anak, undangan pasangan, Rayakan Momen">
     <meta name="author" content="Rayakan Momen">
+    <meta name="robots" content="index,follow,max-image-preview:large">
+    <meta property="og:locale" content="id_ID">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Rayakan Momen — Undangan Digital Pernikahan, Ulang Tahun &amp; Pasangan">
+    <meta property="og:title" content="Rayakan Momen - Undangan Digital Pernikahan, Ulang Tahun &amp; Pasangan">
     <meta property="og:description"
         content="Pengerjaan biasanya 1 hari. Pantau RSVP di dashboard, buat &amp; bagikan link personal per tamu.">
     <meta property="og:image"
         content="https://res.cloudinary.com/zujq4fvj/image/upload/v1784771473/RAYAKAN_MOMEN_veeyix.png">
+    <meta property="og:image:alt" content="Rayakan Momen - Undangan Digital">
     <meta property="og:url" content="{{ url('/') }}">
     <meta property="og:site_name" content="Rayakan Momen">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Rayakan Momen — Jasa Undangan Digital">
+    <meta name="twitter:title" content="Rayakan Momen - Jasa Undangan Digital">
     <meta name="twitter:description"
         content="Undangan digital untuk pernikahan, ulang tahun anak, dan kejutan pasangan. Mulai dari Rp 150.000.">
     <meta name="twitter:image"
         content="https://res.cloudinary.com/zujq4fvj/image/upload/v1784771473/RAYAKAN_MOMEN_veeyix.png">
     <link rel="canonical" href="{{ url('/') }}">
     <link rel="shortcut icon" href="{{ asset('logo.png') }}" type="image/x-icon">
+    <script type="application/ld+json">
+    {!! json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'Organization',
+        'name' => 'Rayakan Momen',
+        'url' => url('/'),
+        'logo' => asset('logo.png'),
+        'description' => 'Jasa undangan digital untuk pernikahan, ulang tahun anak, dan pasangan. Pengerjaan biasanya 1 hari, dilengkapi dashboard RSVP.',
+        'sameAs' => [
+            'https://instagram.com/rayakanmomen',
+            'https://www.tiktok.com/@rayakanmomen.com',
+        ],
+        'contactPoint' => [
+            '@type' => 'ContactPoint',
+            'contactType' => 'customer service',
+            'telephone' => '+6285199641845',
+            'availableLanguage' => ['Indonesian'],
+        ],
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+    </script>
 
     <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">

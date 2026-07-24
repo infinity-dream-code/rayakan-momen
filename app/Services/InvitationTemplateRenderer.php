@@ -126,15 +126,15 @@ class InvitationTemplateRenderer
 
         if ($kat === 'ultah_anak') {
             $name = $u['nama_anak'] ?? $u['nama_wanita'] ?? 'Ultah';
-            $title = $name.' — Undangan Ulang Tahun';
+            $title = $name.' - Undangan Ulang Tahun';
             $desc = 'Undangan digital ulang tahun '.$name.'. Dibuat dengan Rayakan Momen.';
         } elseif ($kat === 'couple') {
             $name = trim(($u['nama_pria'] ?? '').' & '.($u['nama_wanita'] ?? ''));
-            $title = $name.' — Surat Spesial';
+            $title = $name.' - Surat Spesial';
             $desc = 'Surat digital spesial untuk '.$name.'. Dibuat dengan Rayakan Momen.';
         } else {
             $name = trim(($u['nama_wanita'] ?? '').' & '.($u['nama_pria'] ?? ''));
-            $title = $name.' — Undangan Pernikahan';
+            $title = $name.' - Undangan Pernikahan';
             $desc = 'Undangan pernikahan digital '.$name.'. Dibuat dengan Rayakan Momen.';
         }
 

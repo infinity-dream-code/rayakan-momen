@@ -13,7 +13,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Katalog Undangan — Rayakan Momen</title>
+    <title>Katalog Undangan - Rayakan Momen</title>
     <meta name="description"
         content="Lihat katalog undangan digital Rayakan Momen: pernikahan, ulang tahun anak, dan untuk pasangan. Pilih desain, lihat demo, pesan via WhatsApp.">
     <meta name="robots" content="index,follow">
