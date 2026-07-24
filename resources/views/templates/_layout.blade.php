@@ -317,8 +317,9 @@
             </div>
         </section>
 
-        <footer class="text-center py-8 text-xs" style="color:var(--muted)">
-            Made with ♥ by <a href="{{ url('/') }}" class="underline" style="color:var(--accent)">Rayakan Momen</a>
+        <footer class="text-center py-8 text-xs rm-copyright" style="color:var(--muted)">
+            Copyright &copy; {{ date('Y') }}
+            <a href="https://rayakanmomen.com" target="_blank" rel="noopener" class="underline" style="color:var(--accent)">rayakanmomen.com</a>
         </footer>
     </div>
 </div>

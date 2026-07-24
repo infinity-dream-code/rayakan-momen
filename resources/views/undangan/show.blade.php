@@ -20,7 +20,7 @@
 
     $tanggalUtama = $undangan['tanggal_resepsi'] ?? ($undangan['tanggal_akad'] ?? null);
     $tanggalFormatted = $tanggalUtama
-        ? \Illuminate\Support\Carbon::parse($tanggalUtama)->locale('id')->translatedFormat('l · d F Y')
+        ? \Illuminate\Support\Carbon::parse($tanggalUtama)->locale('id')->translatedFormat('l  d F Y')
         : null;
 @endphp
 <!DOCTYPE html>
@@ -29,7 +29,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $undangan['nama_wanita'] }} & {{ $undangan['nama_pria'] }} — Undangan Pernikahan</title>
+    <title>{{ $undangan['nama_wanita'] }} & {{ $undangan['nama_pria'] }}  Undangan Pernikahan</title>
     <meta name="description"
         content="Undangan pernikahan digital {{ $undangan['nama_wanita'] }} & {{ $undangan['nama_pria'] }}">
     <link
@@ -440,9 +440,9 @@
                 </div>
             </section>
 
-            <footer class="text-center py-8 text-xs" style="color:var(--muted)">
-                Made with ? by <a href="{{ url('/') }}" class="underline" style="color:var(--accent)">Rayakan
-                    Momen</a>
+            <footer class="text-center py-8 text-xs rm-copyright" style="color:var(--muted)">
+                Copyright &copy; {{ date('Y') }}
+                <a href="https://rayakanmomen.com" target="_blank" rel="noopener" class="underline" style="color:var(--accent)">rayakanmomen.com</a>
             </footer>
         </div>
     </div>
