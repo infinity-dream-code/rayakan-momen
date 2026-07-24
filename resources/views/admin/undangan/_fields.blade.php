@@ -345,23 +345,42 @@
 @if ($has('youtube'))
 @php
     $musicPath = old('youtube_url', $u['youtube_url'] ?? '');
-    $isLocalMusic = is_string($musicPath) && $musicPath !== '' && ! preg_match('#^https?://#i', $musicPath);
+    $isNoMusic = $musicPath === '__none__' || old('music_none');
+    $isLocalMusic = is_string($musicPath) && $musicPath !== '' && $musicPath !== '__none__' && ! preg_match('#^https?://#i', $musicPath);
 @endphp
 <div class="card p-5 sm:p-6 field-group" data-group="youtube">
     <h3 class="font-display text-lg mb-4">Musik Undangan (MP3)</h3>
-    <p class="text-xs text-gray-500 mb-3">Upload lagu .mp3 (maks 8MB). Kosongkan = pakai musik default template.</p>
-    <input type="file" name="music_mp3" accept=".mp3,audio/mpeg" class="form-input">
+    <p class="text-xs text-gray-500 mb-3">Upload lagu .mp3 (maks 8MB). Tanpa upload &amp; tanpa centang = musik default template.</p>
+    <label class="flex items-center gap-2.5 text-sm text-gray-700 mb-3 cursor-pointer select-none">
+        <input type="checkbox" name="music_none" value="1" id="musicNone" class="rounded border-gray-300 text-[#c9a84c] focus:ring-[#c9a84c]"
+            @checked($isNoMusic)>
+        <span><strong>Tanpa musik</strong> — undangan tanpa lagu sama sekali</span>
+    </label>
+    <input type="file" name="music_mp3" id="musicMp3" accept=".mp3,audio/mpeg" class="form-input" @disabled($isNoMusic)>
     @if ($isLocalMusic)
         <div class="mt-3 flex flex-wrap items-center gap-3">
             <audio controls preload="none" class="max-w-full" src="{{ asset($musicPath) }}?v={{ is_file(public_path($musicPath)) ? filemtime(public_path($musicPath)) : time() }}"></audio>
             <label class="text-sm text-gray-600 flex items-center gap-2">
                 <input type="checkbox" name="music_reset" value="1" class="rounded border-gray-300">
-                Hapus &amp; pakai musik default template
+                Hapus upload &amp; pakai musik default template
             </label>
             <p class="text-xs text-gray-400 break-all w-full">{{ $musicPath }}</p>
         </div>
+    @elseif ($isNoMusic)
+        <p class="text-xs text-amber-700 mt-2 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">Mode tanpa musik aktif. Tombol musik di undangan akan disembunyikan.</p>
     @endif
 </div>
+<script>
+(function () {
+    var none = document.getElementById('musicNone');
+    var file = document.getElementById('musicMp3');
+    if (!none || !file) return;
+    none.addEventListener('change', function () {
+        file.disabled = none.checked;
+        if (none.checked) file.value = '';
+    });
+})();
+</script>
 @endif
 
 @if ($has('galeri'))

@@ -1652,12 +1652,12 @@ HTML;
 
     /**
      * Path musik custom dari admin (disimpan di kolom youtube_url).
-     * Null = pakai default template.
+     * Null = pakai default template. __none__ = tanpa musik.
      */
     protected function resolveMusicUrl(array $u): ?string
     {
         $raw = trim((string) ($u['youtube_url'] ?? ''));
-        if ($raw === '' || preg_match('#^https?://#i', $raw)) {
+        if ($raw === '' || $raw === '__none__' || preg_match('#^https?://#i', $raw)) {
             return null;
         }
 
@@ -1668,11 +1668,22 @@ HTML;
         return $this->mediaUrl($raw);
     }
 
+    protected function isMusicDisabled(array $u): bool
+    {
+        $raw = strtolower(trim((string) ($u['youtube_url'] ?? '')));
+
+        return in_array($raw, ['__none__', 'none', 'off'], true);
+    }
+
     /**
-     * Ganti sumber <audio> template dengan MP3 upload (kalau ada).
+     * Ganti sumber <audio> template dengan MP3 upload, atau matikan musik.
      */
     protected function replaceMusic(string $html, array $u): string
     {
+        if ($this->isMusicDisabled($u)) {
+            return $this->stripMusic($html);
+        }
+
         $url = $this->resolveMusicUrl($u);
         if ($url === null) {
             return $html;
@@ -1703,6 +1714,56 @@ HTML;
         ) ?? $html;
 
         return $html;
+    }
+
+    /**
+     * Matikan musik: kosongkan sumber audio + sembunyikan tombol musik.
+     */
+    protected function stripMusic(string $html): string
+    {
+        // Kosongkan source / audio yang mengarah ke assets/audio
+        $html = preg_replace(
+            '/(<source\b[^>]*\bsrc=")[^"]*assets\/audio\/[^"]*(")/i',
+            '$1$2',
+            $html
+        ) ?? $html;
+
+        $html = preg_replace(
+            '/(<audio\b[^>]*\bsrc=")[^"]*assets\/audio\/[^"]*(")/i',
+            '$1$2',
+            $html
+        ) ?? $html;
+
+        // Couple CONFIG
+        $html = preg_replace(
+            '/("musikUrl"\s*:\s*")(?:[^"\\\\]|\\\\.)*(")/',
+            '$1$2',
+            $html,
+            1
+        ) ?? $html;
+
+        $disable = <<<'HTML'
+<style id="rm-no-music">
+.music-btn,#musicBtn,#music,#music-toggle,#musicToggle{display:none!important;visibility:hidden!important;pointer-events:none!important;opacity:0!important}
+</style>
+<script>
+window.__rmNoMusic=1;
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('audio').forEach(function(a){
+    try{a.pause();}catch(e){}
+    a.removeAttribute('src');
+    a.querySelectorAll('source').forEach(function(s){s.removeAttribute('src');});
+    try{a.load();}catch(e){}
+  });
+});
+</script>
+HTML;
+
+        if (stripos($html, '</head>') !== false) {
+            return (string) preg_replace('/<\/head>/i', $disable."\n</head>", $html, 1);
+        }
+
+        return $disable.$html;
     }
 
     /**
@@ -1778,10 +1839,11 @@ HTML;
             ];
         }
 
-        // Musik custom (MP3 upload) atau default template
-        $musik = $this->resolveMusicUrl($u);
-        if ($musik === null) {
-            $musik = 'assets/audio/Donne-Maula-Bercinta-Lewat-Kata.mp3';
+        // Musik custom (MP3 upload), default template, atau kosong (tanpa musik)
+        if ($this->isMusicDisabled($u)) {
+            $musik = '';
+        } else {
+            $musik = $this->resolveMusicUrl($u) ?? 'assets/audio/Donne-Maula-Bercinta-Lewat-Kata.mp3';
         }
 
         $janji = $pesan !== '' ? $pesan : 'Aku janji akan jadi rumah yang hangat buatmu.';

@@ -215,6 +215,7 @@ class InvitationController extends Controller
             'youtube_url' => 'nullable|string|max:500',
             'music_mp3' => 'nullable|file|max:8192',
             'music_reset' => 'nullable|boolean',
+            'music_none' => 'nullable|boolean',
             'maps_url' => 'nullable|string|max:1000',
             'maps_url_resepsi' => 'nullable|string|max:1000',
             'galeri.*' => 'nullable|file|mimes:jpg,jpeg,png|max:10240',
@@ -315,6 +316,7 @@ class InvitationController extends Controller
             $validated['foto_anak'],
             $validated['music_mp3'],
             $validated['music_reset'],
+            $validated['music_none'],
             $validated['waktu_akad_mulai'],
             $validated['waktu_akad_selesai'],
             $validated['waktu_resepsi_mulai'],
@@ -405,10 +407,10 @@ class InvitationController extends Controller
         $validated['maps_url'] = $this->normalizeMapsUrl($request->input('maps_url'));
         $validated['maps_url_resepsi'] = $this->normalizeMapsUrl($request->input('maps_url_resepsi'));
 
-        // Kolom youtube_url sekarang menyimpan path MP3 lokal; buang URL lama / nilai aneh dari request
+        // Kolom youtube_url: path MP3 lokal | __none__ | null
         if (! empty($validated['youtube_url'])) {
             $yu = (string) $validated['youtube_url'];
-            if (preg_match('#^https?://#i', $yu) || ! str_starts_with($yu, 'uploads/')) {
+            if ($yu !== '__none__' && (preg_match('#^https?://#i', $yu) || ! str_starts_with($yu, 'uploads/'))) {
                 $validated['youtube_url'] = null;
             }
         }
@@ -484,25 +486,34 @@ class InvitationController extends Controller
             }
             $validated['galeri'] = array_values(array_merge($existing['galeri'] ?? [], $newGaleri));
 
-            // Musik MP3 per undangan → uploads/mempelai/{slug}/music/
-            $existingMusic = $existing['youtube_url'] ?? null;
-            if (is_string($existingMusic) && preg_match('#^https?://#i', $existingMusic)) {
-                $existingMusic = null; // buang URL YouTube lama
+            // Musik: path upload | null (default template) | __none__ (tanpa musik)
+            $rawExisting = is_array($existing) ? ($existing['youtube_url'] ?? null) : null;
+            $existingMusicFile = null;
+            if (is_string($rawExisting) && $rawExisting !== '' && $rawExisting !== '__none__' && ! preg_match('#^https?://#i', $rawExisting)) {
+                $existingMusicFile = $rawExisting;
             }
 
-            if ($request->boolean('music_reset')) {
-                $this->storage->deletePublicPath($existingMusic);
-                $validated['youtube_url'] = null;
-            } elseif ($request->hasFile('music_mp3')) {
+            if ($request->hasFile('music_mp3')) {
                 $musicPath = $this->storage->storeAudioUpload($request->file('music_mp3'), $dirMusic, 'musik');
                 if ($musicPath) {
-                    $this->storage->deletePublicPath($existingMusic);
+                    $this->storage->deletePublicPath($existingMusicFile);
                     $validated['youtube_url'] = $musicPath;
                 } else {
-                    $validated['youtube_url'] = $existingMusic;
+                    $validated['youtube_url'] = $existingMusicFile ?? ($rawExisting === '__none__' ? '__none__' : null);
                 }
+            } elseif ($request->boolean('music_none')) {
+                $this->storage->deletePublicPath($existingMusicFile);
+                $validated['youtube_url'] = '__none__';
+            } elseif ($request->boolean('music_reset')) {
+                $this->storage->deletePublicPath($existingMusicFile);
+                $validated['youtube_url'] = null;
+            } elseif ($rawExisting === '__none__') {
+                // Checkbox no-music tidak dicentang → kembali ke default template
+                $validated['youtube_url'] = null;
+            } elseif (is_string($rawExisting) && preg_match('#^https?://#i', $rawExisting)) {
+                $validated['youtube_url'] = null;
             } else {
-                $validated['youtube_url'] = $existingMusic;
+                $validated['youtube_url'] = $existingMusicFile;
             }
         } catch (\InvalidArgumentException $e) {
             throw \Illuminate\Validation\ValidationException::withMessages([
