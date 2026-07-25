@@ -23,8 +23,8 @@
                             class="fa-solid fa-star"></i>
                     </div>
                     <p class="testimonial-text">
-                        Desainnya elegan banget, cocok sama konsep adat kita. Tamu-tamu pada bilang undangannya cantik
-                        dan gampang dibuka.
+                        Awalnya cuma iseng cari referensi, eh malah kepincut sama desainnya. Pas jadi beneran sesuai
+                        adat yang kita mau, banyak tamu yang nanya ini bikin di mana.
                     </p>
                     <p class="testimonial-name">Rina &amp; Dimas</p>
                     <p class="testimonial-city">Pernikahan · Yogyakarta</p>
@@ -37,8 +37,8 @@
                             class="fa-solid fa-star"></i>
                     </div>
                     <p class="testimonial-text">
-                        Ulang tahun anak kami jadi lebih seru — temannya pada antusias buka undangan, konfirmasi
-                        hadirnya juga rapi.
+                        Anak saya seneng banget pas buka undangannya sendiri di HP, temen-temennya juga heboh. Yang
+                        bantu banget itu daftar konfirmasi hadirnya, jadi gak perlu tanya satu-satu.
                     </p>
                     <p class="testimonial-name">Ibu Sinta · Kirana</p>
                     <p class="testimonial-city">Ulang Tahun Anak · Semarang</p>
@@ -51,8 +51,8 @@
                             class="fa-solid fa-star"></i>
                     </div>
                     <p class="testimonial-text">
-                        Buat kejutan pasangan, surat digitalnya bikin dia mewek. Animasi + fotonya terasa personal
-                        banget.
+                        Niatnya mau kasih kejutan buat pasangan, eh yang bikin malah ikutan mewek pas liat hasil
+                        jadinya. Foto sama animasinya kerasa personal, bukan template asal jadi.
                     </p>
                     <p class="testimonial-name">Andi</p>
                     <p class="testimonial-city">Untuk Pasangan · Jakarta</p>
@@ -65,7 +65,8 @@
                             class="fa-solid fa-star"></i>
                     </div>
                     <p class="testimonial-text">
-                        Prosesnya cepat, revisinya ditanggapi baik. Amplop digitalnya juga praktis buat tamu kirim
+                        Sempet minta revisi beberapa kali karena kita rewel soal warna, untungnya responnya cepet dan
+                        gak dipersulit. Fitur amplop digitalnya juga kepake, tamu dari luar kota jadi gampang kirim
                         hadiah.
                     </p>
                     <p class="testimonial-name">Alya &amp; Fajar</p>
@@ -79,8 +80,8 @@
                             class="fa-solid fa-star"></i>
                     </div>
                     <p class="testimonial-text">
-                        Harganya sepadan. Dari konsultasi sampai jadi, komunikasinya enak. Cocok buat yang ingin
-                        undangan tanpa ribet.
+                        Harganya masuk akal buat hasil sebagus ini. Dari awal konsultasi sampai selesai enak diajak
+                        komunikasi, gak bikin pusing buat yang gaptek kayak saya.
                     </p>
                     <p class="testimonial-name">Nadia &amp; Kevin</p>
                     <p class="testimonial-city">Pernikahan · Surabaya</p>
@@ -93,8 +94,8 @@
                             class="fa-solid fa-star"></i>
                     </div>
                     <p class="testimonial-text">
-                        Konfirmasi hadir online-nya membantu banget menghitung jumlah tamu. Buku ucapannya juga ramai
-                        diisi keluarga dari luar kota.
+                        Yang paling kerasa manfaatnya itu rekap tamu yang konfirmasi hadir, jadi gampang pas hitung
+                        catering. Buku ucapannya juga ramai diisi, saudara yang gak bisa dateng tetep bisa kirim doa.
                     </p>
                     <p class="testimonial-name">Dewi &amp; Andra</p>
                     <p class="testimonial-city">Semarang</p>
@@ -107,8 +108,8 @@
                             class="fa-solid fa-star"></i>
                     </div>
                     <p class="testimonial-text">
-                        Tema dark elegant-nya sesuai banget sama suasana kami. Tautannya gampang dibagikan, orang tua
-                        juga bisa buka di HP.
+                        Kita emang pengen yang temanya agak gelap dan elegan, dan ini pas banget sama bayangan kita.
+                        Orang tua yang gak terlalu melek teknologi aja bisa buka sendiri di HP-nya.
                     </p>
                     <p class="testimonial-name">Maya &amp; Tristan</p>
                     <p class="testimonial-city">Bali</p>
