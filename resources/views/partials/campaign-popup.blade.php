@@ -82,8 +82,8 @@
             var popup = document.getElementById('campaignPopup');
             if (!popup) return;
 
-            var showDelay = 800;
-            var visibleMs = 1500;
+            var showDelay = 1500;
+            var visibleMs = 2500;
             var showTimer;
             var closeTimer;
 
