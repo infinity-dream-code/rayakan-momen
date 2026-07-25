@@ -8,6 +8,7 @@ use App\Repositories\CategoryRepository;
 use App\Repositories\InvitationRepository;
 use App\Repositories\TransactionRepository;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -18,22 +19,64 @@ class InvitationController extends Controller
         protected CatalogRepository $catalog,
         protected CategoryRepository $categories,
         protected TransactionRepository $transactions
-    ) {
-    }
+    ) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        $undangan = $this->storage->allForAdmin();
-        $purgeEligible = $this->storage->countPurgeEligible();
+        $search = trim((string) $request->query('search', ''));
+        $temaFilter = (string) $request->query('tema', '');
+        $statusFilter = (string) $request->query('status', '');
 
-        return view('admin.undangan.index', compact('undangan', 'purgeEligible'));
+        $undangan = collect($this->storage->allForAdmin());
+
+        if ($search !== '') {
+            $needle = Str::lower($search);
+            $undangan = $undangan->filter(function ($item) use ($needle) {
+                $nama = Str::lower(trim(
+                    ($item['nama_wanita'] ?? '') . ' ' . ($item['nama_pria'] ?? '') . ' ' . ($item['nama_anak'] ?? '')
+                ));
+
+                return str_contains($nama, $needle);
+            });
+        }
+
+        if ($temaFilter !== '') {
+            $undangan = $undangan->filter(fn($item) => ($item['tema'] ?? '') === $temaFilter);
+        }
+
+        if ($statusFilter !== '') {
+            $undangan = $undangan->filter(fn($item) => ($item['status'] ?? '') === $statusFilter);
+        }
+
+        $undangan = $undangan->values();
+        $perPage = 10;
+        $page = max(1, (int) $request->query('page', 1));
+
+        $undanganPaginated = new LengthAwarePaginator(
+            $undangan->forPage($page, $perPage)->values(),
+            $undangan->count(),
+            $perPage,
+            $page,
+            [
+                'path' => $request->url(),
+                'query' => $request->except('page'),
+            ]
+        );
+
+        return view('admin.undangan.index', [
+            'undangan' => $undanganPaginated,
+            'purgeEligible' => $this->storage->countPurgeEligible(),
+            'search' => $search,
+            'temaFilter' => $temaFilter,
+            'statusFilter' => $statusFilter,
+        ]);
     }
 
     public function create(Request $request)
     {
         $categories = $this->categories->all();
         $templates = collect($this->catalog->templates())
-            ->filter(fn ($t) => ($t['aktif'] ?? false))
+            ->filter(fn($t) => ($t['aktif'] ?? false))
             ->all();
 
         return view('admin.undangan.pilih-template', compact('categories', 'templates'));
@@ -42,7 +85,7 @@ class InvitationController extends Controller
     public function pilihTemplate(Request $request)
     {
         $aktifKeys = collect(config('templates.templates', []))
-            ->filter(fn ($t) => ($t['aktif'] ?? false))
+            ->filter(fn($t) => ($t['aktif'] ?? false))
             ->keys()
             ->all();
 
@@ -58,7 +101,7 @@ class InvitationController extends Controller
     public function form(Request $request)
     {
         $tema = $request->session()->get('undangan_template');
-        $info = config('templates.templates.'.$tema);
+        $info = config('templates.templates.' . $tema);
 
         if (! $tema || ! $info || ! ($info['aktif'] ?? false)) {
             return redirect()
@@ -106,7 +149,7 @@ class InvitationController extends Controller
             'undangan' => $undangan,
             'mode' => 'edit',
             'tema' => $undangan['tema'] ?? 'elegan',
-            'templateInfo' => $this->catalog->templates()[$undangan['tema'] ?? 'elegan'] ?? config('templates.templates.'.($undangan['tema'] ?? 'elegan')),
+            'templateInfo' => $this->catalog->templates()[$undangan['tema'] ?? 'elegan'] ?? config('templates.templates.' . ($undangan['tema'] ?? 'elegan')),
             'categories' => $this->categories->all(),
             'allTemplates' => $this->catalog->templates(),
         ]);
@@ -144,7 +187,7 @@ class InvitationController extends Controller
 
         return redirect()
             ->route('admin.undangan.index')
-            ->with('success', 'Undangan berhasil '.$label.'.');
+            ->with('success', 'Undangan berhasil ' . $label . '.');
     }
 
     public function purgeExpired()
@@ -164,8 +207,8 @@ class InvitationController extends Controller
         abort_if(! $undangan, 404);
 
         $ucapan = $undangan['ucapan_tersimpan'] ?? [];
-        $hadir = count(array_filter($ucapan, fn ($u) => ($u['kehadiran'] ?? '') === 'hadir'));
-        $tidakHadir = count(array_filter($ucapan, fn ($u) => ($u['kehadiran'] ?? '') === 'tidak_hadir'));
+        $hadir = count(array_filter($ucapan, fn($u) => ($u['kehadiran'] ?? '') === 'hadir'));
+        $tidakHadir = count(array_filter($ucapan, fn($u) => ($u['kehadiran'] ?? '') === 'tidak_hadir'));
         $rsvpDashboardUrl = app(\App\Services\RsvpDashboardCipher::class)->urlForSlug((string) ($undangan['slug'] ?? ''));
 
         return view('admin.undangan.laporan', compact('undangan', 'ucapan', 'hadir', 'tidakHadir', 'rsvpDashboardUrl'));
@@ -182,10 +225,10 @@ class InvitationController extends Controller
 
         $reserved = ['admin', 'panel', 'SmartLoginAdmin', 'login', 'logout', 'api', 'css', 'js', 'images', 'uploads', 'storage', 'sitemap.xml', 'robots.txt', 'dashboard-rsvp', 'katalog'];
         $tema = $request->input('tema');
-        $meta = config('templates.templates.'.$tema, []);
+        $meta = config('templates.templates.' . $tema, []);
         $kategori = $meta['kategori'] ?? 'wedding';
         $fields = $meta['fields'] ?? [];
-        $has = fn (string $g) => in_array($g, $fields, true);
+        $has = fn(string $g) => in_array($g, $fields, true);
         $storage = $this->storage;
 
         $rules = [
@@ -305,8 +348,8 @@ class InvitationController extends Controller
     protected function mapFormData(Request $request, array $validated, ?array $existing = null): array
     {
         $kategori = $validated['kategori'] ?? 'wedding';
-        $fields = $validated['fields'] ?? (config('templates.templates.'.($validated['tema'] ?? '').'.fields') ?? []);
-        $has = fn (string $g) => in_array($g, $fields, true);
+        $fields = $validated['fields'] ?? (config('templates.templates.' . ($validated['tema'] ?? '') . '.fields') ?? []);
+        $has = fn(string $g) => in_array($g, $fields, true);
 
         unset(
             $validated['galeri'],
@@ -421,10 +464,10 @@ class InvitationController extends Controller
             if ($slugKey === '') {
                 $slugKey = 'undangan';
             }
-            $dirFoto = 'mempelai/'.$slugKey.'/foto-mempelai';
-            $dirGaleri = 'mempelai/'.$slugKey.'/galeri';
-            $dirQris = 'mempelai/'.$slugKey.'/qris';
-            $dirMusic = 'mempelai/'.$slugKey.'/music';
+            $dirFoto = 'mempelai/' . $slugKey . '/foto-mempelai';
+            $dirGaleri = 'mempelai/' . $slugKey . '/galeri';
+            $dirQris = 'mempelai/' . $slugKey . '/qris';
+            $dirMusic = 'mempelai/' . $slugKey . '/music';
 
             $fotoWanita = $request->hasFile('foto_wanita')
                 ? $this->storage->storeUpload($request->file('foto_wanita'), $dirFoto, 'foto-wanita')
@@ -625,10 +668,10 @@ class InvitationController extends Controller
         $b = $fmt($selesai);
 
         if ($a && $b) {
-            return $a.' – '.$b.' WIB';
+            return $a . ' – ' . $b . ' WIB';
         }
 
-        return ($a ?: $b).' WIB';
+        return ($a ?: $b) . ' WIB';
     }
 
     protected function composeParents(?string $ayah, ?string $ibu): string
@@ -637,10 +680,10 @@ class InvitationController extends Controller
         $ibu = trim((string) $ibu);
         $parts = [];
         if ($ayah !== '') {
-            $parts[] = 'Bapak '.$ayah;
+            $parts[] = 'Bapak ' . $ayah;
         }
         if ($ibu !== '') {
-            $parts[] = 'Ibu '.$ibu;
+            $parts[] = 'Ibu ' . $ibu;
         }
 
         return implode(' & ', $parts);
@@ -657,7 +700,7 @@ class InvitationController extends Controller
         }
 
         if (! preg_match('#^https?://#i', $url)) {
-            $url = 'https://'.$url;
+            $url = 'https://' . $url;
         }
 
         if (filter_var($url, FILTER_VALIDATE_URL)) {
@@ -692,7 +735,7 @@ class InvitationController extends Controller
         $namaWanita = trim((string) ($undangan['nama_wanita'] ?? $undangan['nama_anak'] ?? ''));
         $namaPria = trim((string) ($undangan['nama_pria'] ?? ''));
         if ($namaWanita !== '' && $namaPria !== '' && ($undangan['kategori'] ?? '') !== 'ultah_anak') {
-            $pelanggan = $namaWanita.' & '.$namaPria;
+            $pelanggan = $namaWanita . ' & ' . $namaPria;
         } else {
             $pelanggan = $namaWanita !== '' ? $namaWanita : ($namaPria !== '' ? $namaPria : ($undangan['slug'] ?? '—'));
         }

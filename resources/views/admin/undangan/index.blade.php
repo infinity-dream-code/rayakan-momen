@@ -10,7 +10,7 @@
 @endphp
 <div class="card overflow-hidden">
     <div class="px-5 py-4 border-b border-[#eee8df] flex items-center justify-between gap-3 flex-wrap">
-        <p class="text-sm text-gray-500">Total: <strong class="text-[#1a2234]">{{ count($undangan) }}</strong> undangan</p>
+        <p class="text-sm text-gray-500">Total: <strong class="text-[#1a2234]">{{ $undangan->total() }}</strong> undangan</p>
         <div class="flex items-center gap-2 flex-wrap">
             @if (($purgeEligible ?? 0) > 0)
                 <form method="POST" action="{{ route('admin.undangan.purge-expired') }}"
@@ -29,6 +29,38 @@
             </a>
         </div>
     </div>
+
+    <form method="GET" action="{{ route('admin.undangan.index') }}" class="px-5 py-4 border-b border-[#eee8df] flex items-center gap-3 flex-wrap">
+        <div class="relative flex-1 min-w-[200px]">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama pasangan..."
+                   class="w-full pl-9 pr-3 py-2 rounded-lg border border-[#e5e0d8] text-sm focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/40">
+        </div>
+
+        <select name="tema" class="px-3 py-2 rounded-lg border border-[#e5e0d8] text-sm focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/40">
+            <option value="">Semua Tema</option>
+            @foreach ($catalogTemplates as $key => $t)
+                <option value="{{ $key }}" {{ $temaFilter === $key ? 'selected' : '' }}>{{ $t['nama'] ?? $key }}</option>
+            @endforeach
+        </select>
+
+        <select name="status" class="px-3 py-2 rounded-lg border border-[#e5e0d8] text-sm focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/40">
+            <option value="">Semua Status</option>
+            <option value="aktif" {{ $statusFilter === 'aktif' ? 'selected' : '' }}>Aktif</option>
+            <option value="nonaktif" {{ $statusFilter === 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+        </select>
+
+        <button type="submit" class="px-4 py-2 rounded-lg bg-[#1a2234] text-white text-sm hover:bg-[#232d45]">
+            Terapkan
+        </button>
+
+        @if ($search !== '' || $temaFilter !== '' || $statusFilter !== '')
+            <a href="{{ route('admin.undangan.index') }}" class="text-sm text-gray-500 hover:text-[#c9a84c]">
+                Reset
+            </a>
+        @endif
+    </form>
+
     <div class="overflow-x-auto">
         <table class="w-full text-sm">
             <thead class="bg-[#faf7f2] text-left text-xs uppercase tracking-wider text-gray-500">
@@ -117,12 +149,22 @@
                 @empty
                     <tr>
                         <td colspan="7" class="px-5 py-12 text-center text-gray-400">
-                            Belum ada undangan. <a href="{{ route('admin.undangan.create') }}" class="text-[#a8843a] underline">Buat sekarang</a>
+                            @if ($search !== '' || $temaFilter !== '' || $statusFilter !== '')
+                                Tidak ada undangan yang cocok dengan filter. <a href="{{ route('admin.undangan.index') }}" class="text-[#a8843a] underline">Reset filter</a>
+                            @else
+                                Belum ada undangan. <a href="{{ route('admin.undangan.create') }}" class="text-[#a8843a] underline">Buat sekarang</a>
+                            @endif
                         </td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
+
+    @if ($undangan->hasPages())
+        <div class="px-5 py-4 border-t border-[#eee8df]">
+            {{ $undangan->onEachSide(1)->links() }}
+        </div>
+    @endif
 </div>
 @endsection
