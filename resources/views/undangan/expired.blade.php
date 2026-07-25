@@ -188,7 +188,7 @@
                 <path d="M19 12H5" />
                 <path d="M11 18l-6-6 6-6" />
             </svg>
-            Kembali ke Rayakan Momen
+            Kembali ke Website
         </a>
     </div>
 </body>
