@@ -26,8 +26,16 @@
                 @foreach ($homeTemplates as $key => $t)
                     @php
                         $kat = $categories[$t['kategori'] ?? ''] ?? null;
-                        $final = (int) ($t['harga_final'] ?? 0);
+
+                        $hargaAsli = (int) ($t['harga'] ?? 0);
+                        $diskonPersen = (float) ($t['diskon_persen'] ?? 0);
+                        $final = (int) ($t['harga_final'] ?? $hargaAsli);
+                        $punyaDiskon = ! empty($t['punya_diskon']) && $diskonPersen > 0 && $hargaAsli > 0;
+
                         $hargaLabel = $final > 0 ? $catalog->formatRupiah($final) : null;
+                        $hargaAsliLabel = $punyaDiskon ? $catalog->formatRupiah($hargaAsli) : null;
+                        $diskonLabel = $punyaDiskon ? '-'.rtrim(rtrim(number_format($diskonPersen, 1, ',', ''), '0'), ',').'%' : null;
+
                         $waText = rawurlencode(
                             'Halo Rayakan Momen, saya mau pesan undangan ' .
                                 $t['nama'] .
@@ -44,6 +52,9 @@
                     <article class="home-cat-card reveal">
                         <a href="{{ $t['demo_url'] ?? route('katalog') }}" target="_blank" rel="noopener noreferrer"
                             class="home-cat-card__media">
+                            @if ($punyaDiskon)
+                                <span class="home-cat-card__discount-badge">{{ $diskonLabel }}</span>
+                            @endif
                             @if ($cover)
                                 <img src="{{ $cover }}" alt="{{ $t['nama'] }}" loading="lazy"
                                     decoding="async">
@@ -53,7 +64,12 @@
                             <span class="home-cat-card__label">{{ $kat['nama'] ?? 'Undangan' }}</span>
                             <h3 class="font-display">{{ $t['nama'] }}</h3>
                             @if ($hargaLabel)
-                                <p class="text-sm text-[#a8843a] font-semibold mb-1">{{ $hargaLabel }}</p>
+                                <div class="home-cat-card__price-row">
+                                    @if ($punyaDiskon)
+                                        <span class="home-cat-card__price-old">{{ $hargaAsliLabel }}</span>
+                                    @endif
+                                    <span class="home-cat-card__price-final">{{ $hargaLabel }}</span>
+                                </div>
                             @endif
                             <div class="home-cat-card__actions">
                                 @if (!empty($t['demo_url']))
@@ -128,6 +144,7 @@
     }
 
     .home-cat-card__media {
+        position: relative;
         display: block;
         aspect-ratio: 3/4;
         overflow: hidden;
@@ -140,6 +157,21 @@
         object-fit: cover;
         object-position: top;
         display: block
+    }
+
+    .home-cat-card__discount-badge {
+        position: absolute;
+        top: .5rem;
+        left: .5rem;
+        z-index: 2;
+        background: #c0392b;
+        color: #fff;
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        padding: .28rem .55rem;
+        border-radius: .4rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
     }
 
     .home-cat-card__body {
@@ -164,6 +196,26 @@
         line-height: 1.35;
         color: #1a2234;
         font-weight: 600
+    }
+
+    .home-cat-card__price-row {
+        display: flex;
+        align-items: baseline;
+        gap: .45rem;
+        flex-wrap: wrap;
+        margin-bottom: .3rem;
+    }
+
+    .home-cat-card__price-old {
+        font-size: .75rem;
+        color: #9ca3af;
+        text-decoration: line-through;
+    }
+
+    .home-cat-card__price-final {
+        font-size: .9rem;
+        color: #a8843a;
+        font-weight: 700;
     }
 
     .home-cat-card__actions {
