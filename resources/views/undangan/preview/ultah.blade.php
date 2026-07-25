@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    @include('partials.favicon')
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ ($seo['title'] ?? null) ?: ('Ultah '.($undangan['nama_anak'] ?? ($undangan['nama_wanita'] ?? 'Si Kecil')).' — '.($template['nama'] ?? 'Ultah')) }}</title>

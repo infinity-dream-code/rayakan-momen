@@ -2,6 +2,7 @@
 <html lang="id">
 
 <head>
+    @include('partials.favicon')
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Rayakan Momen - Undangan Digital Pernikahan, Ulang Tahun &amp; Pasangan</title>
