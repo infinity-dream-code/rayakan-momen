@@ -784,11 +784,7 @@ function initReveals(){
   tick(); setInterval(tick,1000);
 })();
 
-const GALLERY = [
-@foreach ($undangan['galeri'] as $g)
-    { src: "{{ asset($g) }}", cap: "" },
-@endforeach
-];
+const GALLERY = __GALLERY_JSON__;
 let li=0;
 GALLERY.forEach((g,i)=>{
   const b=document.createElement('button');
