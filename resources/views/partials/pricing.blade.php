@@ -28,9 +28,9 @@
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Konfirmasi hadir &amp; buku ucapan</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-xmark text-charcoal/20 mt-0.5"></i><span class="opacity-50">Tanpa amplop digital</span></li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Aktif tanpa batas waktu</li>
-                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Revisi 1Ã - </li>
+                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Revisi 1ï¿½ - </li>
                 </ul>
-                <a href="https://wa.me/6285199641845?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20Paket%20Silver"
+                <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20Paket%20Silver"
                    target="_blank"
                    rel="noopener noreferrer"
                    class="btn-outline-dark w-full py-3 rounded-full text-sm">
@@ -53,9 +53,9 @@
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Amplop digital (bank + QRIS)</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Musik latar custom</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Aktif tanpa batas waktu</li>
-                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Revisi 3Ã - </li>
+                    <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-dark-accent mt-0.5"></i>Revisi 3ï¿½ - </li>
                 </ul>
-                <a href="https://wa.me/6285199641845?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20Paket%20Gold"
+                <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20Paket%20Gold"
                    target="_blank"
                    rel="noopener noreferrer"
                    class="btn-gold w-full py-3 rounded-full text-sm">
@@ -79,7 +79,7 @@
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Revisi unlimited sampai puas</li>
                     <li class="flex gap-2.5"><i class="fa-solid fa-check text-gold-accent mt-0.5"></i>Prioritas pengerjaan (1 hari jadi)</li>
                 </ul>
-                <a href="https://wa.me/6285199641845?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20Paket%20Platinum"
+                <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20Paket%20Platinum"
                    target="_blank"
                    rel="noopener noreferrer"
                    class="btn-outline-gold w-full py-3 rounded-full text-sm">
@@ -92,7 +92,7 @@
             <p class="text-sm text-muted mb-6 max-w-lg mx-auto">
                 Harga bisa disesuaikan untuk request khusus. Chat langsung untuk konsultasi gratis - tanpa komitmen.
             </p>
-            <a href="https://wa.me/6285199641845?text=Halo%20Rayakan%20Momen%2C%20saya%20mau%20konsultasi%20paket%20undangan%20digital"
+            <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20mau%20konsultasi%20paket%20undangan%20digital"
                target="_blank"
                rel="noopener noreferrer"
                class="btn-gold px-7 py-3 rounded-full text-sm">

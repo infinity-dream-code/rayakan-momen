@@ -577,7 +577,7 @@ body.open #music{opacity:1;pointer-events:auto;transform:none}
 <div id="lightbox"><div class="frame">
   <button type="button" class="x" id="lbX" aria-label="Tutup">✕</button>
   <button type="button" class="p" id="lbP" aria-label="Sebelumnya">‹</button>
-  <img id="lbImg" src="" alt="">
+  <img id="lbImg" alt="">
   <button type="button" class="n" id="lbN" aria-label="Berikutnya">›</button>
 </div></div>
 
@@ -784,17 +784,32 @@ function initReveals(){
   tick(); setInterval(tick,1000);
 })();
 
-const GALLERY = [];
+const GALLERY = [
+@foreach ($undangan['galeri'] as $g)
+    { src: "{{ asset($g) }}", cap: "" },
+@endforeach
+];
 let li=0;
+
+function showLightboxImage(idx){
+  const imgEl = $('#lbImg');
+  if (!imgEl) return;
+  delete imgEl.dataset.rmHide;
+  imgEl.style.display = '';
+  imgEl.src = GALLERY[idx].src;
+  imgEl.alt = GALLERY[idx].cap || '';
+}
+
 GALLERY.forEach((g,i)=>{
   const b=document.createElement('button');
   b.type='button'; b.className='g-tile'+(g.wide?' wide':''); b.setAttribute('data-reveal','');
   b.innerHTML=`<img src="${g.src}" alt="${g.cap}" loading="lazy"><span class="cap font-kufi">${g.cap.toUpperCase()}</span>`;
-  b.addEventListener('click',()=>{li=i;$('#lbImg').src=GALLERY[li].src;$('#lightbox').classList.add('show')});
+  b.addEventListener('click',()=>{li=i;showLightboxImage(li);$('#lightbox').classList.add('show')});
   $('#galleryGrid').appendChild(b);
 });
+
 const closeLb=()=>$('#lightbox').classList.remove('show');
-const step=d=>{li=(li+d+GALLERY.length)%GALLERY.length;$('#lbImg').src=GALLERY[li].src};
+const step=d=>{li=(li+d+GALLERY.length)%GALLERY.length;showLightboxImage(li);};
 $('#lbX').onclick=closeLb;
 $('#lbP').onclick=e=>{e.stopPropagation();step(-1)};
 $('#lbN').onclick=e=>{e.stopPropagation();step(1)};

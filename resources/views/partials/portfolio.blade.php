@@ -5,7 +5,7 @@
     $categories = $categories ?? app(CategoryRepository::class)->allActive();
     $homeTemplates = $homeTemplates ?? [];
     $catalog = app(CatalogRepository::class);
-    $waNumber = '6285199641845';
+    $waNumber = '6285777433886';
 @endphp
 
 <section id="template" class="relative section-light py-16 md:py-24 pb-20 md:pb-28 overflow-hidden">

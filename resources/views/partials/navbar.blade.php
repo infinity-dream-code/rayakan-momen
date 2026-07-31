@@ -86,7 +86,7 @@
             </ul>
 
             <div class="flex items-center gap-2 sm:gap-3">
-                <a href="https://wa.me/6285199641845?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20undangan%20digital"
+                <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20undangan%20digital"
                     target="_blank" rel="noopener noreferrer" class="btn-gold nav-cta px-5 py-2.5 rounded-full text-sm">
                     <i class="fa-brands fa-whatsapp"></i>
                     <span>Pesan Sekarang</span>
@@ -132,7 +132,7 @@
         </li>
     </ul>
     <div class="px-5 mt-4">
-        <a href="https://wa.me/6285199641845?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20undangan%20digital"
+        <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20ingin%20pesan%20undangan%20digital"
             target="_blank" rel="noopener noreferrer" class="btn-gold mobile-nav-link w-full py-3 rounded-full text-sm">
             <i class="fa-brands fa-whatsapp"></i>
             Pesan Sekarang
