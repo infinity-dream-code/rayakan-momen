@@ -784,21 +784,10 @@ function initReveals(){
   tick(); setInterval(tick,1000);
 })();
 
-const GALLERY=[
-  {src:'assets/images/gallery-1.jpg',cap:'Pertemuan'},
-  {src:'assets/images/gallery-2.jpg',cap:'Ta\'aruf'},
-  {src:'assets/images/gallery-3.jpg',cap:'Lamaran'},
-  {src:'assets/images/gallery-4.jpg',cap:'Prewedding'},
-  {src:'assets/images/hero-islamic.jpg?v=7',cap:'Masjid',wide:1},
-  {src:'assets/images/gallery-5.jpg',cap:'Keluarga'},
-  {src:'assets/images/gallery-6.jpg',cap:'Sahabat'},
-  {src:'assets/images/gallery-7.jpg',cap:'Doa'},
-  {src:'assets/images/gallery-8.jpg',cap:'Cinta'},
-  {src:'assets/images/mosque-arch.jpg?v=6',cap:'Masjid'},
-  {src:'assets/images/quran-moment.jpg?v=6',cap:'Berkah'},
-  {src:'assets/images/islamic-extra-1.jpg?v=6',cap:'Nabawi'},
-  {src:'assets/images/lantern-gold.jpg?v=6',cap:'Cahaya'},
-  {src:'assets/images/gold-lanterns.jpg?v=6',cap:'Sheikh Zayed'},
+const GALLERY = [
+@foreach ($undangan['galeri'] as $g)
+    { src: "{{ asset($g) }}", cap: "" },
+@endforeach
 ];
 let li=0;
 GALLERY.forEach((g,i)=>{

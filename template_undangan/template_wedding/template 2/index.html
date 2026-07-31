@@ -2319,35 +2319,60 @@
             { src: "assets/images/photo-1470225620780-dba8ba36b745_8359883.jpg", alt: "Pesta malam" }
         ];
 
-        (function initGallery() {
-            const lightbox = document.getElementById('galLightbox');
-            const lightboxImg = document.getElementById('galLightboxImg');
-            const closeBtn = document.getElementById('galLightboxClose');
-            if (!lightbox || !lightboxImg) return;
-            let currentIdx = 0;
-            document.querySelectorAll('.gal-item').forEach(function(btn, idx) {
-                btn.addEventListener('click', function() {
-                    currentIdx = idx;
-                    lightboxImg.src = galleryItems[idx].src;
-                    lightboxImg.alt = galleryItems[idx].alt;
-                    lightbox.classList.add('open');
-                    lightbox.setAttribute('aria-hidden', 'false');
-                });
-            });
-            function closeLightbox() {
-                lightbox.classList.remove('open');
-                lightbox.setAttribute('aria-hidden', 'true');
-                setTimeout(function() { if (!lightbox.classList.contains('open')) { lightboxImg.removeAttribute('src'); lightboxImg.alt = ''; } }, 300);
+       (function initGallery() {
+    const lightbox = document.getElementById('galLightbox');
+    const lightboxImg = document.getElementById('galLightboxImg');
+    const closeBtn = document.getElementById('galLightboxClose');
+    if (!lightbox || !lightboxImg) return;
+
+    const galButtons = Array.from(document.querySelectorAll('.gal-item'));
+    const galleryItems = galButtons.map(function (btn) {
+        const img = btn.querySelector('img');
+        return { src: img.getAttribute('src'), alt: img.getAttribute('alt') || '' };
+    });
+
+    let currentIdx = 0;
+
+    galButtons.forEach(function (btn, idx) {
+        btn.addEventListener('click', function () {
+            currentIdx = idx;
+            lightboxImg.src = galleryItems[idx].src;
+            lightboxImg.alt = galleryItems[idx].alt;
+            lightbox.classList.add('open');
+            lightbox.setAttribute('aria-hidden', 'false');
+        });
+    });
+
+    function closeLightbox() {
+        lightbox.classList.remove('open');
+        lightbox.setAttribute('aria-hidden', 'true');
+        setTimeout(function () {
+            if (!lightbox.classList.contains('open')) {
+                lightboxImg.removeAttribute('src');
+                lightboxImg.alt = '';
             }
-            closeBtn.addEventListener('click', closeLightbox);
-            lightbox.addEventListener('click', function(e) { if (e.target === lightbox) closeLightbox(); });
-            document.addEventListener('keydown', function(e) {
-                if (!lightbox.classList.contains('open')) return;
-                if (e.key === 'Escape') closeLightbox();
-                if (e.key === 'ArrowRight' && galleryItems.length > 1) { currentIdx = (currentIdx + 1) % galleryItems.length; lightboxImg.src = galleryItems[currentIdx].src; lightboxImg.alt = galleryItems[currentIdx].alt; }
-                if (e.key === 'ArrowLeft' && galleryItems.length > 1) { currentIdx = (currentIdx - 1 + galleryItems.length) % galleryItems.length; lightboxImg.src = galleryItems[currentIdx].src; lightboxImg.alt = galleryItems[currentIdx].alt; }
-            });
-        })();
+        }, 300);
+    }
+
+    closeBtn.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', function (e) {
+        if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (!lightbox.classList.contains('open')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowRight' && galleryItems.length > 1) {
+            currentIdx = (currentIdx + 1) % galleryItems.length;
+            lightboxImg.src = galleryItems[currentIdx].src;
+            lightboxImg.alt = galleryItems[currentIdx].alt;
+        }
+        if (e.key === 'ArrowLeft' && galleryItems.length > 1) {
+            currentIdx = (currentIdx - 1 + galleryItems.length) % galleryItems.length;
+            lightboxImg.src = galleryItems[currentIdx].src;
+            lightboxImg.alt = galleryItems[currentIdx].alt;
+        }
+    });
+})();
 
         document.getElementById('giftToggle').addEventListener('click', function() {
             const list = document.getElementById('bankList');
