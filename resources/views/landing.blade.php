@@ -29,7 +29,7 @@
     <meta name="twitter:image"
         content="https://res.cloudinary.com/zujq4fvj/image/upload/v1784771473/RAYAKAN_MOMEN_veeyix.png">
     <link rel="canonical" href="{{ url('/') }}">
-    <link rel="shortcut icon" href="{{ asset('logo.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('logo-gold.png') }}" type="image/x-icon">
     <script type="application/ld+json">
     {!! json_encode([
         '@context' => 'https://schema.org',
