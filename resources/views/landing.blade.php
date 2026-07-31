@@ -45,7 +45,7 @@
         'contactPoint' => [
             '@type' => 'ContactPoint',
             'contactType' => 'customer service',
-            'telephone' => '+6285777433886',
+            'telephone' => '+6285199641845',
             'availableLanguage' => ['Indonesian'],
         ],
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
