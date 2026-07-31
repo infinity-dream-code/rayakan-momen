@@ -354,22 +354,39 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         // Kalau kartu event belum punya tombol maps (mis. LIHAT PETA), baru tambahkan
-        document.querySelectorAll('.event-card').forEach(function (card, i) {
-            if (card.querySelector(mapSel)) return;
-            var u = i === 0
-                ? (cfg.mapsUrl || cfg.mapsUrlResepsi)
-                : (cfg.mapsUrlResepsi || cfg.mapsUrl);
-            if (!u) return;
-            var link = document.createElement('a');
-            link.href = u;
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
-            link.className = 'map-btn';
-            link.setAttribute('data-maps', '1');
-            link.textContent = 'Lihat Lokasi';
-            link.style.display = 'inline-block';
-            link.style.marginTop = '12px';
-            card.appendChild(link);
-        });
+    if (cfg.mapsUrl || cfg.mapsUrlResepsi) {
+    var mapSel = 'a.map-btn, a.event-map, a[data-maps], a[href*="google.com/maps"], a[href*="maps.google"], a[href*="maps.app.goo.gl"], a[href*="goo.gl/maps"]';
+    var mapLinks = document.querySelectorAll(mapSel);
+    mapLinks.forEach(function (a, i) {
+        var u = i === 0
+            ? (cfg.mapsUrl || cfg.mapsUrlResepsi)
+            : (cfg.mapsUrlResepsi || cfg.mapsUrl);
+        if (!u) return;
+        a.href = u;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+    });
+
+    // Kalau kartu event belum punya tombol maps, baru tambahkan —
+    // batasi hanya ke section acara/event, jangan ke kartu gift/rekening
+    var eventScope = document.getElementById('acara') || document.getElementById('event') || document;
+    eventScope.querySelectorAll('.event-card').forEach(function (card, i) {
+        if (card.querySelector(mapSel)) return;
+        var u = i === 0
+            ? (cfg.mapsUrl || cfg.mapsUrlResepsi)
+            : (cfg.mapsUrlResepsi || cfg.mapsUrl);
+        if (!u) return;
+        var link = document.createElement('a');
+        link.href = u;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'map-btn';
+        link.setAttribute('data-maps', '1');
+        link.textContent = 'Lihat Lokasi';
+        link.style.display = 'inline-block';
+        link.style.marginTop = '12px';
+        card.appendChild(link);
+    });
+}
     }
 });

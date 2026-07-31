@@ -39,13 +39,13 @@
         'logo' => asset('logo.png'),
         'description' => 'Jasa undangan digital untuk pernikahan, ulang tahun anak, dan pasangan. Pengerjaan biasanya 1 hari, dilengkapi dashboard RSVP.',
         'sameAs' => [
-            'https://instagram.com/rayakanmomen',
+            'https://instagram.com/rayakanmomen_',
             'https://www.tiktok.com/@rayakanmomen.com',
         ],
         'contactPoint' => [
             '@type' => 'ContactPoint',
             'contactType' => 'customer service',
-            'telephone' => '+6285199641845',
+            'telephone' => '+6285777433886',
             'availableLanguage' => ['Indonesian'],
         ],
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}

@@ -4,7 +4,7 @@
     $allTemplates =
         $allTemplates ?? collect($catalog->templates())->filter(fn($t) => $t['aktif_katalog'] ?? true)->all();
     $activeKat = $activeKat ?? 'all';
-    $waNumber = '6285199641845';
+    $waNumber = '6285777433886';
 @endphp
 
 <!DOCTYPE html>
