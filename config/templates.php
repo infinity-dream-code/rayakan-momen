@@ -260,7 +260,7 @@ return [
             'preview' => null,
             'file' => 'template_undangan/template_wedding/wedding_islam/index.html',
             'blade' => 'undangan.preview.wedding',
-            'demo_url' => 'https://rayakanmomen.com/shinta',
+            'demo_url' => 'https://rayakanmomen.com/james',
             'aktif' => true,
             'fields' => [
                 'mempelai',
