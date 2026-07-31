@@ -37,7 +37,7 @@
             <a href="{{ route('katalog') }}" class="btn-gold px-8 py-3.5 rounded-full text-sm">
                 Lihat Katalog Undangan
             </a>
-            <a href="https://wa.me/6285199641845?text=Halo%20Rayakan%20Momen%2C%20saya%20mau%20tanya%20soal%20undangan%20digital"
+            <a href="https://wa.me/6285777433886?text=Halo%20Rayakan%20Momen%2C%20saya%20mau%20tanya%20soal%20undangan%20digital"
                 target="_blank" rel="noopener noreferrer" class="btn-outline-gold px-8 py-3.5 rounded-full text-sm">
                 <i class="fa-brands fa-whatsapp"></i>
                 Tanya via WhatsApp
