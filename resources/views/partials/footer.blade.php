@@ -32,7 +32,7 @@
                         <a href="https://wa.me/6285199641845" target="_blank" rel="noopener noreferrer"
                             class="footer-link inline-flex items-center gap-2">
                             <i class="fa-brands fa-whatsapp text-gold-accent"></i>
-                            085-199-641-845
+                            0851-9964-1845
                         </a>
                     </li>
                     <li>
