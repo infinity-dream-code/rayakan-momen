@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/katalog', [LandingController::class, 'katalog'])->name('katalog');
-Route::post('/wa-click', [WaClickController::class, 'store'])
+Route::match(['get', 'post'], '/wa-click', [WaClickController::class, 'store'])
     ->middleware('throttle:120,1')
     ->name('wa.click');
 
