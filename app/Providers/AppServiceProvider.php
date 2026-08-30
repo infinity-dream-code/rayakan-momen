@@ -10,6 +10,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         require_once app_path('Helpers/cdn.php');
+        require_once app_path('Helpers/contact.php');
 
         // public_html sering di LUAR folder project (sibling), bukan di dalamnya.
         // Contoh: /home/USER/website-undangan + /home/USER/public_html

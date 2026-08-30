@@ -4,7 +4,7 @@
     $allTemplates =
         $allTemplates ?? collect($catalog->templates())->filter(fn($t) => $t['aktif_katalog'] ?? true)->all();
     $activeKat = $activeKat ?? 'all';
-    $waNumber = '6285199641845';
+    $waNumber = wa_number();
 @endphp
 
 <!DOCTYPE html>
@@ -300,6 +300,7 @@
             color: #e8d5a3;
         }
     </style>
+    @include('partials.wa-track')
 </head>
 
 <body class="font-sans antialiased katalog-page">

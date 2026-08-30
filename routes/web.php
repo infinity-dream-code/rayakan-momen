@@ -10,10 +10,14 @@ use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\InvitationPublicController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\RsvpDashboardController;
+use App\Http\Controllers\WaClickController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/katalog', [LandingController::class, 'katalog'])->name('katalog');
+Route::post('/wa-click', [WaClickController::class, 'store'])
+    ->middleware('throttle:120,1')
+    ->name('wa.click');
 
 Route::get('/sitemap.xml', [InvitationPublicController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt', [InvitationPublicController::class, 'robots'])->name('robots');

@@ -5,7 +5,7 @@
 @section('subheading', 'Ringkasan laporan undangan digital')
 
 @section('content')
-<div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+<div class="grid sm:grid-cols-2 xl:grid-cols-5 gap-4 mb-8">
     <div class="card p-5">
         <div class="flex items-center justify-between mb-3">
             <div class="stat-icon bg-[#faf7f2] text-[#c9a84c]"><i class="fa-solid fa-envelope"></i></div>
@@ -33,6 +33,13 @@
         </div>
         <p class="text-2xl font-display text-[#1a2234]">{{ $stats['total_ucapan'] }}</p>
         <p class="text-xs text-gray-500 mt-1">Ucapan / RSVP (Hadir: {{ $stats['total_hadir'] }})</p>
+    </div>
+    <div class="card p-5">
+        <div class="flex items-center justify-between mb-3">
+            <div class="stat-icon bg-green-50 text-green-600"><i class="fa-brands fa-whatsapp"></i></div>
+        </div>
+        <p class="text-2xl font-display text-[#1a2234]">{{ number_format($stats['wa_clicks'] ?? 0) }}</p>
+        <p class="text-xs text-gray-500 mt-1">Klik nomor WhatsApp ({{ wa_display() }})</p>
     </div>
 </div>
 

@@ -15,7 +15,7 @@
         <p class="text-on-dark-muted text-sm sm:text-base mb-10 max-w-md mx-auto leading-relaxed">
             Pengerjaan biasanya 1 hari. Dilengkapi dashboard RSVP &amp; link personal siap dibagikan. Konsultasi gratis.
         </p>
-        <a href="https://wa.me/6285199641845?text=Halo%20Rayakan%20Momen%2C%20saya%20mau%20tanya%20tentang%20undangan%20digital"
+        <a href="{{ wa_me_url('Halo Rayakan Momen, saya mau tanya tentang undangan digital') }}"
             target="_blank" rel="noopener noreferrer" class="btn-gold px-9 py-4 rounded-full text-base">
             <i class="fa-brands fa-whatsapp text-xl"></i>
             Hubungi via WhatsApp

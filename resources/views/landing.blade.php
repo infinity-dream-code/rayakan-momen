@@ -45,7 +45,7 @@
         'contactPoint' => [
             '@type' => 'ContactPoint',
             'contactType' => 'customer service',
-            'telephone' => '+6285199641845',
+            'telephone' => wa_tel(),
             'availableLanguage' => ['Indonesian'],
         ],
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
@@ -86,6 +86,7 @@
     </noscript>
     <link rel="stylesheet" type="text/css" href="{{ asset('css/app.css') }}?v={{ $appCssVer }}">
     @include('partials.landing-dark-text')
+    @include('partials.wa-track')
 </head>
 
 <body class="font-sans antialiased">
