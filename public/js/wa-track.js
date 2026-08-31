@@ -20,9 +20,10 @@
 
     function ping() {
         var url = endpoint + (endpoint.indexOf('?') > -1 ? '&' : '?') + 't=' + Date.now();
-        try {
+        if (typeof fetch === 'function') {
             fetch(url, { method: 'GET', keepalive: true, credentials: 'same-origin' }).catch(function () {});
-        } catch (e) {}
+            return;
+        }
         try {
             (new Image()).src = url;
         } catch (e) {}
@@ -30,7 +31,9 @@
 
     document.addEventListener('click', function (e) {
         var a = e.target.closest('a[href*="wa.me"]');
-        if (!a || !isOurWaLink(a.href || a.getAttribute('href') || '')) return;
+        if (!a || a.dataset.waTracked === '1') return;
+        if (!isOurWaLink(a.href || a.getAttribute('href') || '')) return;
+        a.dataset.waTracked = '1';
         ping();
     }, true);
 })();
